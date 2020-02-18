@@ -10,26 +10,31 @@ const DoctorView = () => {
 
 const renderPatients = () => {
     render(
-        patients.map((p, i) => {
-        return(
-            <Grid
+        <Grid
             container
             direction="row"
             justify="center"
             alignItems="center"
             >
-                <Patient 
-                name={p.name} 
-                photo={p.photo}
-                profile={p.profile}
-                />
-            </Grid>
-        )
-    })
+        {
+            patients.map((p, i) => {
+                return(
+                    <Grid item xs={6}>
+                        <Patient 
+                        name={p.name} 
+                        photo={p.photo}
+                        profile={p.profile}
+                        />
+                    </Grid>
+                )
+        })
+        }
+        </Grid>
     )
 }
     return ( 
         <Container fixed>
+            <h2>Patient Dashboard</h2>
             {renderPatients()}
         </Container>
     );

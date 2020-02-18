@@ -2,15 +2,16 @@ import React from 'react';
 import './App.css';
 import PatientView from './PatientComponents/PatientView' 
 import DoctorView from './DoctorComponents/DoctorView' 
+import ExerciseTracking from './PatientComponents/PatientExerciseTracking'
 
 // Add login/auth logic here, add react routing to correct pages 
 
 const App = () => {
-  return ( 
+  return (
     (false) ? 
-    <PatientView></PatientView>
+    <DoctorView></DoctorView>
     :
-    <DoctorView> </DoctorView>
+    <ExerciseTracking> </ExerciseTracking>
   );
 }
 
