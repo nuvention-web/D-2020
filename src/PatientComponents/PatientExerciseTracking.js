@@ -11,11 +11,30 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import YouTube from 'react-youtube';
 
 
 const useStyles = makeStyles(theme => ({
     exercises: {
         marginTop: 15
+    },
+    header: {
+        marginTop: 10,
+        marginBottom: 8,
+        color: '#80858a'
+    },
+    meter: {
+        marginTop: 25
+    },
+    video: {
+        marginTop: 30,
+        marginLeft: 120,
+        height: 250,
+        width: 460,
+    },
+    exerciseContainer: {
+        display: 'flex',
+        flexDirection: 'row'
     }
 
 }));
@@ -43,8 +62,9 @@ const ExerciseTracking = () => {
                 </Toolbar>
             </AppBar>
             <Container>
-            <h2>Weekly Exercises</h2>
+            <Typography variant="h4" className={classes.header}>Weekly Exercises</Typography>
             <Divider />
+            <div className={classes.exerciseContainer}>
             <FormGroup className={classes.exercises}>
             {PatientExerciseData.exercises.map( (exercise, i) => {
                 return(
@@ -62,8 +82,13 @@ const ExerciseTracking = () => {
                 );
             }
             )}
+            <Typography variant="h6" className={classes.meter}>Percent Completed: {percentFinished}%</Typography>
             </FormGroup>
-            <h4>Percent Completed: {percentFinished}%</h4>
+            <YouTube
+                videoId="bv373Y1oeck"
+                className={classes.video}
+            />
+            </div>
             </Container>
         </div>
     )
