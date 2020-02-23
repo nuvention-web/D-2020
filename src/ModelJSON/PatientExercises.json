@@ -1,6 +1,13 @@
 {
     "id": 0,
     "name": "Anni Rogers",
-    "exercises": ["Calf wall stretch (5 mins)", "Sideways leg lifts (2 mins)", "Heel Raise (2 mins)",
-    "Bilateral calf stretch (3 mins)", "Ankle plantarflexion (2 mins)"]
+    "exercise": [
+        {"name" : "calf wall stretch", "reps": 1, "duration": 5},
+        {"name" : "sideways leg lifts", "reps": 10, "duration": 2},
+        {"name" : "heel raise", "reps": 20, "duration": 2},
+        {"name" : "bilateral calf stretch", "reps": 5, "duration": 3},
+        {"name" : "ankle plantarflexion", "reps": 10, "duration": 2}
+    ],
+    "exercises": ["Calf wall stretch (5 mins)", "Sideways leg lifts (2 mins)", "Heel Raise (2 mins)"
+    ]
 }

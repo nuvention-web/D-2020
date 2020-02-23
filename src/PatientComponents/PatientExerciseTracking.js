@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Patient from '../PatientComponents/Patient'
-import PatientExerciseData from '../ModelJSON/PatientExercises.json';
+import PatientExercises from '../ModelJSON/PatientExercises.json';
 import Container from '@material-ui/core/Container';
 import { render } from '@testing-library/react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +12,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import YouTube from 'react-youtube';
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Carousel from 'react-bootstrap/Carousel';
 
 const useStyles = makeStyles(theme => ({
     exercises: {
@@ -29,9 +30,11 @@ const useStyles = makeStyles(theme => ({
     },
     video: {
         marginTop: 30,
-        marginLeft: 120,
+        // marginLeft: 120,
         height: 250,
         width: 460,
+        // display: 'block',
+        // margin: 'auto'
     },
     checklistContainer: {
         display: 'flex',
@@ -42,26 +45,37 @@ const useStyles = makeStyles(theme => ({
         boxShadow: 'none'
     },
     exerciseContainer: {
-        marginTop: 30
+        width: 600,
+        marginTop: 30,
+        textAlign: 'center'
     },
-
 }));
-
-
-const ExerciseTracking = () => {
-    const [checked, setChecked] = useState(Array(PatientExerciseData.exercises.length).fill(false));
-    const [percentFinished, setPercentFinished] = useState(0);
+const ExerciseCarousel = () => {
+    const [index, setIndex] = useState(0);
+    const [direction, setDirection] = useState(null);
     const classes = useStyles();
-    
-    const handleChecked = (index) => {
-        var updatedChecked = [...checked];
-        updatedChecked[index] = !updatedChecked[index];
-        setChecked(updatedChecked);
-        
-        var numTrue = checked.filter(Boolean).length;
-        setPercentFinished(100*(updatedChecked.reduce((a,b) => a + b, 0)/checked.length));
-    }
-    
+    const handleSelect = (selectedIndex, e) => {
+        setIndex(selectedIndex);
+        setDirection(e.direction);
+    };
+    return(
+        <Carousel activeIndex={index} direction={direction} onSelect={handleSelect}>
+            {/* {PatientExercises.map( exercise =>  */}
+            <Carousel.Item>
+                <YouTube
+                    videoId="bv373Y1oeck"
+                    className={classes.video}
+                />
+                <Carousel.Caption>
+                <Typography variant="h6">Calf Stretch</Typography>
+                </Carousel.Caption>
+            </Carousel.Item>
+            {/* )} */}
+        </Carousel>
+    );
+}
+const ExerciseTracking = () => {
+    const classes = useStyles();
     return(
         <div>
             <AppBar position="static" className={classes.appBar}>
@@ -70,38 +84,12 @@ const ExerciseTracking = () => {
                 </Toolbar>
             </AppBar>
             <Container className={classes.exerciseContainer}>
-            <Typography variant="h4" className={classes.header}>Weekly Exercises</Typography>
-            <Divider />
-            <div className={classes.checklistContainer}>
-            <FormGroup className={classes.exercises}>
-            {PatientExerciseData.exercises.map( (exercise, i) => {
-                return(
-                    <FormControlLabel
-                    key={i}
-                    control={
-                    <Checkbox 
-                        checked={!!checked[i]} 
-                        onChange={() => {handleChecked(i)}}
-                        color="#7ea8e6"
-                        // style={{color: "#7ea8e6"}}
-                    />
-                    }
-                    label={exercise}
-                    />
-
-                );
-            }
-            )}
-            <Typography variant="h6" className={classes.meter}>Percent Completed: {percentFinished}%</Typography>
-            </FormGroup>
-            <YouTube
-                videoId="bv373Y1oeck"
-                className={classes.video}
-            />
-            </div>
+                <Typography variant="h4" className={classes.header}>Weekly Exercises</Typography>
+                <Divider />
+                <ExerciseCarousel />
             </Container>
         </div>
-    )
+    );
 }
 
 export default ExerciseTracking;
