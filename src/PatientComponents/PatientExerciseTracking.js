@@ -16,7 +16,8 @@ import YouTube from 'react-youtube';
 
 const useStyles = makeStyles(theme => ({
     exercises: {
-        marginTop: 15
+        marginTop: 15,
+        minWidth: 250
     },
     header: {
         marginTop: 10,
@@ -32,10 +33,17 @@ const useStyles = makeStyles(theme => ({
         height: 250,
         width: 460,
     },
-    exerciseContainer: {
+    checklistContainer: {
         display: 'flex',
         flexDirection: 'row'
-    }
+    },
+    appBar: {
+        backgroundColor: '#bfd9ff',
+        boxShadow: 'none'
+    },
+    exerciseContainer: {
+        marginTop: 30
+    },
 
 }));
 
@@ -56,15 +64,15 @@ const ExerciseTracking = () => {
     
     return(
         <div>
-            <AppBar position="static">
+            <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h6">PRM</Typography>
                 </Toolbar>
             </AppBar>
-            <Container>
+            <Container className={classes.exerciseContainer}>
             <Typography variant="h4" className={classes.header}>Weekly Exercises</Typography>
             <Divider />
-            <div className={classes.exerciseContainer}>
+            <div className={classes.checklistContainer}>
             <FormGroup className={classes.exercises}>
             {PatientExerciseData.exercises.map( (exercise, i) => {
                 return(
@@ -74,7 +82,9 @@ const ExerciseTracking = () => {
                     <Checkbox 
                         checked={!!checked[i]} 
                         onChange={() => {handleChecked(i)}}
-                        color="primary"/>
+                        color="#7ea8e6"
+                        // style={{color: "#7ea8e6"}}
+                    />
                     }
                     label={exercise}
                     />
