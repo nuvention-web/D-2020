@@ -20,7 +20,7 @@ import {
     Route,
     Link
   } from "react-router-dom";
-import Button from '@material-ui/core/Button';
+import Button from 'react-bootstrap/Button';
 import PatientExerciseMain from './PatientExerciseMain';
 
 const useStyles = makeStyles(theme => ({
@@ -70,6 +70,9 @@ const useStyles = makeStyles(theme => ({
         background: 'no-repeat 50%/100% 100%',
         backgroundImage: `url(${prevIcon})`
     },
+    backButton: {
+        float: 'left'
+    }
 }));
 
 
@@ -112,11 +115,13 @@ const ExerciseTracking = () => {
                     <Typography variant="h6">PRM</Typography>
                 </Toolbar>
             </AppBar>
-            <Link to="/" className={classes.link}>
-                    <Button variant="outline-primary">Back</Button>
-                </Link>
+         
             <Container className={classes.exerciseContainer}>
-                <Typography variant="h4" className={classes.header}>Weekly</Typography>
+                <Typography variant="h4" className={classes.header}>
+                    <Link to="/workout" className={classes.link}>
+                        <Button className={classes.backButton} variant="outline-primary">Back</Button>
+                    </Link>
+                    Weekly</Typography>
                 <Divider />
                 <ExerciseCarousel />
                 <Timer
