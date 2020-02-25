@@ -1,13 +1,21 @@
 {
     "id": 0,
     "name": "Anni Rogers",
-    "exercise": [
-        {"name" : "calf wall stretch", "reps": 1, "duration": 5},
-        {"name" : "sideways leg lifts", "reps": 10, "duration": 2},
-        {"name" : "heel raise", "reps": 20, "duration": 2},
-        {"name" : "bilateral calf stretch", "reps": 5, "duration": 3},
-        {"name" : "ankle plantarflexion", "reps": 10, "duration": 2}
-    ],
-    "exercises": ["Calf wall stretch (5 mins)", "Sideways leg lifts (2 mins)", "Heel Raise (2 mins)"
+    "sets": [
+        {
+            "day": "Monday",
+            "exercise": [
+                {"id": 0, "name" : "calf wall stretch", "reps": 1, "duration": 5, "videoId": "bv373Y1oeck"},
+                {"id": 1, "name" : "sideways leg lifts", "reps": 10, "duration": 2, "videoId": "jgh6sGwtTwk"},
+                {"id": 2, "name" : "heel raise", "reps": 20, "duration": 2, "videoId": "MW2WG5l-fYE"}
+            ]
+        }, 
+        {
+            "day": "Tuesday",
+            "exercise": [
+                {"id": 3, "name" : "bilateral calf stretch", "reps": 5, "duration": 3, "videoId": "InbD-ANnZhk"},
+                {"id": 4, "name" : "ankle plantarflexion", "reps": 10, "duration": 2, "videoId": "MujwFGJSQ_k"}
+            ]
+        }
     ]
 }
