@@ -1,0 +1,18 @@
+.carousel-indicators li {
+    background-color: #80858a !important;
+  }
+  
+  /* this determines distance of carousel indicators from carousel item*/
+  .carousel-item {
+    margin-bottom: 140px;
+  }
+  
+  .carousel-caption {
+    position: absolute;
+    bottom: -60px !important;
+    color: #6f7378 !important;
+  }
+
+  .btn {
+    padding: 0rem .75rem !important;
+  }

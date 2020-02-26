@@ -22,6 +22,7 @@ import {
   } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import PatientExerciseMain from './PatientExerciseMain';
+import '../PatientExerciseTracking.css';
 
 const useStyles = makeStyles(theme => ({
     exercises: {
@@ -54,12 +55,14 @@ const useStyles = makeStyles(theme => ({
     carousel: {
         display: 'flex',
         minWidth: 900,
-        marginTop: 45
+        marginTop: 45,
+        marginBottom: 50
     },
     nextArrow: {
         display: 'inline-block',
         width: 40,
         height: 40,
+        marginBottom: '70%',
         background: 'no-repeat 50%/100% 100%',
         backgroundImage: `url(${nextIcon})`
     },
@@ -67,11 +70,26 @@ const useStyles = makeStyles(theme => ({
         display: 'inline-block',
         width: 40,
         height: 40,
+        marginBottom: '70%',
         background: 'no-repeat 50%/100% 100%',
         backgroundImage: `url(${prevIcon})`
     },
     backButton: {
-        float: 'left'
+        float: 'left',
+        padding: '0.375rem 0.75rem !important'
+    },
+    timer: {
+        position: 'absolute',
+        textAlign: 'center',
+        right: '15%',
+        left: '15%',
+        bottom: -95
+    },
+    timerButtons: {
+        marginRight: 5,
+        fontSize: 12,
+        height: 29,
+        paddingBottom: 7
     }
 }));
 
@@ -101,6 +119,24 @@ const ExerciseCarousel = () => {
                 <Carousel.Caption>
                 <Typography variant="h6">{exercise.name}</Typography>
                 </Carousel.Caption>
+                <div className={classes.timer}>
+                <Timer
+                    initialTime={exercise.duration * 60000 }
+                    direction="backward"
+                    startImmediately={false}
+                >
+                    {({ start, stop, reset }) => (
+                        <React.Fragment>
+                            <Timer.Minutes />:
+                            <Timer.Seconds formatValue={(value) => `${(value < 10 ? `0${value}` : value)}`}/>
+                            <br />
+                            <Button onClick={start} className={classes.timerButtons}>Start</Button>
+                            <Button onClick={stop} className={classes.timerButtons}>Stop</Button>
+                            <Button onClick={reset} className={classes.timerButtons}>Reset</Button>
+                        </React.Fragment>
+                    )}
+                </Timer>
+                </div>
             </Carousel.Item>
             )}
         </Carousel>
@@ -121,16 +157,10 @@ const ExerciseTracking = () => {
                     <Link to="/workout" className={classes.link}>
                         <Button className={classes.backButton} variant="outline-primary">Back</Button>
                     </Link>
-                    Weekly</Typography>
+                    Weekly Exercise
+                </Typography>
                 <Divider />
                 <ExerciseCarousel />
-                <Timer
-                    initialTime={500000}
-                    direction="backward"
-                >
-                    <Timer.Minutes />
-                    <Timer.Seconds />
-                </Timer>
             </Container>
         </div>
     );

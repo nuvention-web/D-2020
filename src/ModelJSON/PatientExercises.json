@@ -5,16 +5,16 @@
         {
             "day": "Monday",
             "exercise": [
-                {"id": 0, "name" : "calf wall stretch", "reps": 1, "duration": 5, "videoId": "bv373Y1oeck"},
-                {"id": 1, "name" : "sideways leg lifts", "reps": 10, "duration": 2, "videoId": "jgh6sGwtTwk"},
-                {"id": 2, "name" : "heel raise", "reps": 20, "duration": 2, "videoId": "MW2WG5l-fYE"}
+                {"id": 0, "name" : "Calf Wall Stretch", "reps": 1, "duration": 5, "videoId": "bv373Y1oeck"},
+                {"id": 1, "name" : "Sideways Leg Lifts", "reps": 10, "duration": 2, "videoId": "jgh6sGwtTwk"},
+                {"id": 2, "name" : "Heel Raise", "reps": 20, "duration": 2, "videoId": "MW2WG5l-fYE"}
             ]
         },
         {
             "day": "Tuesday",
             "exercise": [
-                {"id": 3, "name" : "bilateral calf stretch", "reps": 5, "duration": 3, "videoId": "InbD-ANnZhk"},
-                {"id": 4, "name" : "ankle plantarflexion", "reps": 10, "duration": 2, "videoId": "MujwFGJSQ_k"}
+                {"id": 3, "name" : "Bilateral Calf Stretch", "reps": 5, "duration": 3, "videoId": "InbD-ANnZhk"},
+                {"id": 4, "name" : "Ankle Plantarflexion", "reps": 10, "duration": 2, "videoId": "MujwFGJSQ_k"}
             ]
         }
     ]
