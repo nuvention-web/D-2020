@@ -14,6 +14,17 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import YouTube from 'react-youtube';
 import { withStyles } from '@material-ui/core';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+  } from "react-router-dom";
+import ExerciseTracking from './PatientExerciseTracking';
+// import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
 
 const useStyles = makeStyles(theme => ({
     exercises: {
@@ -35,8 +46,7 @@ const useStyles = makeStyles(theme => ({
         width: 460,
     },
     checklistContainer: {
-        display: 'flex',
-        flexDirection: 'row'
+      
     },
     appBar: {
         backgroundColor: '#bfd9ff',
@@ -45,12 +55,23 @@ const useStyles = makeStyles(theme => ({
     exerciseContainer: {
         marginTop: 30
     },
+    link: {
+        textDecoration: 'none',
+        textAlign: 'right',
+        '&:hover': {
+            color: 'white'
+         },
+    },
+    startButton: {
+        float: 'right'
+    }    
+
 
 }));
 
 const calculateTotalTime = () => {
     var t = 0
-    for (const [i, entry] of Object.entries(PatientExerciseData.exercise)) {
+    for (const [i, entry] of Object.entries(PatientExerciseData.sets[0].exercise)) {
         t += entry.duration;
       }
     console.log("t:",t)
@@ -66,20 +87,20 @@ const formatExerciseName = (n) => {
     return splitStr.join(' '); 
  }
 
-const PatientExerciseMain = ({startWorkout}) => {
-    const [checked, setChecked] = useState(Array(PatientExerciseData.exercise.length).fill(false));
+const PatientExerciseMain = () => {
+    const exerciseSets = PatientExerciseData.sets
     const [percentFinished, setPercentFinished] = useState(0);
     const classes = useStyles();
     const [totalTime, setTotalTime] = useState(calculateTotalTime);
     
-    const handleChecked = (index) => {
-        var updatedChecked = [...checked];
-        updatedChecked[index] = !updatedChecked[index];
-        setChecked(updatedChecked);
+    // const handleChecked = (index) => {
+    //     var updatedChecked = [...checked];
+    //     updatedChecked[index] = !updatedChecked[index];
+    //     setChecked(updatedChecked);
         
-        var numTrue = checked.filter(Boolean).length;
-        setPercentFinished(100*(updatedChecked.reduce((a,b) => a + b, 0)/checked.length));
-    }
+    //     var numTrue = checked.filter(Boolean).length;
+    //     setPercentFinished(100*(updatedChecked.reduce((a,b) => a + b, 0)/checked.length));
+    // }
     
     const StyledButton = withStyles({
         root: {
@@ -96,6 +117,14 @@ const PatientExerciseMain = ({startWorkout}) => {
         },
       })(Button);
 
+
+
+    //   <Container className={classes.exerciseContainer}>
+    //   <Typography variant="h4" className={classes.header}>Monday Exercises ({totalTime} minutes)</Typography>
+    //   <StyledButton onClick={()=>startWorkout()} color="primary">Start Workout</StyledButton>
+    //   <Divider />
+    //   <div className={classes.checklistContainer}>
+    //   <FormGroup className={classes.exercise}>
     return(
         <div>
             <AppBar position="static" className={classes.appBar}>
@@ -103,38 +132,45 @@ const PatientExerciseMain = ({startWorkout}) => {
                     <Typography variant="h6">PRM</Typography>
                 </Toolbar>
             </AppBar>
-            <Container className={classes.exerciseContainer}>
-            <Typography variant="h4" className={classes.header}>Monday Exercises ({totalTime} minutes)</Typography>
-            <StyledButton onClick={()=>startWorkout()} color="primary">Start Workout</StyledButton>
-            <Divider />
-            <div className={classes.checklistContainer}>
-            <FormGroup className={classes.exercise}>
-            {PatientExerciseData.exercise.map( (exercise, i) => {
-                return(
-                    <FormControlLabel
-                    key={i}
-                    control={
-                    <Checkbox 
-                        checked={!!checked[i]} 
-                        onChange={() => {handleChecked(i)}}
-                        color="#7ea8e6"
-                        // style={{color: "#7ea8e6"}}
-                    />
-                    }
-                    label={formatExerciseName(exercise.name)}
-                    />
 
-                );
+            {exerciseSets.map( (set, i) => {
+                return(
+                <Container className={classes.exerciseContainer} key={i}>
+                <Typography variant="h4" className={classes.header}>{set.day} Exercises ({totalTime} minutes)
+                    <Link to= {{
+                        pathname: "/workout/dotw",
+                        patientProps: {currentSet: set}
+                    }}
+                        className={classes.link}
+                    >
+                        <Button className={classes.startButton} variant="outline-primary">Start</Button>
+                    </Link>
+                </Typography>
+                <div className={classes.checklistContainer}>
+                <Row>
+                    <Col>Exercise</Col>
+                    <Col>Reps</Col>
+                    <Col>Duration</Col>
+                </Row>
+                <Divider />
+                    {set.exercise.map( (exercise, i) => {
+                        return(
+                            <Row key={i}>
+                                <Col>{formatExerciseName(exercise.name)}</Col>
+                                <Col>{exercise.reps}</Col>
+                                <Col>{exercise.duration}</Col>
+                            </Row>
+                        );
+                    }
+                    )}
+               
+            </div>
+
+
+            </Container>
+             );
             }
             )}
-            <Typography variant="h6" className={classes.meter}>Percent Completed: {percentFinished}%</Typography>
-            </FormGroup>
-            {/* <YouTube
-                videoId="bv373Y1oeck"
-                className={classes.video}
-            /> */}
-            </div>
-            </Container>
         </div>
     )
 }

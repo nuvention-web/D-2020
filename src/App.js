@@ -30,7 +30,7 @@ const App = () => {
               <Link to="/">Landing Page</Link>
             </li>
             <li>
-              <Link to="/patient">Patient View</Link>
+              <Link to="/workout">Patient View</Link>
             </li>
           </ul>
         </nav>
@@ -38,9 +38,12 @@ const App = () => {
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <Route path="/patient">
-            <PatientView></PatientView>
+          <Route path="/workout/dotw" component={(props)=><ExerciseTracking {...props}></ExerciseTracking>}>
           </Route>
+          <Route path="/workout" component={(props)=><PatientExerciseMain></PatientExerciseMain>}>
+          </Route>
+          
+
           {/* <Route path="/users">
             <Users />
           </Route> */}
