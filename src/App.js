@@ -11,8 +11,14 @@ import DoctorView from './DoctorComponents/DoctorView';
 import ExerciseTracking from './PatientComponents/PatientExerciseTracking';
 import PatientExerciseMain from './PatientComponents/PatientExerciseMain';
 
-
 // Add login/auth logic here, add react routing to correct pages 
+// React routing flow
+  // Landing Page (doctor signin and patient signin)
+    // PatientView
+      // PateintExerciseMain.js: screen with the week's worth of exercises on it 
+        // PatientExerciseTracking.js: screen for actual exercise section 
+    // DoctorView 
+      
 
 const App = () => {
   return (
@@ -21,10 +27,10 @@ const App = () => {
         <nav>
           <ul>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/">Landing Page</Link>
             </li>
             <li>
-              <Link to="/workout">Workout</Link>
+              <Link to="/patient">Patient View</Link>
             </li>
           </ul>
         </nav>
@@ -32,8 +38,8 @@ const App = () => {
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <Route path="/workout">
-            <ExerciseTracking></ExerciseTracking>
+          <Route path="/patient">
+            <PatientView></PatientView>
           </Route>
           {/* <Route path="/users">
             <Users />
@@ -46,11 +52,5 @@ const App = () => {
     </Router>
   );
 }
-  // return (
-  //   (false) ? 
-  //   <DoctorView></DoctorView>
-  //   :
-  //   <ExerciseTracking></ExerciseTracking>
-  // );
 
 export default App;

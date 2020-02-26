@@ -4,6 +4,7 @@ import PatientExerciseData from '../ModelJSON/PatientExercises.json';
 import Container from '@material-ui/core/Container';
 import { render } from '@testing-library/react';
 import { makeStyles } from '@material-ui/core/styles';
+import { Button } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -12,6 +13,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import YouTube from 'react-youtube';
+import { withStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
     exercises: {
@@ -64,7 +66,7 @@ const formatExerciseName = (n) => {
     return splitStr.join(' '); 
  }
 
-const PatientExerciseMain = () => {
+const PatientExerciseMain = ({startWorkout}) => {
     const [checked, setChecked] = useState(Array(PatientExerciseData.exercise.length).fill(false));
     const [percentFinished, setPercentFinished] = useState(0);
     const classes = useStyles();
@@ -79,6 +81,21 @@ const PatientExerciseMain = () => {
         setPercentFinished(100*(updatedChecked.reduce((a,b) => a + b, 0)/checked.length));
     }
     
+    const StyledButton = withStyles({
+        root: {
+          background: 'linear-gradient(45deg, #2980B9 50%, #6DD5FA 100%)',
+          borderRadius: 3,
+          border: 0,
+          color: 'white',
+          height: 48,
+          padding: '0 30px',
+          boxShadow: '0 3px 5px 2px #fff',
+        },
+        label: {
+          textTransform: 'capitalize',
+        },
+      })(Button);
+
     return(
         <div>
             <AppBar position="static" className={classes.appBar}>
@@ -88,6 +105,7 @@ const PatientExerciseMain = () => {
             </AppBar>
             <Container className={classes.exerciseContainer}>
             <Typography variant="h4" className={classes.header}>Monday Exercises ({totalTime} minutes)</Typography>
+            <StyledButton onClick={()=>startWorkout()} color="primary">Start Workout</StyledButton>
             <Divider />
             <div className={classes.checklistContainer}>
             <FormGroup className={classes.exercise}>
