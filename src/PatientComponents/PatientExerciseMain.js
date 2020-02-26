@@ -69,9 +69,11 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-const calculateTotalTime = () => {
+const calculateTotalTime = (s) => {
     var t = 0
-    for (const [i, entry] of Object.entries(PatientExerciseData.sets[0].exercise)) {
+    console.log("set", s)
+    console.log("set.exercise", s.exercise);
+    for (const [i, entry] of Object.entries(s.exercise)) {
         t += entry.duration;
       }
     console.log("t:",t)
@@ -91,7 +93,6 @@ const PatientExerciseMain = () => {
     const exerciseSets = PatientExerciseData.sets
     const [percentFinished, setPercentFinished] = useState(0);
     const classes = useStyles();
-    const [totalTime, setTotalTime] = useState(calculateTotalTime);
     
     // const handleChecked = (index) => {
     //     var updatedChecked = [...checked];
@@ -136,7 +137,7 @@ const PatientExerciseMain = () => {
             {exerciseSets.map( (set, i) => {
                 return(
                 <Container className={classes.exerciseContainer} key={i}>
-                <Typography variant="h4" className={classes.header}>{set.day} Exercises ({totalTime} minutes)
+                <Typography variant="h4" className={classes.header}>{set.day} Exercises ({calculateTotalTime(set)} minutes)
                     <Link to= {{
                         pathname: "/workout/dotw",
                         patientProps: {currentSet: set}
