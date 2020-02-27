@@ -8,15 +8,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link
-  } from "react-router-dom";
-import IndividualPatientView from './IndividualPatientView';
-import { Button } from '@material-ui/core';
-
 
 const useStyles = makeStyles(theme => ({
     exercises: {
@@ -66,39 +57,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const DoctorView = () => {
+const IndividualPatientView = () => {
     const classes = useStyles();
     const [patients, setPatient] = useState(PatientData.patients)
 
-const renderPatients = () => {
-    render(
-        <Grid
-            container
-            direction="row"
-            justify="center"
-            alignItems="center"
-            >
-        {
-            patients.map((p, i) => {
-                return(
-                    <div>
-                    
 
-                        <Grid item xs={6}>
-                            <Patient 
-                            name={p.name} 
-                            photo={p.photo}
-                            profile={p.profile}
-                            />
-                        </Grid>
-                    </div>
-
-                )
-        })
-        }
-        </Grid>
-    )
-}
     return ( 
         <div>
         <AppBar position="static" className={classes.appBar}>
@@ -108,24 +71,13 @@ const renderPatients = () => {
         </AppBar>
 
         <Container fixed>
-            <Typography variant="h4" className={classes.header}>Patient Dashboard</Typography>
-            
-            <Link to= {{
-                        pathname: "/PT/patient",
-                    }}
-                        className={classes.link}
-                    >Hello
-            </Link>
-
-            {renderPatients()}
-
-
+            <Typography variant="h4" className={classes.header}>Patient Name: HERE</Typography>
         </Container>
         </div>
     );
 }
 
-export default DoctorView;
+export default IndividualPatientView;
 
 
 
