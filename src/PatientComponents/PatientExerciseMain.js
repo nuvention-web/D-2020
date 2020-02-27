@@ -64,8 +64,12 @@ const useStyles = makeStyles(theme => ({
     },
     startButton: {
         float: 'right'
+    }, 
+    stretchGraphic: {
+        height: 225,
+        marginLeft: 15,
+        marginTop: 55
     }    
-
 
 }));
 
@@ -171,6 +175,7 @@ const PatientExerciseMain = () => {
              );
             }
             )}
+            <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic}/>
         </div>
     )
 }
