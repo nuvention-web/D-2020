@@ -46,7 +46,7 @@ const App = () => {
           {/* <Route path="/users">
             <Users />
           </Route> */}
-          <Route path="/PT/patient" component={(props)=><IndividualPatientView></IndividualPatientView>}></Route>
+          <Route path="/PT/patient" component={(props)=><IndividualPatientView {...props}></IndividualPatientView>}></Route>
           <Route path="/PT" component={(props)=><DoctorView></DoctorView>}></Route>
         </Switch>
       </div>

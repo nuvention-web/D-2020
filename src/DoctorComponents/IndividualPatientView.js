@@ -8,6 +8,13 @@ import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
+import Button from 'react-bootstrap/Button';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+  } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
     exercises: {
@@ -57,7 +64,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const IndividualPatientView = () => {
+const IndividualPatientView = (props) => {
+    // console.log(props) 
+    const patientData = props.location.patientProps.patientInfo
+    console.log(patientData)
     const classes = useStyles();
     const [patients, setPatient] = useState(PatientData.patients)
 
@@ -71,8 +81,12 @@ const IndividualPatientView = () => {
         </AppBar>
 
         <Container fixed>
-            <Typography variant="h4" className={classes.header}>Patient Name: HERE</Typography>
+            <Typography variant="h4" className={classes.header}>Patient Name: {patientData.name}</Typography>
         </Container>
+
+        <Link to="/PT" className={classes.link}>
+                <Button className={classes.backButton} variant="outline-primary">Back</Button>
+        </Link>
         </div>
     );
 }

@@ -110,14 +110,38 @@ const renderPatients = () => {
         <Container fixed>
             <Typography variant="h4" className={classes.header}>Patient Dashboard</Typography>
             
-            <Link to= {{
-                        pathname: "/PT/patient",
-                    }}
-                        className={classes.link}
-                    >Hello
-            </Link>
+            <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            >
+        {
+            patients.map((p, i) => {
+                return(
+                <Link to= {{
+                    pathname: "/PT/patient",
+                    patientProps: {patientInfo: p}
+                }}
+                    className={classes.link}
+                >
+       
+                
+                    <div>
+                    
 
-            {renderPatients()}
+                        <Grid item xs={6}>
+                            <Patient 
+                            name={p.name} 
+                            photo={p.photo}
+                            profile={p.profile}
+                            />
+                        </Grid>
+                    </div>
+                </Link>)
+        })
+        }
+        </Grid>
 
 
         </Container>
