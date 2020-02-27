@@ -24,6 +24,7 @@ import ExerciseTracking from './PatientExerciseTracking';
 // import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import db from '../Firebase.js';
 
 
 const useStyles = makeStyles(theme => ({
@@ -75,12 +76,9 @@ const useStyles = makeStyles(theme => ({
 
 const calculateTotalTime = (s) => {
     var t = 0
-    console.log("set", s)
-    console.log("set.exercise", s.exercise);
     for (const [i, entry] of Object.entries(s.exercise)) {
         t += entry.duration;
       }
-    console.log("t:",t)
     return t;
 }
 
@@ -93,19 +91,35 @@ const formatExerciseName = (n) => {
     return splitStr.join(' '); 
  }
 
+
+// const addSets = patients => ({
+//     sets: Object.values(patients["Anni Rogers"].sets)
+// })
+
 const PatientExerciseMain = () => {
-    const exerciseSets = PatientExerciseData.sets
+    const [exerciseSets, setExerciseSets] = useState([]);
     const [percentFinished, setPercentFinished] = useState(0);
     const classes = useStyles();
-    
-    // const handleChecked = (index) => {
-    //     var updatedChecked = [...checked];
-    //     updatedChecked[index] = !updatedChecked[index];
-    //     setChecked(updatedChecked);
-        
-    //     var numTrue = checked.filter(Boolean).length;
-    //     setPercentFinished(100*(updatedChecked.reduce((a,b) => a + b, 0)/checked.length));
-    // }
+
+    //note: need to load data asynchronously first
+    useEffect(() => {
+        const fetchPatients = async () => {
+            const snapshot = await db.once('value');
+            const value = snapshot.val();
+            return value
+        }
+        setExerciseSets(fetchPatients());
+    }, []);
+
+
+    useEffect(() => {
+        const handleData = snap => {
+          if (snap.val()) setExerciseSets(Object.values(snap.val()));
+        }
+
+        db.on('value', handleData, error => alert(error));
+        return () => { db.off('value', handleData); };
+      }, []);
     
     const StyledButton = withStyles({
         root: {
@@ -123,22 +137,15 @@ const PatientExerciseMain = () => {
       })(Button);
 
 
-
-    //   <Container className={classes.exerciseContainer}>
-    //   <Typography variant="h4" className={classes.header}>Monday Exercises ({totalTime} minutes)</Typography>
-    //   <StyledButton onClick={()=>startWorkout()} color="primary">Start Workout</StyledButton>
-    //   <Divider />
-    //   <div className={classes.checklistContainer}>
-    //   <FormGroup className={classes.exercise}>
     return(
         <div>
+            {console.log(exerciseSets)}
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h6">PRM</Typography>
                 </Toolbar>
             </AppBar>
-
-            {exerciseSets.map( (set, i) => {
+            {/* {   exerciseSets[0].sets.map( (set, i) => {
                 return(
                 <Container className={classes.exerciseContainer} key={i}>
                 <Typography variant="h4" className={classes.header}>{set.day} Exercises ({calculateTotalTime(set)} minutes)
@@ -168,17 +175,17 @@ const PatientExerciseMain = () => {
                         );
                     }
                     )}
-               
+                
             </div>
 
 
             </Container>
-             );
+                );
             }
-            )}
+            )} */}
             <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic}/>
         </div>
-    )
+    );
 }
 
 export default PatientExerciseMain;
