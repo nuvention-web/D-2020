@@ -17,6 +17,7 @@ import {
     Link
   } from "react-router-dom";
 import PresetExercisesData from '../ModelJSON/PresetExercises.json';
+import PatientExerciseData from '../ModelJSON/PatientExercises.json';
 
 const useStyles = makeStyles(theme => ({
     exercises: {
@@ -68,11 +69,25 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
+
+
 const IndividualPatientView = (props) => {
     // If patient data does not exist (in case of refresh), retrieve from console
+    const [patientData, setPatientData] = useState("");
+    useEffect(() => {
+        if (props.location.patientProps == undefined) {
+            var cpi = localStorage.getItem('currPatient');
 
-    const patientData = props.location.patientProps.patientInfo;
+            setPatientData(PatientExerciseData[cpi]);
+            console.log("patient data retrieved from local storage", patientData);
+        }
+        else {
+            setPatientData(props.location.patientProps.patientInfo)
+            localStorage.setItem('currPatient', patientData.id);
+        }
+    });
 
+ 
     // try {
     //     const patientData = props.location.patientProps.patientInfo;
     //     localStorage.setItem('currPatient', patientData.id);
@@ -83,7 +98,6 @@ const IndividualPatientView = (props) => {
     //      console.error(e); 
     // }
 
-    console.log(patientData)
     const classes = useStyles();
     const [patients, setPatient] = useState(PatientData.patients);
     const [newExercise, setNewExercise] = useState("");
