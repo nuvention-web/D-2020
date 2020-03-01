@@ -99,6 +99,7 @@ const formatExerciseName = (n) => {
 const PatientExerciseMain = () => {
     const [exerciseSets, setExerciseSets] = useState([]);
     const [percentFinished, setPercentFinished] = useState(0);
+    const [loading, setLoading] = useState(true);
     const classes = useStyles();
 
     //note: need to load data asynchronously first
@@ -106,9 +107,10 @@ const PatientExerciseMain = () => {
         const fetchPatients = async () => {
             const snapshot = await db.once('value');
             const value = snapshot.val();
-            return value
+            setExerciseSets(value);
+            setLoading(false);
         }
-        setExerciseSets(fetchPatients());
+        fetchPatients();
     }, []);
 
 
@@ -136,56 +138,59 @@ const PatientExerciseMain = () => {
         },
       })(Button);
 
-
-    return(
-        <div>
-            {console.log(exerciseSets)}
-            <AppBar position="static" className={classes.appBar}>
-                <Toolbar>
-                    <Typography variant="h6">PRM</Typography>
-                </Toolbar>
-            </AppBar>
-            {/* {   exerciseSets[0].sets.map( (set, i) => {
-                return(
-                <Container className={classes.exerciseContainer} key={i}>
-                <Typography variant="h4" className={classes.header}>{set.day} Exercises ({calculateTotalTime(set)} minutes)
-                    <Link to= {{
-                        pathname: "/workout/dotw",
-                        patientProps: {currentSet: set}
-                    }}
-                        className={classes.link}
-                    >
-                        <Button className={classes.startButton} variant="outline-primary">Start</Button>
-                    </Link>
-                </Typography>
-                <div className={classes.checklistContainer}>
-                <Row>
-                    <Col>Exercise</Col>
-                    <Col>Reps</Col>
-                    <Col>Duration</Col>
-                </Row>
-                <Divider />
-                    {set.exercise.map( (exercise, i) => {
-                        return(
-                            <Row key={i}>
-                                <Col>{formatExerciseName(exercise.name)}</Col>
-                                <Col>{exercise.reps}</Col>
-                                <Col>{exercise.duration}</Col>
-                            </Row>
-                        );
-                    }
-                    )}
-                
+    if (!loading) {
+        return(
+            <div>
+                <AppBar position="static" className={classes.appBar}>
+                    <Toolbar>
+                        <Typography variant="h6">PRM</Typography>
+                    </Toolbar>
+                </AppBar>
+                {   exerciseSets[0].sets.map( (set, i) => {
+                    return(
+                    <Container className={classes.exerciseContainer} key={i}>
+                    <Typography variant="h4" className={classes.header}>{set.day} Exercises ({calculateTotalTime(set)} minutes)
+                        <Link to= {{
+                            pathname: "/workout/dotw",
+                            patientProps: {currentSet: set}
+                        }}
+                            className={classes.link}
+                        >
+                            <Button className={classes.startButton} variant="outline-primary">Start</Button>
+                        </Link>
+                    </Typography>
+                    <div className={classes.checklistContainer}>
+                    <Row>
+                        <Col>Exercise</Col>
+                        <Col>Reps</Col>
+                        <Col>Duration</Col>
+                    </Row>
+                    <Divider />
+                        {set.exercise.map( (exercise, i) => {
+                            return(
+                                <Row key={i}>
+                                    <Col>{formatExerciseName(exercise.name)}</Col>
+                                    <Col>{exercise.reps}</Col>
+                                    <Col>{exercise.duration}</Col>
+                                </Row>
+                            );
+                        }
+                        )}
+                    
+                </div>
+    
+    
+                </Container>
+                    );
+                }
+                )}
+                <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic}/>
             </div>
-
-
-            </Container>
-                );
-            }
-            )} */}
-            <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic}/>
-        </div>
-    );
+        );
+    }
+    else {
+        return <Typography>Loading Data</Typography>;
+    }
 }
 
 export default PatientExerciseMain;
