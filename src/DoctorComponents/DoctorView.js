@@ -16,6 +16,8 @@ import {
   } from "react-router-dom";
 import IndividualPatientView from './IndividualPatientView';
 import { Button } from '@material-ui/core';
+import PatientExerciseData from '../ModelJSON/PatientExercises.json';
+
 
 
 const useStyles = makeStyles(theme => ({
@@ -27,18 +29,6 @@ const useStyles = makeStyles(theme => ({
         marginTop: 10,
         marginBottom: 8,
         color: '#80858a'
-    },
-    meter: {
-        marginTop: 25
-    },
-    video: {
-        marginTop: 30,
-        marginLeft: 120,
-        height: 250,
-        width: 460,
-    },
-    checklistContainer: {
-      
     },
     appBar: {
         backgroundColor: '#bfd9ff',
@@ -54,51 +44,26 @@ const useStyles = makeStyles(theme => ({
             color: 'white'
          },
     },
-    startButton: {
-        float: 'right'
-    }, 
-    stretchGraphic: {
-        height: 225,
-        marginLeft: 15,
-        marginTop: 55
-    }    
+    patientInfoCard: {
+        width: "100%",
+    }
 
 }));
 
 
 const DoctorView = () => {
     const classes = useStyles();
-    const [patients, setPatient] = useState(PatientData.patients)
+    const [patients, setPatient] = useState(PatientData.patients);
+    const patientData = PatientExerciseData;
+    console.log("patientData", patientData);
 
-const renderPatients = () => {
-    render(
-        <Grid
-            container
-            direction="row"
-            justify="center"
-            alignItems="center"
-            >
-        {
-            patients.map((p, i) => {
-                return(
-                    <div>
-                    
 
-                        <Grid item xs={6}>
-                            <Patient 
-                            name={p.name} 
-                            photo={p.photo}
-                            profile={p.profile}
-                            />
-                        </Grid>
-                    </div>
+// const renderPatients = () => {
+//     render(
+//        <div>trash</div>
+//     )
+// }
 
-                )
-        })
-        }
-        </Grid>
-    )
-}
     return ( 
         <div>
         <AppBar position="static" className={classes.appBar}>
@@ -111,13 +76,13 @@ const renderPatients = () => {
             <Typography variant="h4" className={classes.header}>Patient Dashboard</Typography>
             
             <Grid
-            container
-            direction="row"
-            justify="center"
-            alignItems="center"
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
+                spacing={2}
             >
-        {
-            patients.map((p, i) => {
+        {patientData.map((p, i) => {
                 return(
                 <Link to= {{
                     pathname: "/PT/patient",
@@ -125,12 +90,8 @@ const renderPatients = () => {
                 }}
                     className={classes.link}
                 >
-       
-                
                     <div>
-                    
-
-                        <Grid item xs={6}>
+                        <Grid item xs={6} className={classes.patientInfoCard} key={i}>
                             <Patient 
                             name={p.name} 
                             photo={p.photo}
