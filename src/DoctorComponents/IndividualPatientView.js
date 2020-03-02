@@ -72,21 +72,6 @@ const useStyles = makeStyles(theme => ({
 
 
 const IndividualPatientView = (props) => {
-<<<<<<< HEAD
-
-    // useEffect(() => {
-    //     try{
-    //         const test = props.location.patientProps.patientInfo
-    //     }
-    //     catch{
-    //         props.history.push('/PT')
-    //     }
-    //   }, []);
-
-    // console.log(props) 
-    
-    const patientData = props.location.patientProps.patientInfo
-=======
     // If patient data does not exist (in case of refresh), retrieve from console
     const [patientData, setPatientData] = useState("");
     useEffect(() => {
@@ -113,18 +98,14 @@ const IndividualPatientView = (props) => {
     //      console.error(e); 
     // }
 
->>>>>>> 2e14fe96dce708ea3683203d899015047c31b43b
     const classes = useStyles();
     const [patients, setPatient] = useState(PatientData.patients);
     const [newExercise, setNewExercise] = useState("");
 
-<<<<<<< HEAD
-=======
     const addExercise = () => {
         console.log("Add this exercise to firebase", newExercise);
     }
 
->>>>>>> 2e14fe96dce708ea3683203d899015047c31b43b
     return ( 
         <div>
         <AppBar position="static" className={classes.appBar}>
