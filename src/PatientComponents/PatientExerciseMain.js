@@ -97,95 +97,152 @@ const formatExerciseName = (n) => {
 // })
 
 const PatientExerciseMain = () => {
-    const [exerciseSets, setExerciseSets] = useState([]);
+    const [exerciseSets, setExerciseSets] = useState([])
     const [percentFinished, setPercentFinished] = useState(0);
+    const [loaded, setLoaded] = useState(false)
     const classes = useStyles();
 
-    //note: need to load data asynchronously first
+    // note: need to load data asynchronously first
     useEffect(() => {
         const fetchPatients = async () => {
             const snapshot = await db.once('value');
             const value = snapshot.val();
+            console.log(value)
             return value
         }
-        setExerciseSets(fetchPatients());
+        fetchPatients().then((data)=>{
+            console.log(data)
+            setExerciseSets(Object.values(data))
+        })
+        // setExerciseSets(fetchPatients());
     }, []);
 
-
-    useEffect(() => {
-        const handleData = snap => {
-          if (snap.val()) setExerciseSets(Object.values(snap.val()));
+    useEffect(()=>{
+        console.log(exerciseSets)
+        if(exerciseSets.length != 0) {
+            setLoaded(true)
         }
+    }, [exerciseSets])
 
-        db.on('value', handleData, error => alert(error));
-        return () => { db.off('value', handleData); };
-      }, []);
+
+    // useEffect(() => {
+    //     const handleData = snap => {
+    //       if (snap.val()) setExerciseSets(Object.values(snap.val()));
+    //     }
+    //     db.on('value', handleData, error => alert(error));
+    //     return () => { db.off('value', handleData); };
+    //   }, []);
     
-    const StyledButton = withStyles({
-        root: {
-          background: 'linear-gradient(45deg, #2980B9 50%, #6DD5FA 100%)',
-          borderRadius: 3,
-          border: 0,
-          color: 'white',
-          height: 48,
-          padding: '0 30px',
-          boxShadow: '0 3px 5px 2px #fff',
-        },
-        label: {
-          textTransform: 'capitalize',
-        },
-      })(Button);
+    
+    // const StyledButton = withStyles({
+    //     root: {
+    //       background: 'linear-gradient(45deg, #2980B9 50%, #6DD5FA 100%)',
+    //       borderRadius: 3,
+    //       border: 0,
+    //       color: 'white',
+    //       height: 48,
+    //       padding: '0 30px',
+    //       boxShadow: '0 3px 5px 2px #fff',
+    //     },
+    //     label: {
+    //       textTransform: 'capitalize',
+    //     },
+    //   })(Button);
 
 
+    const renderItems = () => {
+        console.log(exerciseSets)
+        return(
+            <div>
+                <h1>render</h1>
+                {exerciseSets.map((person, i) => {
+                    console.log("person:", person)
+                    console.log('------')
+                    return(<div>
+                        <h1>{person.name}</h1>
+                        {person.sets.map((e,i) => {
+                            return(<div>
+                                <h1>{e.day}</h1>
+                                {e.exercise.map((n,k) => {
+                                    return(
+                                    <div>
+                                        <h1>{n.name}</h1>
+                                        <h1>{n.reps}</h1>
+                                    </div>
+                                    )
+                                })}
+                            </div>)
+                        })}
+                    </div>)
+                })}
+            </div>
+        )
+    }
+            // {   exerciseSets[0].sets.map( (set, i) => {
+            //     return(
+            //     <Container className={classes.exerciseContainer} key={i}>
+            //     <Typography variant="h4" className={classes.header}>{set.day} Exercises ({calculateTotalTime(set)} minutes)
+            //         <Link to= {{
+            //             pathname: "/workout/dotw",
+            //             patientProps: {currentSet: set}
+            //         }}
+            //             className={classes.link}
+            //         >
+            //             <Button className={classes.startButton} variant="outline-primary">Start</Button>
+            //         </Link>
+            //     </Typography>
+            //     <div className={classes.checklistContainer}>
+            //     <Row>
+            //         <Col>Exercise</Col>
+            //         <Col>Reps</Col>
+            //         <Col>Duration</Col>
+            //     </Row>
+            //     <Divider />
+            //         {set.exercise.map( (exercise, i) => {
+            //             return(
+            //                 <Row key={i}>
+            //                     <Col>{formatExerciseName(exercise.name)}</Col>
+            //                     <Col>{exercise.reps}</Col>
+            //                     <Col>{exercise.duration}</Col>
+            //                 </Row>
+            //             )
+            //         }
+            //         )}
+            //     </div>
+            //     </Container>
+            //         )
+            //     }
+            //     )}
+            // }
+
+    const renderTable = () => {
+        console.log(exerciseSets)
+        return(
+            <div>
+                {/* <h1>{Object.keys(exerciseSets)[0]}</h1> */}
+                <AppBar position="static" className={classes.appBar}>
+                    <Toolbar>
+                        <Typography variant="h6">PRM</Typography>
+                    </Toolbar>
+                </AppBar>
+
+                {renderItems()}
+                <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic}/>
+        </div>
+        )
+    }
+
+    const renderLoading = () => {
+        return(<h1>Loading...</h1>)
+    }
+    
     return(
         <div>
-            {console.log(exerciseSets)}
-            <AppBar position="static" className={classes.appBar}>
-                <Toolbar>
-                    <Typography variant="h6">PRM</Typography>
-                </Toolbar>
-            </AppBar>
-            {/* {   exerciseSets[0].sets.map( (set, i) => {
-                return(
-                <Container className={classes.exerciseContainer} key={i}>
-                <Typography variant="h4" className={classes.header}>{set.day} Exercises ({calculateTotalTime(set)} minutes)
-                    <Link to= {{
-                        pathname: "/workout/dotw",
-                        patientProps: {currentSet: set}
-                    }}
-                        className={classes.link}
-                    >
-                        <Button className={classes.startButton} variant="outline-primary">Start</Button>
-                    </Link>
-                </Typography>
-                <div className={classes.checklistContainer}>
-                <Row>
-                    <Col>Exercise</Col>
-                    <Col>Reps</Col>
-                    <Col>Duration</Col>
-                </Row>
-                <Divider />
-                    {set.exercise.map( (exercise, i) => {
-                        return(
-                            <Row key={i}>
-                                <Col>{formatExerciseName(exercise.name)}</Col>
-                                <Col>{exercise.reps}</Col>
-                                <Col>{exercise.duration}</Col>
-                            </Row>
-                        );
-                    }
-                    )}
-                
-            </div>
-
-
-            </Container>
-                );
-            }
-            )} */}
-            <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic}/>
+             {loaded ? renderTable() : renderLoading()}
         </div>
     );
 }
 
-export default PatientExerciseMain;
+export default PatientExerciseMain
+
+

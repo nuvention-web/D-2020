@@ -65,12 +65,21 @@ const useStyles = makeStyles(theme => ({
 
 
 const IndividualPatientView = (props) => {
+
+    // useEffect(() => {
+    //     try{
+    //         const test = props.location.patientProps.patientInfo
+    //     }
+    //     catch{
+    //         props.history.push('/PT')
+    //     }
+    //   }, []);
+
     // console.log(props) 
+    
     const patientData = props.location.patientProps.patientInfo
-    console.log(patientData)
     const classes = useStyles();
     const [patients, setPatient] = useState(PatientData.patients)
-
 
     return ( 
         <div>
