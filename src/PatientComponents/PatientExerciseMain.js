@@ -99,11 +99,7 @@ const formatExerciseName = (n) => {
 const PatientExerciseMain = () => {
     const [exerciseSets, setExerciseSets] = useState([])
     const [percentFinished, setPercentFinished] = useState(0);
-<<<<<<< HEAD
     const [loaded, setLoaded] = useState(false)
-=======
-    const [loading, setLoading] = useState(true);
->>>>>>> 469d723fc4ecd43cca7c205a26323b2faa43dba5
     const classes = useStyles();
 
     // note: need to load data asynchronously first
