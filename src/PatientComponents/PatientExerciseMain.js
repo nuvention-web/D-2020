@@ -151,69 +151,47 @@ const PatientExerciseMain = () => {
 
 
     const renderItems = () => {
-        console.log(exerciseSets)
+        console.log("exerciseSets:", exerciseSets[0])
+        const person = exerciseSets[0];
+
         return(
             <div>
-                <h1>render</h1>
-                {exerciseSets.map((person, i) => {
+                {/* {exerciseSets.map((person, i) => {
                     console.log("person:", person)
                     console.log('------')
-                    return(<div>
-                        <h1>{person.name}</h1>
+                    return( */}
+                    <div>
+                        {/* <h1>{person.name}</h1> */}
                         {person.sets.map((e,i) => {
-                            return(<div>
-                                <h1>{e.day}</h1>
+                            return(
+                                <div>
+                                <Container className={classes.exerciseContainer} key={i}>
+                                <Typography variant="h4" className={classes.header}>{e.day} Exercises ({calculateTotalTime(e)} minutes)</Typography>
+                                <Row>
+                                    <Col>Exercise</Col>
+                                    <Col>Reps</Col>
+                                    <Col>Duration</Col>
+                                </Row>
+                                <Divider />
                                 {e.exercise.map((n,k) => {
                                     return(
                                     <div>
-                                        <h1>{n.name}</h1>
-                                        <h1>{n.reps}</h1>
+                                        <Row key={i}>
+                                            <Col>{formatExerciseName(n.name)}</Col>
+                                            <Col>{n.reps}</Col>
+                                            <Col>{n.duration}</Col>
+                                        </Row>
                                     </div>
                                     )
                                 })}
+                                </Container>
                             </div>)
                         })}
-                    </div>)
-                })}
+                    </div>
+                    {/* })} */}
             </div>
         )
     }
-            // {   exerciseSets[0].sets.map( (set, i) => {
-            //     return(
-            //     <Container className={classes.exerciseContainer} key={i}>
-            //     <Typography variant="h4" className={classes.header}>{set.day} Exercises ({calculateTotalTime(set)} minutes)
-            //         <Link to= {{
-            //             pathname: "/workout/dotw",
-            //             patientProps: {currentSet: set}
-            //         }}
-            //             className={classes.link}
-            //         >
-            //             <Button className={classes.startButton} variant="outline-primary">Start</Button>
-            //         </Link>
-            //     </Typography>
-            //     <div className={classes.checklistContainer}>
-            //     <Row>
-            //         <Col>Exercise</Col>
-            //         <Col>Reps</Col>
-            //         <Col>Duration</Col>
-            //     </Row>
-            //     <Divider />
-            //         {set.exercise.map( (exercise, i) => {
-            //             return(
-            //                 <Row key={i}>
-            //                     <Col>{formatExerciseName(exercise.name)}</Col>
-            //                     <Col>{exercise.reps}</Col>
-            //                     <Col>{exercise.duration}</Col>
-            //                 </Row>
-            //             )
-            //         }
-            //         )}
-            //     </div>
-            //     </Container>
-            //         )
-            //     }
-            //     )}
-            // }
 
     const renderTable = () => {
         console.log(exerciseSets)
@@ -222,10 +200,9 @@ const PatientExerciseMain = () => {
                 {/* <h1>{Object.keys(exerciseSets)[0]}</h1> */}
                 <AppBar position="static" className={classes.appBar}>
                     <Toolbar>
-                        <Typography variant="h6">PRM</Typography>
+                        <Typography variant="h6">PRM: Anni Rogers</Typography>
                     </Toolbar>
                 </AppBar>
-<<<<<<< HEAD
 
                 {renderItems()}
                 <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic}/>
@@ -242,53 +219,6 @@ const PatientExerciseMain = () => {
              {loaded ? renderTable() : renderLoading()}
         </div>
     );
-=======
-                {   exerciseSets[0].sets.map( (set, i) => {
-                    return(
-                    <Container className={classes.exerciseContainer} key={i}>
-                    <Typography variant="h4" className={classes.header}>{set.day} Exercises ({calculateTotalTime(set)} minutes)
-                        <Link to= {{
-                            pathname: "/workout/dotw",
-                            patientProps: {currentSet: set}
-                        }}
-                            className={classes.link}
-                        >
-                            <Button className={classes.startButton} variant="outline-primary">Start</Button>
-                        </Link>
-                    </Typography>
-                    <div className={classes.checklistContainer}>
-                    <Row>
-                        <Col>Exercise</Col>
-                        <Col>Reps</Col>
-                        <Col>Duration</Col>
-                    </Row>
-                    <Divider />
-                        {set.exercise.map( (exercise, i) => {
-                            return(
-                                <Row key={i}>
-                                    <Col>{formatExerciseName(exercise.name)}</Col>
-                                    <Col>{exercise.reps}</Col>
-                                    <Col>{exercise.duration}</Col>
-                                </Row>
-                            );
-                        }
-                        )}
-                    
-                </div>
-    
-    
-                </Container>
-                    );
-                }
-                )}
-                <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic}/>
-            </div>
-        );
-    }
-    else {
-        return <Typography>Loading Data</Typography>;
-    }
->>>>>>> 469d723fc4ecd43cca7c205a26323b2faa43dba5
 }
 
 export default PatientExerciseMain
