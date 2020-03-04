@@ -20,7 +20,7 @@ import {
     Link
   } from "react-router-dom";
 import PresetExercisesData from '../ModelJSON/PresetExercises.json';
-import PatientExerciseData from '../ModelJSON/PatientExercises.json';
+// import PatientExerciseData from '../ModelJSON/PatientExercises.json';
 import db from '../Firebase.js';
 
 
@@ -75,34 +75,19 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-
 const IndividualPatientView = (props) => {
-    // If patient data does not exist (in case of refresh), retrieve from console
+    // patientData stores the specific patient we are looking at
     const [patientData, setPatientData] = useState("");
     const classes = useStyles();
     const [newExercise, setNewExercise] = useState("Calf Wall Stretch");
-    console.log("patientData", patientData);
 
     // For loading data, taken from PatientExerciseMain
+    // exerciseSets actually contains our entire json (all patients)
     const [exerciseSets, setExerciseSets] = useState([]);
     const [loaded, setLoaded] = useState(false); // Unsure if we need this one
+    console.log("exerciseSets", exerciseSets);
 
-      // Keeping track of which patient we are looking at
-      useEffect(() => {
-        // If prop is undefined, retrieve from local storage
-        if (props.location.patientProps == undefined) {
-            var cpi = localStorage.getItem('currPatient');
-
-            setPatientData(PatientExerciseData[cpi]);
-            console.log("patient data retrieved from local storage", patientData);
-        }
-        // Use prop if available. Also store in local storage for future use
-        else {
-            setPatientData(props.location.patientProps.patientInfo)
-            localStorage.setItem('currPatient', patientData.id);
-        }
-    });
-
+   
     // Loading data, taken from PatientExerciseMain
     useEffect(() => {
         const fetchPatients = async () => {
@@ -112,10 +97,9 @@ const IndividualPatientView = (props) => {
             return value
         }
         fetchPatients().then((data)=>{
-            console.log(data)
-            setExerciseSets(Object.values(data))
+            console.log(data);
+            setExerciseSets(Object.values(data));
         })
-        // setExerciseSets(fetchPatients());
     }, []);
 
     useEffect(()=>{
@@ -125,6 +109,23 @@ const IndividualPatientView = (props) => {
         }
     }, [exerciseSets])
     // End loading data
+
+   // Keeping track of which patient we are looking at
+   useEffect(() => {
+    // If prop is undefined, retrieve id local storage, then access via Firebase
+    if (props.location.patientProps == undefined) {
+        var cpi = localStorage.getItem('currPatient');
+
+        // Set patient data from Firebase
+        setPatientData(exerciseSets[cpi]);
+        console.log("patient data retrieved from local storage", patientData);
+    }
+    // Use prop if available. Also store in local storage for future use
+    else {
+        setPatientData(props.location.patientProps.patientInfo)
+        localStorage.setItem('currPatient', patientData.id);
+    }
+    });
 
     const findExercise = (exercise) => {
         const exercises = Object.values(PresetExercisesData);
@@ -136,10 +137,10 @@ const IndividualPatientView = (props) => {
         }
     }
    
-    const addExercise = () => {
+    const addExercise = (setIndex) => {
         console.log("Adding this exercise to firebase! :)", newExercise);
         var exerciseObjectData = findExercise(newExercise);
-        var exerciseListRef = db.child('Anni Rogers/sets/0/exercise').push(exerciseObjectData);
+        var exerciseListRef = db.child('Anni Rogers/sets/'+ setIndex.toString() + '/exercise').push(exerciseObjectData);
     }
 
     // Repeat function from PatientExerciseMain
@@ -162,7 +163,7 @@ const IndividualPatientView = (props) => {
     
 
     const renderItems = () => {
-        console.log("exerciseSets:", exerciseSets[0])
+        // For now, our patient is default to Anni Rogers
         const person = exerciseSets[0];
 
         return(
@@ -173,46 +174,47 @@ const IndividualPatientView = (props) => {
                     return( */}
                     <div>
                         {/* <h1>{person.name}</h1> */}
-                        {patientData.sets.map((e,i) => {
+                        {person.sets.map((s,i) => {
                             return(
                                 <div>
                                 <Container className={classes.exerciseContainer} key={i}>
-                                <Typography variant="h4" className={classes.header}>{e.day} Exercises ({calculateTotalTime(e)} minutes)</Typography>
+                                <Typography variant="h4" className={classes.header}>{s.day} Exercises ({calculateTotalTime(s)} minutes)</Typography>
                                 <Row>
                                     <Col>Exercise</Col>
                                     <Col>Reps</Col>
                                     <Col>Duration</Col>
                                 </Row>
                                 <Divider />
-                                {e.exercise.map((n,k) => {
+                                {Object.values(s.exercise).map((ex,k) => {
                                     return(
                                     <div>
-                                        <Row key={i}>
-                                            <Col>{formatExerciseName(n.name)}</Col>
-                                            <Col>{n.reps}</Col>
-                                            <Col>{n.duration}</Col>
+                                        <Row key={k}>
+                                            <Col>{formatExerciseName(ex.name)}</Col>
+                                            <Col>{ex.reps}</Col>
+                                            <Col>{ex.duration}</Col>
                                         </Row>
                                     </div>
                                     )
                                 })}
                                  <Form>
-                <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>Select Exercise</Form.Label>
-                    <Form.Control as="select" 
-                        className={classes.exerciseBox} 
-                        onChange={(event) => {setNewExercise(event.target.value); console.log(newExercise)}}>
-                        {
-                            PresetExercisesData.map( (exercise, i) => {
-                            return(
-                                <option value={exercise.name}>
-                                    {exercise.name}
-                                </option>
-                            );
-                        }
-                        )}
+                                     <br/>
+                                    <Form.Group controlId="exampleForm.ControlSelect1">
+                                    <Form.Label>Select Exercise</Form.Label>
+                                        <Form.Control as="select" 
+                                            className={classes.exerciseBox} 
+                                            onChange={(event) => {setNewExercise(event.target.value); console.log(newExercise)}}>
+                                            {
+                                            PresetExercisesData.map( (exercise, i) => {
+                                            return(
+                                            <option value={exercise.name}>
+                                                {exercise.name}
+                                            </option>
+                                        );
+                                    }
+                                    )}
                     </Form.Control>
                 </Form.Group>
-                <Button variant="primary" type="submit" className={classes.submitButton} onClick={() => {addExercise(newExercise)}}>
+                <Button variant="primary" type="submit" className={classes.submitButton} onClick={() => {addExercise(i)}}>
                     Add
                 </Button>
             </Form>
@@ -236,12 +238,13 @@ const IndividualPatientView = (props) => {
             </AppBar>
     
             <Container fixed>
-                <Typography variant="h4" className={classes.header}>Patient: {patientData.name}</Typography>
             <Link to="/PT" className={classes.link}>
                     <Button className={classes.backButton} variant="outline-primary">Back</Button>
             </Link>
-            {renderItems()}
+            <Typography variant="h4" className={classes.header}>Patient: {patientData.name}</Typography>
             </Container>        
+
+            {renderItems()}
             </div>
         )
     }

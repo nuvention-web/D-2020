@@ -162,24 +162,24 @@ const PatientExerciseMain = () => {
                     return( */}
                     <div>
                         {/* <h1>{person.name}</h1> */}
-                        {person.sets.map((e,i) => {
+                        {person.sets.map((s,i) => {
                             return(
                                 <div>
                                 <Container className={classes.exerciseContainer} key={i}>
-                                <Typography variant="h4" className={classes.header}>{e.day} Exercises ({calculateTotalTime(e)} minutes)</Typography>
+                                <Typography variant="h4" className={classes.header}>{s.day} Exercises ({calculateTotalTime(s)} minutes)</Typography>
                                 <Row>
                                     <Col>Exercise</Col>
                                     <Col>Reps</Col>
                                     <Col>Duration</Col>
                                 </Row>
                                 <Divider />
-                                {e.exercise.map((n,k) => {
+                                {Object.values(s.exercise).map((ex,k) => {
                                     return(
                                     <div>
                                         <Row key={i}>
-                                            <Col>{formatExerciseName(n.name)}</Col>
-                                            <Col>{n.reps}</Col>
-                                            <Col>{n.duration}</Col>
+                                            <Col>{formatExerciseName(ex.name)}</Col>
+                                            <Col>{ex.reps}</Col>
+                                            <Col>{ex.duration}</Col>
                                         </Row>
                                     </div>
                                     )
