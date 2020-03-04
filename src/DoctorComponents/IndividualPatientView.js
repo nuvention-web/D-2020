@@ -10,6 +10,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Divider from '@material-ui/core/Divider';
 import {
     BrowserRouter as Router,
     Switch,
@@ -18,6 +21,8 @@ import {
   } from "react-router-dom";
 import PresetExercisesData from '../ModelJSON/PresetExercises.json';
 import PatientExerciseData from '../ModelJSON/PatientExercises.json';
+import db from '../Firebase.js';
+
 
 const useStyles = makeStyles(theme => ({
     exercises: {
@@ -74,79 +79,180 @@ const useStyles = makeStyles(theme => ({
 const IndividualPatientView = (props) => {
     // If patient data does not exist (in case of refresh), retrieve from console
     const [patientData, setPatientData] = useState("");
-    useEffect(() => {
+    const classes = useStyles();
+    const [newExercise, setNewExercise] = useState("Calf Wall Stretch");
+    console.log("patientData", patientData);
+
+    // For loading data, taken from PatientExerciseMain
+    const [exerciseSets, setExerciseSets] = useState([]);
+    const [loaded, setLoaded] = useState(false); // Unsure if we need this one
+
+      // Keeping track of which patient we are looking at
+      useEffect(() => {
+        // If prop is undefined, retrieve from local storage
         if (props.location.patientProps == undefined) {
             var cpi = localStorage.getItem('currPatient');
 
             setPatientData(PatientExerciseData[cpi]);
             console.log("patient data retrieved from local storage", patientData);
         }
+        // Use prop if available. Also store in local storage for future use
         else {
             setPatientData(props.location.patientProps.patientInfo)
             localStorage.setItem('currPatient', patientData.id);
         }
     });
 
- 
-    // try {
-    //     const patientData = props.location.patientProps.patientInfo;
-    //     localStorage.setItem('currPatient', patientData.id);
-    //  } 
-    //  catch(e) { 
-    //      const i = localStorage.getItem('currPatient');
-    //      const patientData = PatientExerciseData[i];
-    //      console.error(e); 
-    // }
+    // Loading data, taken from PatientExerciseMain
+    useEffect(() => {
+        const fetchPatients = async () => {
+            const snapshot = await db.once('value');
+            const value = snapshot.val();
+            console.log(value)
+            return value
+        }
+        fetchPatients().then((data)=>{
+            console.log(data)
+            setExerciseSets(Object.values(data))
+        })
+        // setExerciseSets(fetchPatients());
+    }, []);
 
-    const classes = useStyles();
-    const [patients, setPatient] = useState(PatientData.patients);
-    const [newExercise, setNewExercise] = useState("");
+    useEffect(()=>{
+        console.log(exerciseSets)
+        if(exerciseSets.length != 0) {
+            setLoaded(true)
+        }
+    }, [exerciseSets])
+    // End loading data
 
+    const findExercise = (exercise) => {
+        const exercises = Object.values(PresetExercisesData);
+        for (var i = 0; i < exercises.length; i++)
+        {
+            if (exercises[i].name === exercise) {
+                return exercises[i];
+            }
+        }
+    }
+   
     const addExercise = () => {
-        console.log("Add this exercise to firebase", newExercise);
+        console.log("Adding this exercise to firebase! :)", newExercise);
+        var exerciseObjectData = findExercise(newExercise);
+        var exerciseListRef = db.child('Anni Rogers/sets/0/exercise').push(exerciseObjectData);
     }
 
-    return ( 
+    // Repeat function from PatientExerciseMain
+    const calculateTotalTime = (s) => {
+        var t = 0
+        for (const [i, entry] of Object.entries(s.exercise)) {
+            t += entry.duration;
+          }
+        return t;
+    }
+
+    const formatExerciseName = (n) => {
+        var splitStr = n.toLowerCase().split(' ');
+        for (var i = 0; i < splitStr.length; i++) {
+            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+        }
+        // Directly return the joined string
+        return splitStr.join(' '); 
+     }
+    
+
+    const renderItems = () => {
+        console.log("exerciseSets:", exerciseSets[0])
+        const person = exerciseSets[0];
+
+        return(
+            <div>
+                {/* {exerciseSets.map((person, i) => {
+                    console.log("person:", person)
+                    console.log('------')
+                    return( */}
+                    <div>
+                        {/* <h1>{person.name}</h1> */}
+                        {patientData.sets.map((e,i) => {
+                            return(
+                                <div>
+                                <Container className={classes.exerciseContainer} key={i}>
+                                <Typography variant="h4" className={classes.header}>{e.day} Exercises ({calculateTotalTime(e)} minutes)</Typography>
+                                <Row>
+                                    <Col>Exercise</Col>
+                                    <Col>Reps</Col>
+                                    <Col>Duration</Col>
+                                </Row>
+                                <Divider />
+                                {e.exercise.map((n,k) => {
+                                    return(
+                                    <div>
+                                        <Row key={i}>
+                                            <Col>{formatExerciseName(n.name)}</Col>
+                                            <Col>{n.reps}</Col>
+                                            <Col>{n.duration}</Col>
+                                        </Row>
+                                    </div>
+                                    )
+                                })}
+                                 <Form>
+                <Form.Group controlId="exampleForm.ControlSelect1">
+                    <Form.Label>Select Exercise</Form.Label>
+                    <Form.Control as="select" 
+                        className={classes.exerciseBox} 
+                        onChange={(event) => {setNewExercise(event.target.value); console.log(newExercise)}}>
+                        {
+                            PresetExercisesData.map( (exercise, i) => {
+                            return(
+                                <option value={exercise.name}>
+                                    {exercise.name}
+                                </option>
+                            );
+                        }
+                        )}
+                    </Form.Control>
+                </Form.Group>
+                <Button variant="primary" type="submit" className={classes.submitButton} onClick={() => {addExercise(newExercise)}}>
+                    Add
+                </Button>
+            </Form>
+                                </Container>
+                            </div>)
+                        })}
+                    </div>
+                    {/* })} */}
+            </div>
+        )
+    }
+
+    const renderTable = () => {
+        console.log(exerciseSets)
+        return(
+            <div>
+            <AppBar position="static" className={classes.appBar}>
+                <Toolbar>
+                    <Typography variant="h6">PRM</Typography>
+                </Toolbar>
+            </AppBar>
+    
+            <Container fixed>
+                <Typography variant="h4" className={classes.header}>Patient: {patientData.name}</Typography>
+            <Link to="/PT" className={classes.link}>
+                    <Button className={classes.backButton} variant="outline-primary">Back</Button>
+            </Link>
+            {renderItems()}
+            </Container>        
+            </div>
+        )
+    }
+
+    const renderLoading = () => {
+        return(<h1>Loading...</h1>)
+    }
+    
+    return(
         <div>
-        <AppBar position="static" className={classes.appBar}>
-            <Toolbar>
-                <Typography variant="h6">PRM</Typography>
-            </Toolbar>
-        </AppBar>
-
-        <Container fixed>
-            <Typography variant="h4" className={classes.header}>Patient: {patientData.name}</Typography>
-
-        <Link to="/PT" className={classes.link}>
-                <Button className={classes.backButton} variant="outline-primary">Back</Button>
-        </Link>
-
-
-        <Form>
-            <Form.Group controlId="exampleForm.ControlSelect1">
-                <Form.Label>Select Exercise</Form.Label>
-                <Form.Control as="select" 
-                    className={classes.exerciseBox} 
-                    // onChange={setNewExercise()}
-                    inputRef={(ref) => {newExercise = ref}}>
-                    {PresetExercisesData.map( (exercise, i) => {
-                        return(
-                            <option>{exercise.name}</option>
-                        );
-                    }
-                    )}
-                </Form.Control>
-            </Form.Group>
-            <Button variant="primary" type="submit" className={classes.submitButton} onClick={addExercise()}>
-                Add
-            </Button>
-        </Form>
-
-        </Container>
-
-
-
-        
+             {loaded ? renderTable() : renderLoading()}
         </div>
     );
 }
