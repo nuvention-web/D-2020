@@ -122,10 +122,10 @@ const IndividualPatientView = (props) => {
     }
     // Use prop if available. Also store in local storage for future use
     else {
-        setPatientData(props.location.patientProps.patientInfo)
+        setPatientData(props.location.patientProps.patientInfo);
         localStorage.setItem('currPatient', patientData.id);
     }
-    });
+    }, []);
 
     const findExercise = (exercise) => {
         const exercises = Object.values(PresetExercisesData);
@@ -168,12 +168,7 @@ const IndividualPatientView = (props) => {
 
         return(
             <div>
-                {/* {exerciseSets.map((person, i) => {
-                    console.log("person:", person)
-                    console.log('------')
-                    return( */}
                     <div>
-                        {/* <h1>{person.name}</h1> */}
                         {person.sets.map((s,i) => {
                             return(
                                 <div>
@@ -228,7 +223,6 @@ const IndividualPatientView = (props) => {
     }
 
     const renderTable = () => {
-        console.log(exerciseSets)
         return(
             <div>
             <AppBar position="static" className={classes.appBar}>
@@ -237,7 +231,7 @@ const IndividualPatientView = (props) => {
                 </Toolbar>
             </AppBar>
     
-            <Container fixed>
+            <Container>
             <Link to="/PT" className={classes.link}>
                     <Button className={classes.backButton} variant="outline-primary">Back</Button>
             </Link>

@@ -89,13 +89,14 @@ const useStyles = makeStyles(theme => ({
         marginRight: 5,
         fontSize: 12,
         height: 29,
-        paddingBottom: 7
+        paddingBottom: 7,
+        backgroundColor: '#9DB4FF !important',
+        border: '#9DB4FF !important'
     }
 }));
 
 
 const ExerciseCarousel = ({set}) => {
-    console.log(set)
     const [index, setIndex] = useState(0);
     const [direction, setDirection] = useState(null);
     const classes = useStyles();
@@ -103,6 +104,9 @@ const ExerciseCarousel = ({set}) => {
         setIndex(selectedIndex);
         setDirection(e.direction);
     };
+
+
+
     return(
         <Carousel activeIndex={index} 
                   direction={direction} 
@@ -111,7 +115,7 @@ const ExerciseCarousel = ({set}) => {
                   prevIcon={<span aria-hidden="true" className={classes.prevArrow} />}
                   className={classes.carousel}
                   interval={0}>
-            {set.exercise.map( exercise => 
+            {Object.values(set.exercise).map( exercise => 
             <Carousel.Item key={exercise.id}>
                 <YouTube
                     videoId={exercise.videoId}
@@ -144,9 +148,34 @@ const ExerciseCarousel = ({set}) => {
     );
 }
 const ExerciseTracking = (props) => {
-    const currentSet = props.location.patientProps.currentSet
+    const [currentSet, setCurrentSet] = useState(props.location.exerciseProps);
     const classes = useStyles();
-    return(
+    const [loaded, setLoaded] = useState(false);
+    
+
+    useEffect(() => {
+
+        //if page is refreshed, can retrieve and parse into JSON
+        if (typeof(props.location.exerciseProps) === 'undefined') {
+            var retrievedSet = JSON.parse(localStorage.getItem('currSet'));
+            setCurrentSet(retrievedSet);
+
+        }
+
+        //store object for refresh as string
+        else {
+            localStorage.setItem('currSet', JSON.stringify(props.location.exerciseProps));
+        }
+    }, []);
+
+    useEffect(()=>{
+        if (typeof(currentSet) !== 'undefined') {
+            setLoaded(true)
+        }
+    }, [currentSet])
+
+    const renderExerciseTracking = () => {
+        return(
         <div>
             <AppBar position="static" className={classes.appBar}>
                 <Toolbar>
@@ -166,6 +195,17 @@ const ExerciseTracking = (props) => {
             </Container>
         </div>
     );
+}
+
+    const renderLoading = () => {
+        return(<h1>Loading...</h1>)
+    }
+
+    return (
+        <div>
+            {loaded ? renderExerciseTracking() : renderLoading() }
+        </div>
+    )
 }
 
 export default ExerciseTracking;

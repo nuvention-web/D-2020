@@ -4,7 +4,7 @@ import PatientExerciseData from '../ModelJSON/PatientExercises.json';
 import Container from '@material-ui/core/Container';
 import { render } from '@testing-library/react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
+// import { Button } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -21,7 +21,7 @@ import {
     Link
   } from "react-router-dom";
 import ExerciseTracking from './PatientExerciseTracking';
-// import Button from 'react-bootstrap/Button';
+import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import db from '../Firebase.js';
@@ -64,7 +64,8 @@ const useStyles = makeStyles(theme => ({
          },
     },
     startButton: {
-        float: 'right'
+        padding: '0.375rem 0.9rem !important',
+        marginTop: 20
     }, 
     stretchGraphic: {
         height: 225,
@@ -92,10 +93,6 @@ const formatExerciseName = (n) => {
  }
 
 
-// const addSets = patients => ({
-//     sets: Object.values(patients["Anni Rogers"].sets)
-// })
-
 const PatientExerciseMain = () => {
     const [exerciseSets, setExerciseSets] = useState([])
     const [percentFinished, setPercentFinished] = useState(0);
@@ -107,61 +104,27 @@ const PatientExerciseMain = () => {
         const fetchPatients = async () => {
             const snapshot = await db.once('value');
             const value = snapshot.val();
-            console.log(value)
             return value
         }
         fetchPatients().then((data)=>{
-            console.log(data)
             setExerciseSets(Object.values(data))
         })
-        // setExerciseSets(fetchPatients());
     }, []);
 
     useEffect(()=>{
-        console.log(exerciseSets)
         if(exerciseSets.length != 0) {
             setLoaded(true)
         }
     }, [exerciseSets])
 
 
-    // useEffect(() => {
-    //     const handleData = snap => {
-    //       if (snap.val()) setExerciseSets(Object.values(snap.val()));
-    //     }
-    //     db.on('value', handleData, error => alert(error));
-    //     return () => { db.off('value', handleData); };
-    //   }, []);
-    
-    
-    // const StyledButton = withStyles({
-    //     root: {
-    //       background: 'linear-gradient(45deg, #2980B9 50%, #6DD5FA 100%)',
-    //       borderRadius: 3,
-    //       border: 0,
-    //       color: 'white',
-    //       height: 48,
-    //       padding: '0 30px',
-    //       boxShadow: '0 3px 5px 2px #fff',
-    //     },
-    //     label: {
-    //       textTransform: 'capitalize',
-    //     },
-    //   })(Button);
-
 
     const renderItems = () => {
-        console.log("exerciseSets:", exerciseSets[0])
         const person = exerciseSets[0];
 
         return(
             <div>
-                {/* {exerciseSets.map((person, i) => {
-                    console.log("person:", person)
-                    console.log('------')
-                    return( */}
                     <div>
-                        {/* <h1>{person.name}</h1> */}
                         {person.sets.map((s,i) => {
                             return(
                                 <div>
@@ -184,6 +147,13 @@ const PatientExerciseMain = () => {
                                     </div>
                                     )
                                 })}
+                                <Link to={{
+                                    pathname: "/workout/dotw",
+                                    exerciseProps: s,
+                                    setInd: i
+                                }}>
+                                    <Button variant="light" className={classes.startButton}>Start</Button>
+                                </Link>
                                 </Container>
                             </div>)
                         })}
@@ -194,10 +164,8 @@ const PatientExerciseMain = () => {
     }
 
     const renderTable = () => {
-        console.log(exerciseSets)
         return(
             <div>
-                {/* <h1>{Object.keys(exerciseSets)[0]}</h1> */}
                 <AppBar position="static" className={classes.appBar}>
                     <Toolbar>
                         <Typography variant="h6">PRM: Anni Rogers</Typography>
