@@ -1,10 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Patient from '../PatientComponents/Patient'
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid'
 import PatientData from '../ModelJSON/Patients.json'
 import { render } from '@testing-library/react';
-import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -13,7 +12,7 @@ import {
     Switch,
     Route,
     Link
-  } from "react-router-dom";
+} from "react-router-dom";
 import IndividualPatientView from './IndividualPatientView';
 import { Button } from '@material-ui/core';
 import PatientExerciseData from '../ModelJSON/PatientExercises.json';
@@ -42,12 +41,21 @@ const useStyles = makeStyles(theme => ({
         textAlign: 'right',
         '&:hover': {
             color: 'white'
-         },
+        },
     },
     patientInfoCard: {
-        width: "100%",
-    }
-
+        width: 300,
+        minHeight: 430,
+        margin: 10
+    },
+    accentDivider: {
+        content: "",
+        display: "block",
+        width: "6.25rem",
+        height: ".325rem",
+        marginTop: "1.5rem",
+        background: "#9DB4FF"
+      }
 }));
 
 
@@ -58,54 +66,49 @@ const DoctorView = () => {
     console.log("patientData", patientData);
 
 
-// const renderPatients = () => {
-//     render(
-//        <div>trash</div>
-//     )
-// }
+    // const renderPatients = () => {
+    //     render(
+    //        <div>trash</div>
+    //     )
+    // }
 
-    return ( 
+    return (
         <div>
-        <AppBar position="static" className={classes.appBar}>
-            <Toolbar>
-                <Typography variant="h6">PRM</Typography>
-            </Toolbar>
-        </AppBar>
+            <Container fixed>
+                <Typography variant="h4" className={classes.header}>Patient Dashboard</Typography>
+                <div className={classes.accentDivider}></div>
 
-        <Container fixed>
-            <Typography variant="h4" className={classes.header}>Patient Dashboard</Typography>
-            
-            <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                spacing={2}
-            >
-        {patientData.map((p, i) => {
-                return(
-                <Link to= {{
-                    pathname: "/PT/patient",
-                    patientProps: {patientInfo: p}
-                }}
-                    className={classes.link}
+                <Grid
+                    container
+                    direction="row"
+                    justify="center"
+                    alignItems="center"
+                    spacing={1}
                 >
-                    <div>
-                        <Grid item xs={6} className={classes.patientInfoCard} key={i}>
-                            <Patient 
-                            name={p.name} 
-                            photo={p.photo}
-                            profile={p.profile}
-                            />
-                        </Grid>
-                    </div>
-                </Link>)
-        })
-        }
-        </Grid>
+                    {patientData.map((p, i) => {
+                        return (
+                            <Link to={{
+                                pathname: "/PT/patient",
+                                patientProps: { patientInfo: p }
+                            }}
+                                className={classes.link}
+                            >
+                                <div>
+                                    <Grid item className={classes.patientInfoCard} key={i}>
+                                        <Patient
+                                            name={p.name}
+                                            photo={p.photo}
+                                            profile={p.profile}
+                                        />
+                                    </Grid>
+                                </div>
+                            </Link>)
+                    })
+                    }
+                </Grid>
 
 
-        </Container>
+            </Container>
         </div>
     );
 }
