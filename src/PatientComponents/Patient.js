@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 const useStyles = makeStyles({
   root: {
     maxWidth: 345,
+    minHeight: 430
   },
 });
 
@@ -26,7 +27,7 @@ const Patient = ({name, photo, profile}) => {
           component="img"
         //   alt="Contemplative Reptile"
           height="230"
-          image={photo}
+          src={photo}
         //   title="Contemplative Reptile"
         />
         <CardContent>

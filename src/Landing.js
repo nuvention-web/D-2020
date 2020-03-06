@@ -3,22 +3,120 @@ import Container from '@material-ui/core/Container';
 import { Button } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import { makeStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-
+import landing_background from './images/background.png'
+import { StylesContext } from '@material-ui/styles';
+import Toolbar from '@material-ui/core/Toolbar';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+  } from "react-router-dom";
+import './App.css';
 
 const useStyles = makeStyles(theme => ({
-    exercises: {
-        marginTop: 15,
-        minWidth: 250
-    }
+    background: {
+        backgroundImage:`url(${landing_background})`,
+        height:'100vh',
+        backgroundRepeat: 'no-repeat'
+    },
+    appBar: {
+        backgroundColor: 'transparent',
+        boxShadow: 'none',
+        height: 100,
+        display: 'inline-block'
+      },
+      appBackground: {
+        backgroundColor: "#FEFEFE",
+        height: "100vh"
+      },
+      tendonLogo: {
+        width: 150,
+        float: "left",
+        display: "inline-block",
+        margin: "40px 30px",
+      },
+      navBar: {
+        float: "right",
+        width: "70vh",
+        justifyContent: "center",
+        margin: "40px 0px"
+      },
+      navButton: {
+        display: "inline-block",
+        margin: "0px 10px",
+        fontSize: 14,
+        backgroundColor: "inherit",
+        border: "none",
+        // fontFamily: "San Francisco",
+        '&:hover': {
+          color: "#9DB4FF",
+          backgroundColor: "inherit"
+        }
+      },
+      accentDivider: {
+        content: "",
+        display: "block",
+        width: "6.25rem",
+        height: ".325rem",
+        marginTop: "1.5rem",
+        background: "#9DB4FF"
+      },
+      landingLeftText: {
+          marginTop: '15vh',
+          marginLeft: '3vw',
+          color: '#3358C4',
+          fontSize: '64px',
+          fontWeight: '700',
+          width: '30vw'
+      },
+      subtitle: {
+          color: 'grey',
+          fontSize: '22px',
+          fontWeight: '500',
+          marginTop: '3vh'
+      },
+      joinButton: {
+          borderRadius: '15px',
+          backgroundColor: '#9DB4FF',
+          color: 'white',
+          fontSize: '24px',
+          padding: '12px',
+          border: 'none',
+          width: '9vw'
+      }
 }));
 
    
 const Landing = () => {
+    const classes = useStyles();
     return(
-        <h1>tendon</h1>
+        <div className={classes.background}>
+            {/* <h1>hi</h1> */}
+            <nav>
+                <AppBar position="static" className={classes.appBar}>
+                    <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
+                    <Toolbar className={classes.navBar}>
+                    <Link to="/">
+                        <Button variant="light" className={classes.navButton}>Landing Page</Button>
+                    </Link>
+                    <Link to="/PT">
+                        <Button variant="light" className={classes.navButton}>PT View</Button>
+                    </Link>
+                    <Link to="/workout">
+                        <Button variant="light" className={classes.navButton}>Patient View</Button>
+                    </Link>
+                    </Toolbar>
+                </AppBar>
+            </nav>
+            <div className={classes.landingLeftText}>
+                <p>PT patient relationships first.</p>
+                <p className={classes.subtitle}>We believe that quality care begins with a strong relationship between physical therapist and patient.</p>
+                <button className={classes.joinButton}>Join us -></button>
+            </div>
+        </div>
     );
 }
 

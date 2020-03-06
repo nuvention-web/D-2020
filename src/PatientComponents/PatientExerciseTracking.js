@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Patient from '../PatientComponents/Patient'
 import PatientExercises from '../ModelJSON/PatientExercises.json';
 import Container from '@material-ui/core/Container';
@@ -19,7 +19,7 @@ import {
     Switch,
     Route,
     Link
-  } from "react-router-dom";
+} from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import PatientExerciseMain from './PatientExerciseMain';
 import '../PatientExerciseTracking.css';
@@ -89,13 +89,14 @@ const useStyles = makeStyles(theme => ({
         marginRight: 5,
         fontSize: 12,
         height: 29,
-        paddingBottom: 7
+        paddingBottom: 7,
+        backgroundColor: '#9DB4FF !important',
+        border: '#9DB4FF !important'
     }
 }));
 
 
-const ExerciseCarousel = ({set}) => {
-    console.log(set)
+const ExerciseCarousel = ({ set }) => {
     const [index, setIndex] = useState(0);
     const [direction, setDirection] = useState(null);
     const classes = useStyles();
@@ -103,69 +104,102 @@ const ExerciseCarousel = ({set}) => {
         setIndex(selectedIndex);
         setDirection(e.direction);
     };
-    return(
-        <Carousel activeIndex={index} 
-                  direction={direction} 
-                  onSelect={handleSelect} 
-                  nextIcon={<span aria-hidden="true" className={classes.nextArrow} />}
-                  prevIcon={<span aria-hidden="true" className={classes.prevArrow} />}
-                  className={classes.carousel}
-                  interval={0}>
-            {set.exercise.map( exercise => 
-            <Carousel.Item key={exercise.id}>
-                <YouTube
-                    videoId={exercise.videoId}
-                    className={classes.video}
-                />
-                <Carousel.Caption>
-                <Typography variant="h6">{exercise.name}</Typography>
-                </Carousel.Caption>
-                <div className={classes.timer}>
-                <Timer
-                    initialTime={exercise.duration * 60000 }
-                    direction="backward"
-                    startImmediately={false}
-                >
-                    {({ start, stop, reset }) => (
-                        <React.Fragment>
-                            <Timer.Minutes />:
-                            <Timer.Seconds formatValue={(value) => `${(value < 10 ? `0${value}` : value)}`}/>
-                            <br />
-                            <Button onClick={start} className={classes.timerButtons}>Start</Button>
-                            <Button onClick={stop} className={classes.timerButtons}>Stop</Button>
-                            <Button onClick={reset} className={classes.timerButtons}>Reset</Button>
-                        </React.Fragment>
-                    )}
-                </Timer>
-                </div>
-            </Carousel.Item>
+
+
+
+    return (
+        <Carousel activeIndex={index}
+            direction={direction}
+            onSelect={handleSelect}
+            nextIcon={<span aria-hidden="true" className={classes.nextArrow} />}
+            prevIcon={<span aria-hidden="true" className={classes.prevArrow} />}
+            className={classes.carousel}
+            interval={0}>
+            {Object.values(set.exercise).map(exercise =>
+                <Carousel.Item key={exercise.id}>
+                    <YouTube
+                        videoId={exercise.videoId}
+                        className={classes.video}
+                    />
+                    <Carousel.Caption>
+                        <Typography variant="h6">{exercise.name}</Typography>
+                    </Carousel.Caption>
+                    <div className={classes.timer}>
+                        <Timer
+                            initialTime={exercise.duration * 60000}
+                            direction="backward"
+                            startImmediately={false}
+                        >
+                            {({ start, stop, reset }) => (
+                                <React.Fragment>
+                                    <Timer.Minutes />:
+                            <Timer.Seconds formatValue={(value) => `${(value < 10 ? `0${value}` : value)}`} />
+                                    <br />
+                                    <Button onClick={start} className={classes.timerButtons}>Start</Button>
+                                    <Button onClick={stop} className={classes.timerButtons}>Stop</Button>
+                                    <Button onClick={reset} className={classes.timerButtons}>Reset</Button>
+                                </React.Fragment>
+                            )}
+                        </Timer>
+                    </div>
+                </Carousel.Item>
             )}
         </Carousel>
     );
 }
 const ExerciseTracking = (props) => {
-    const currentSet = props.location.patientProps.currentSet
+    const [currentSet, setCurrentSet] = useState(props.location.exerciseProps);
     const classes = useStyles();
-    return(
-        <div>
-            <AppBar position="static" className={classes.appBar}>
-                <Toolbar>
-                    <Typography variant="h6">PRM</Typography>
-                </Toolbar>
-            </AppBar>
-         
-            <Container className={classes.exerciseContainer}>
-                <Typography variant="h4" className={classes.header}>
-                    <Link to="/workout" className={classes.link}>
-                        <Button className={classes.backButton} variant="outline-primary">Back</Button>
-                    </Link>
-                    {currentSet.day}'s Exercises
+    const [loaded, setLoaded] = useState(false);
+
+
+    useEffect(() => {
+
+        //if page is refreshed, can retrieve and parse into JSON
+        if (typeof (props.location.exerciseProps) === 'undefined') {
+            var retrievedSet = JSON.parse(localStorage.getItem('currSet'));
+            setCurrentSet(retrievedSet);
+
+        }
+
+        //store object for refresh as string
+        else {
+            localStorage.setItem('currSet', JSON.stringify(props.location.exerciseProps));
+        }
+    }, []);
+
+    useEffect(() => {
+        if (typeof (currentSet) !== 'undefined') {
+            setLoaded(true)
+        }
+    }, [currentSet])
+
+    const renderExerciseTracking = () => {
+        return (
+            <div>
+                <Container className={classes.exerciseContainer}>
+                    <Typography variant="h4" className={classes.header}>
+                        <Link to="/workout" className={classes.link}>
+                            <Button className={classes.backButton} variant="outline-primary">Back</Button>
+                        </Link>
+                        {currentSet.day}'s Exercises
                 </Typography>
-                <Divider />
-                <ExerciseCarousel set={currentSet} />
-            </Container>
+                    <Divider />
+                    <ExerciseCarousel set={currentSet} />
+                </Container>
+            </div>
+        );
+    }
+
+    const renderLoading = () => {
+        return (<h1>Loading...</h1>)
+    }
+
+    return (
+        <div>
+            {loaded ? renderExerciseTracking() : renderLoading()}
         </div>
-    );
+    )
 }
 
 export default ExerciseTracking;
