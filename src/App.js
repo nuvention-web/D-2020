@@ -11,6 +11,7 @@ import DoctorView from './DoctorComponents/DoctorView';
 import ExerciseTracking from './PatientComponents/PatientExerciseTracking';
 import PatientExerciseMain from './PatientComponents/PatientExerciseMain';
 import IndividualPatientView from './DoctorComponents/IndividualPatientView';
+import Landing from './Landing'
 
 // Add login/auth logic here, add react routing to correct pages 
 // React routing flow
@@ -24,6 +25,7 @@ const App = () => {
   return (
     <Router>
       <div>
+      <Landing></Landing>
         <nav>
           <ul>
             <li>
