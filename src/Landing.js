@@ -8,6 +8,8 @@ import Divider from '@material-ui/core/Divider';
 import landing_background from './images/background.png'
 import { StylesContext } from '@material-ui/styles';
 import Toolbar from '@material-ui/core/Toolbar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowsAltH, faLongArrowAltRight} from '@fortawesome/free-solid-svg-icons'
 import {
     BrowserRouter as Router,
     Switch,
@@ -86,6 +88,28 @@ const useStyles = makeStyles(theme => ({
           padding: '12px',
           border: 'none',
           width: '9vw'
+      },
+      rightButtons: {
+          display: 'flex',
+          float: 'right'
+      },
+      registerButton: {
+          backgroundColor: 'transparent',
+          color: 'white',
+          border: 'none',
+          fontSize: '18px',
+          padding: '8px',
+          fontWeight: '600'
+      },
+      logInButton: {
+        borderRadius: '15px',
+          backgroundColor: 'white',
+          border: 'none',
+          color: '#3358C4',
+          fontSize: '18px',
+          width: '8vw',
+          padding: '8px',
+          fontWeight: '600'
       }
 }));
 
@@ -110,11 +134,15 @@ const Landing = () => {
                     </Link>
                     </Toolbar>
                 </AppBar>
+                <div className={classes.rightButtons}>
+                    <button className={classes.registerButton}>Register</button>
+                    <button className={classes.logInButton}>Log in &nbsp;&nbsp;<FontAwesomeIcon icon={faLongArrowAltRight} color='#3358C4'/></button>
+                </div>
             </nav>
             <div className={classes.landingLeftText}>
-                <p>PT patient relationships first.</p>
+                <p>PT <FontAwesomeIcon icon={faArrowsAltH} color='#9DB4FF'/> &nbsp;patient relationships first.</p>
                 <p className={classes.subtitle}>We believe that quality care begins with a strong relationship between physical therapist and patient.</p>
-                <button className={classes.joinButton}>Join us -></button>
+                <button className={classes.joinButton}>Join us &nbsp;&nbsp;<FontAwesomeIcon icon={faLongArrowAltRight} color='white'/> </button>
             </div>
         </div>
     );
