@@ -42,11 +42,12 @@ const useStyles = makeStyles(theme => ({
       },
       navBar: {
         float: "right",
-        width: "70vh",
+        width: "95vh",
         justifyContent: "center",
         margin: "40px 0px"
       },
       navButton: {
+        marginRight:'20px',
         display: "inline-block",
         margin: "0px 10px",
         fontSize: 14,
@@ -99,17 +100,22 @@ const useStyles = makeStyles(theme => ({
           border: 'none',
           fontSize: '18px',
           padding: '8px',
-          fontWeight: '600'
+          fontWeight: '600',
+          marginRight: '55px',
       },
       logInButton: {
-        borderRadius: '15px',
+        borderRadius: '11px',
           backgroundColor: 'white',
           border: 'none',
           color: '#3358C4',
           fontSize: '18px',
-          width: '8vw',
+          width: '7vw',
           padding: '8px',
-          fontWeight: '600'
+        //   marginLeft: '-10px',
+          fontWeight: '600',
+      },
+      space:{
+        width:'50px'
       }
 }));
 
@@ -132,12 +138,14 @@ const Landing = () => {
                     <Link to="/workout">
                         <Button variant="light" className={classes.navButton}>Patient View</Button>
                     </Link>
+                    <div className={classes.space}></div>
+                    <div className={classes.rightButtons}>
+                        <button className={classes.registerButton}>Register</button>
+                        <button className={classes.logInButton}>Log in &nbsp;&nbsp;<FontAwesomeIcon icon={faLongArrowAltRight} color='#3358C4'/></button>
+                    </div>
                     </Toolbar>
                 </AppBar>
-                <div className={classes.rightButtons}>
-                    <button className={classes.registerButton}>Register</button>
-                    <button className={classes.logInButton}>Log in &nbsp;&nbsp;<FontAwesomeIcon icon={faLongArrowAltRight} color='#3358C4'/></button>
-                </div>
+                
             </nav>
             <div className={classes.landingLeftText}>
                 <p>PT <FontAwesomeIcon icon={faArrowsAltH} color='#9DB4FF'/> &nbsp;patient relationships first.</p>
