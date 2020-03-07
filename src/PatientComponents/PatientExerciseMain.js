@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Patient from '../PatientComponents/Patient'
 import PatientExerciseData from '../ModelJSON/PatientExercises.json';
 import Container from '@material-ui/core/Container';
@@ -19,7 +19,7 @@ import {
     Switch,
     Route,
     Link
-  } from "react-router-dom";
+} from "react-router-dom";
 import ExerciseTracking from './PatientExerciseTracking';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
@@ -46,13 +46,6 @@ const useStyles = makeStyles(theme => ({
         height: 250,
         width: 460,
     },
-    checklistContainer: {
-      
-    },
-    appBar: {
-        backgroundColor: '#bfd9ff',
-        boxShadow: 'none'
-    },
     exerciseContainer: {
         marginTop: 30
     },
@@ -61,36 +54,35 @@ const useStyles = makeStyles(theme => ({
         textAlign: 'right',
         '&:hover': {
             color: 'white'
-         },
+        },
     },
     startButton: {
         padding: '0.375rem 0.9rem !important',
         marginTop: 20
-    }, 
+    },
     stretchGraphic: {
         height: 225,
         marginLeft: 15,
         marginTop: 55
-    }    
-
+    },
 }));
 
 const calculateTotalTime = (s) => {
     var t = 0
     for (const [i, entry] of Object.entries(s.exercise)) {
         t += entry.duration;
-      }
+    }
     return t;
 }
 
 const formatExerciseName = (n) => {
     var splitStr = n.toLowerCase().split(' ');
     for (var i = 0; i < splitStr.length; i++) {
-        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
     }
     // Directly return the joined string
-    return splitStr.join(' '); 
- }
+    return splitStr.join(' ');
+}
 
 
 const PatientExerciseMain = () => {
@@ -106,13 +98,13 @@ const PatientExerciseMain = () => {
             const value = snapshot.val();
             return value
         }
-        fetchPatients().then((data)=>{
+        fetchPatients().then((data) => {
             setExerciseSets(Object.values(data))
         })
     }, []);
 
-    useEffect(()=>{
-        if(exerciseSets.length != 0) {
+    useEffect(() => {
+        if (exerciseSets.length != 0) {
             setLoaded(true)
         }
     }, [exerciseSets])
@@ -122,69 +114,63 @@ const PatientExerciseMain = () => {
     const renderItems = () => {
         const person = exerciseSets[0];
 
-        return(
+        return (
             <div>
-                    <div>
-                        {person.sets.map((s,i) => {
-                            return(
-                                <div>
+                <div>
+                    {person.sets.map((s, i) => {
+                        return (
+                            <div>
                                 <Container className={classes.exerciseContainer} key={i}>
-                                <Typography variant="h4" className={classes.header}>{s.day} Exercises ({calculateTotalTime(s)} minutes)</Typography>
-                                <Row>
-                                    <Col>Exercise</Col>
-                                    <Col>Reps</Col>
-                                    <Col>Duration</Col>
-                                </Row>
-                                <Divider />
-                                {Object.values(s.exercise).map((ex,k) => {
-                                    return(
-                                    <div>
-                                        <Row key={i}>
-                                            <Col>{formatExerciseName(ex.name)}</Col>
-                                            <Col>{ex.reps}</Col>
-                                            <Col>{ex.duration}</Col>
-                                        </Row>
-                                    </div>
-                                    )
-                                })}
-                                <Link to={{
-                                    pathname: "/workout/dotw",
-                                    exerciseProps: s,
-                                    setInd: i
-                                }}>
-                                    <Button className={classes.startButton}>Start</Button>
-                                </Link>
+                                    <Typography variant="h4" className={classes.header}>{s.day} Exercises ({calculateTotalTime(s)} minutes)</Typography>
+                                    <Row>
+                                        <Col>Exercise</Col>
+                                        <Col>Reps</Col>
+                                        <Col>Duration</Col>
+                                    </Row>
+                                    <Divider />
+                                    {Object.values(s.exercise).map((ex, k) => {
+                                        return (
+                                            <div>
+                                                <Row key={i}>
+                                                    <Col>{formatExerciseName(ex.name)}</Col>
+                                                    <Col>{ex.reps}</Col>
+                                                    <Col>{ex.duration}</Col>
+                                                </Row>
+                                            </div>
+                                        )
+                                    })}
+                                    <Link to={{
+                                        pathname: "/workout/dotw",
+                                        exerciseProps: s,
+                                        setInd: i
+                                    }}>
+                                        <Button variant="light" className={classes.startButton}>Start</Button>
+                                    </Link>
                                 </Container>
                             </div>)
-                        })}
-                    </div>
-                    {/* })} */}
+                    })}
+                </div>
+                {/* })} */}
             </div>
         )
     }
 
     const renderTable = () => {
-        return(
+        return (
             <div>
-                <AppBar position="static" className={classes.appBar}>
-                    <Toolbar>
-                        <Typography variant="h6">PRM: Anni Rogers</Typography>
-                    </Toolbar>
-                </AppBar>
-
                 {renderItems()}
-                <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic}/>
-        </div>
+                <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic} />
+            </div>
         )
     }
 
     const renderLoading = () => {
-        return(<h1>Loading...</h1>)
+        return (<h1>Loading...</h1>)
     }
-    
-    return(
+
+    return (
         <div>
-             {loaded ? renderTable() : renderLoading()}
+            {loaded ? renderTable() : renderLoading()}
         </div>
     );
 }

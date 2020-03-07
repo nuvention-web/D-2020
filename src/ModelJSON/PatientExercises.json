@@ -2,7 +2,7 @@
     {
         "id": 0,
         "name": "Anni Rogers",
-        "photo": "https://images.unsplash.com/photo-1489659831163-682b5af42225?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80", 
+        "photo": "/img/Annie.jpg", 
         "profile": {
             "gender": "female",
             "birthdate": "01/10/1989",
@@ -28,12 +28,39 @@
     }, 
     {
         "id": 1,
-        "name": "Jordan Chu",
-        "photo": "https://images.unsplash.com/photo-1489659831163-682b5af42225?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80", 
+        "name": "Chloe Kim",
+        "photo": "/img/chloekim.jpg", 
         "profile": {
             "gender": "female",
             "birthdate": "01/10/2000",
-            "bio": "Jordan loves shrimp chips. He loves them. He loves them a lot. Shrimp shrimp shrimp shrimp shrimp shrimp shrimp shrimp shrimp shrimp shrimp."
+            "bio": "Chloe has a dog. Her favorite cereal is Corn Flakes. She has two sisters, Tracy and Erica."
+        },
+        "sets": [
+            {
+                "day": "Monday",
+                "exercise": [
+                    {"id": 0, "name" : "Calf Wall Stretch", "reps": 1, "duration": 5, "videoId": "bv373Y1oeck"},
+                    {"id": 1, "name" : "Sideways Leg Lifts", "reps": 10, "duration": 2, "videoId": "jgh6sGwtTwk"},
+                    {"id": 2, "name" : "Heel Raise", "reps": 20, "duration": 2, "videoId": "MW2WG5l-fYE"}
+                ]
+            },
+            {
+                "day": "Tuesday",
+                "exercise": [
+                    {"id": 3, "name" : "Bilateral Calf Stretch", "reps": 5, "duration": 3, "videoId": "InbD-ANnZhk"},
+                    {"id": 4, "name" : "Ankle Plantarflexion", "reps": 10, "duration": 2, "videoId": "MujwFGJSQ_k"}
+                ]
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Alyosha Karamazov",
+        "photo": "/img/km.jpg", 
+        "profile": {
+            "gender": "male",
+            "birthdate": "01/10/2000",
+            "bio": "Alyosha has 3 dogs. His wife, Liza and him enjoy travelling together."
         },
         "sets": [
             {

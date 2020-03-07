@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Patient from '../PatientComponents/Patient'
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid'
@@ -18,7 +18,7 @@ import {
     Switch,
     Route,
     Link
-  } from "react-router-dom";
+} from "react-router-dom";
 import PresetExercisesData from '../ModelJSON/PresetExercises.json';
 // import PatientExerciseData from '../ModelJSON/PatientExercises.json';
 import db from '../Firebase.js';
@@ -43,9 +43,6 @@ const useStyles = makeStyles(theme => ({
         height: 250,
         width: 460,
     },
-    checklistContainer: {
-      
-    },
     appBar: {
         backgroundColor: '#bfd9ff',
         boxShadow: 'none'
@@ -58,11 +55,8 @@ const useStyles = makeStyles(theme => ({
         textAlign: 'right',
         '&:hover': {
             color: 'white'
-         },
+        },
     },
-    startButton: {
-        float: 'right'
-    }, 
     stretchGraphic: {
         height: 225,
         marginLeft: 15,
@@ -70,8 +64,26 @@ const useStyles = makeStyles(theme => ({
     },
     exerciseBox: {
         width: 200
+    },
+    backButton: {
+        color: "#9DB4FF",
+        border: "#9DB4FF",
+        '&:hover': {
+            backgroundColor: "#9DB4FF"
+        }
+    },
+    addButton: {
+        backgroundColor: "#9DB4FF",
+        border: "none"
+    },
+    accentDivider: {
+        content: "",
+        display: "block",
+        width: "6.25rem",
+        height: ".325rem",
+        marginTop: "1.5rem",
+        background: "#9DB4FF"
     }
-
 }));
 
 
@@ -87,7 +99,7 @@ const IndividualPatientView = (props) => {
     const [loaded, setLoaded] = useState(false); // Unsure if we need this one
     console.log("exerciseSets", exerciseSets);
 
-   
+
     // Loading data, taken from PatientExerciseMain
     useEffect(() => {
         const fetchPatients = async () => {
@@ -96,51 +108,50 @@ const IndividualPatientView = (props) => {
             console.log(value)
             return value
         }
-        fetchPatients().then((data)=>{
+        fetchPatients().then((data) => {
             console.log(data);
             setExerciseSets(Object.values(data));
         })
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log(exerciseSets)
-        if(exerciseSets.length != 0) {
+        if (exerciseSets.length != 0) {
             setLoaded(true)
         }
     }, [exerciseSets])
     // End loading data
 
-   // Keeping track of which patient we are looking at
-   useEffect(() => {
-    // If prop is undefined, retrieve id local storage, then access via Firebase
-    if (props.location.patientProps == undefined) {
-        var cpi = localStorage.getItem('currPatient');
+    // Keeping track of which patient we are looking at
+    useEffect(() => {
+        // If prop is undefined, retrieve id local storage, then access via Firebase
+        if (props.location.patientProps == undefined) {
+            var cpi = localStorage.getItem('currPatient');
 
-        // Set patient data from Firebase
-        setPatientData(exerciseSets[cpi]);
-        console.log("patient data retrieved from local storage", patientData);
-    }
-    // Use prop if available. Also store in local storage for future use
-    else {
-        setPatientData(props.location.patientProps.patientInfo);
-        localStorage.setItem('currPatient', patientData.id);
-    }
+            // Set patient data from Firebase
+            setPatientData(exerciseSets[cpi]);
+            console.log("patient data retrieved from local storage", patientData);
+        }
+        // Use prop if available. Also store in local storage for future use
+        else {
+            setPatientData(props.location.patientProps.patientInfo);
+            localStorage.setItem('currPatient', patientData.id);
+        }
     }, []);
 
     const findExercise = (exercise) => {
         const exercises = Object.values(PresetExercisesData);
-        for (var i = 0; i < exercises.length; i++)
-        {
+        for (var i = 0; i < exercises.length; i++) {
             if (exercises[i].name === exercise) {
                 return exercises[i];
             }
         }
     }
-   
+
     const addExercise = (setIndex) => {
         console.log("Adding this exercise to firebase! :)", newExercise);
         var exerciseObjectData = findExercise(newExercise);
-        var exerciseListRef = db.child('Anni Rogers/sets/'+ setIndex.toString() + '/exercise').push(exerciseObjectData);
+        var exerciseListRef = db.child('Anni Rogers/sets/' + setIndex.toString() + '/exercise').push(exerciseObjectData);
     }
 
     // Repeat function from PatientExerciseMain
@@ -148,108 +159,112 @@ const IndividualPatientView = (props) => {
         var t = 0
         for (const [i, entry] of Object.entries(s.exercise)) {
             t += entry.duration;
-          }
+        }
         return t;
     }
 
     const formatExerciseName = (n) => {
         var splitStr = n.toLowerCase().split(' ');
         for (var i = 0; i < splitStr.length; i++) {
-            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
         }
         // Directly return the joined string
-        return splitStr.join(' '); 
-     }
-    
+        return splitStr.join(' ');
+    }
+
 
     const renderItems = () => {
         // For now, our patient is default to Anni Rogers
         const person = exerciseSets[0];
 
-        return(
+        return (
             <div>
-                    <div>
-                        {person.sets.map((s,i) => {
-                            return(
-                                <div>
+                <div>
+                    {person.sets.map((s, i) => {
+                        return (
+                            <div>
                                 <Container className={classes.exerciseContainer} key={i}>
-                                <Typography variant="h4" className={classes.header}>{s.day} Exercises ({calculateTotalTime(s)} minutes)</Typography>
-                                <Row>
-                                    <Col>Exercise</Col>
-                                    <Col>Reps</Col>
-                                    <Col>Duration</Col>
-                                </Row>
-                                <Divider />
-                                {Object.values(s.exercise).map((ex,k) => {
-                                    return(
-                                    <div>
-                                        <Row key={k}>
-                                            <Col>{formatExerciseName(ex.name)}</Col>
-                                            <Col>{ex.reps}</Col>
-                                            <Col>{ex.duration}</Col>
+                                    <Typography variant="h4" className={classes.header}>{s.day} Exercises ({calculateTotalTime(s)} minutes)</Typography>
+                                    <Row>
+                                        <Col>Exercise</Col>
+                                        <Col>Reps</Col>
+                                        <Col>Duration</Col>
+                                        <Col></Col>
+                                    </Row>
+                                    <Divider />
+                                    {Object.values(s.exercise).map((ex, k) => {
+                                        return (
+                                            <div>
+                                                <Row key={k}>
+                                                    <Col>{formatExerciseName(ex.name)}</Col>
+                                                    <Col>{ex.reps}</Col>
+                                                    <Col>{ex.duration}</Col>
+                                                    <Col></Col>
+                                                </Row>
+                                            </div>
+                                        )
+                                    })}
+                                    <Form>
+                                        <br />
+                                        <Row>
+                                            <Col>
+                                                <Form.Group controlId="exampleForm.ControlSelect1">
+                                                    <Form.Control as="select"
+                                                        className={classes.exerciseBox}
+                                                        onChange={(event) => { setNewExercise(event.target.value); console.log(newExercise) }}>
+                                                        {
+                                                            PresetExercisesData.map((exercise, i) => {
+                                                                return (
+                                                                    <option value={exercise.name}>
+                                                                        {exercise.name}
+                                                                    </option>
+                                                                );
+                                                            }
+                                                            )}
+                                                    </Form.Control>
+                                                </Form.Group>
+                                            </Col>
+                                            <Col>TBD</Col>
+                                            <Col>TBD</Col>
+                                            <Col>
+                                                <Button variant="primary" type="submit" className={classes.addButton} onClick={() => { addExercise(i) }}>
+                                                    Add
+                                                </Button>
+                                            </Col>
                                         </Row>
-                                    </div>
-                                    )
-                                })}
-                                 <Form>
-                                     <br/>
-                                    <Form.Group controlId="exampleForm.ControlSelect1">
-                                    <Form.Label>Select Exercise</Form.Label>
-                                        <Form.Control as="select" 
-                                            className={classes.exerciseBox} 
-                                            onChange={(event) => {setNewExercise(event.target.value); console.log(newExercise)}}>
-                                            {
-                                            PresetExercisesData.map( (exercise, i) => {
-                                            return(
-                                            <option value={exercise.name}>
-                                                {exercise.name}
-                                            </option>
-                                        );
-                                    }
-                                    )}
-                    </Form.Control>
-                </Form.Group>
-                <Button variant="primary" type="submit" className={classes.submitButton} onClick={() => {addExercise(i)}}>
-                    Add
-                </Button>
-            </Form>
+                                    </Form>
                                 </Container>
                             </div>)
-                        })}
-                    </div>
-                    {/* })} */}
+                    })}
+                </div>
+                {/* })} */}
             </div>
         )
     }
 
     const renderTable = () => {
-        return(
+        return (
             <div>
-            <AppBar position="static" className={classes.appBar}>
-                <Toolbar>
-                    <Typography variant="h6">PRM</Typography>
-                </Toolbar>
-            </AppBar>
-    
-            <Container>
-            <Link to="/PT" className={classes.link}>
-                    <Button className={classes.backButton} variant="outline-primary">Back</Button>
-            </Link>
-            <Typography variant="h4" className={classes.header}>Patient: {patientData.name}</Typography>
-            </Container>        
+                <Container>
+                    <Link to="/PT" className={classes.link}>
+                        <Button className={classes.backButton} variant="outline-primary">Back</Button>
+                    </Link>
+                    <Typography variant="h4" className={classes.header}>{patientData.name}</Typography>
+                    <div className={classes.accentDivider}></div>
+                </Container>
 
-            {renderItems()}
+                {renderItems()}
             </div>
         )
     }
 
     const renderLoading = () => {
-        return(<h1>Loading...</h1>)
+        return (<h1>Loading...</h1>)
     }
-    
-    return(
+
+    return (
         <div>
-             {loaded ? renderTable() : renderLoading()}
+            {loaded ? renderTable() : renderLoading()}
         </div>
     );
 }
