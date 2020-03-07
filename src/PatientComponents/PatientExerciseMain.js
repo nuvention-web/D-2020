@@ -152,7 +152,7 @@ const PatientExerciseMain = () => {
                                     exerciseProps: s,
                                     setInd: i
                                 }}>
-                                    <Button variant="light" className={classes.startButton}>Start</Button>
+                                    <Button className={classes.startButton}>Start</Button>
                                 </Link>
                                 </Container>
                             </div>)

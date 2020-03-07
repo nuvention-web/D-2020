@@ -76,7 +76,7 @@ const useStyles = makeStyles(theme => ({
     },
     backButton: {
         float: 'left',
-        padding: '0.375rem 0.75rem !important'
+        padding: '0.375rem 0.75rem !important',
     },
     timer: {
         position: 'absolute',
@@ -87,11 +87,10 @@ const useStyles = makeStyles(theme => ({
     },
     timerButtons: {
         marginRight: 5,
+        marginTop: 5,
         fontSize: 12,
         height: 29,
-        paddingBottom: 7,
-        backgroundColor: '#9DB4FF !important',
-        border: '#9DB4FF !important'
+        paddingBottom: 7
     }
 }));
 
@@ -186,7 +185,7 @@ const ExerciseTracking = (props) => {
             <Container className={classes.exerciseContainer}>
                 <Typography variant="h4" className={classes.header}>
                     <Link to="/workout" className={classes.link}>
-                        <Button className={classes.backButton} variant="outline-primary">Back</Button>
+                        <Button className={classes.backButton}>Back</Button>
                     </Link>
                     {currentSet.day}'s Exercises
                 </Typography>
