@@ -13,6 +13,7 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Divider from '@material-ui/core/Divider';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import {
     BrowserRouter as Router,
     Switch,
@@ -68,6 +69,7 @@ const useStyles = makeStyles(theme => ({
     backButton: {
         color: "#9DB4FF",
         border: "#9DB4FF",
+        padding: "5px 10px 5px 0px !important",
         '&:hover': {
             backgroundColor: "#9DB4FF"
         }
@@ -83,6 +85,9 @@ const useStyles = makeStyles(theme => ({
         height: ".325rem",
         marginTop: "1.5rem",
         background: "#9DB4FF"
+    },
+    arrowIcon: {
+        maxWidth: 20
     }
 }));
 
@@ -247,7 +252,10 @@ const IndividualPatientView = (props) => {
             <div>
                 <Container>
                     <Link to="/PT" className={classes.link}>
-                        <Button className={classes.backButton} variant="outline-primary">Back</Button>
+                        <Button className={classes.backButton} variant="outline-primary">
+                            <img className={classes.arrowIcon} src="/img/arrowleft.png"></img>
+                            Back
+                        </Button>
                     </Link>
                     <Typography variant="h4" className={classes.header}>{patientData.name}</Typography>
                     <div className={classes.accentDivider}></div>
@@ -259,7 +267,11 @@ const IndividualPatientView = (props) => {
     }
 
     const renderLoading = () => {
-        return (<h1>Loading...</h1>)
+        return (
+        <h1>
+            Loading...
+            <CircularProgress variant="determinate" value={progress} />
+        </h1>)
     }
 
     return (
