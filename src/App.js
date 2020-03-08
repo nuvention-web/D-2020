@@ -11,6 +11,7 @@ import DoctorView from './DoctorComponents/DoctorView';
 import ExerciseTracking from './PatientComponents/PatientExerciseTracking';
 import PatientExerciseMain from './PatientComponents/PatientExerciseMain';
 import IndividualPatientView from './DoctorComponents/IndividualPatientView';
+import Landing from './Landing'
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Button from 'react-bootstrap/Button';
@@ -75,26 +76,12 @@ const App = () => {
 
   return (
     <Router>
-      <div className={classes.appBackground}>
-        <nav>
-          <AppBar position="static" className={classes.appBar}>
-            <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
-            <Toolbar className={classes.navBar}>
-              <Link to="/">
-                <Button variant="light" className={classes.navButton}>Landing Page</Button>
-              </Link>
-              <Link to="/PT">
-                <Button variant="light" className={classes.navButton}>PT View</Button>
-              </Link>
-              <Link to="/workout">
-                <Button variant="light" className={classes.navButton}>Patient View</Button>
-              </Link>
-            </Toolbar>
-          </AppBar>
-        </nav>
+      <div>
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
+        
         <Switch>
+          <Route exact path="/" component={(props) => <Landing />}></Route>
           <Route path="/workout/dotw" component={(props) => <ExerciseTracking {...props}></ExerciseTracking>}></Route>
           <Route path="/workout" component={(props) => <PatientExerciseMain></PatientExerciseMain>}></Route>
           {/* <Route path="/users">

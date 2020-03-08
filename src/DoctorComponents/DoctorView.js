@@ -106,8 +106,6 @@ const DoctorView = () => {
                     })
                     }
                 </Grid>
-
-
             </Container>
         </div>
     );

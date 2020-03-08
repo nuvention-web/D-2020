@@ -4,15 +4,19 @@
   
   /* this determines distance of carousel indicators from carousel item*/
   .carousel-item {
-    margin-bottom: 140px;
+    margin-bottom: 145px;
   }
   
   .carousel-caption {
     position: absolute;
     bottom: -60px !important;
+    margin-bottom: 20;
     color: #6f7378 !important;
   }
 
   .btn {
     padding: 0rem .75rem !important;
+    background-color: #9DB4FF !important;
+    border-color: #9DB4FF !important;
+    color: white;
   }
