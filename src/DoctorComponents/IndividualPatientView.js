@@ -97,21 +97,20 @@ const IndividualPatientView = (props) => {
     const [patientData, setPatientData] = useState("");
     const classes = useStyles();
     const [newExercise, setNewExercise] = useState("Calf Wall Stretch");
+    const [patientIndex, setPatientIndex] = useState("");
 
     // For loading data, taken from PatientExerciseMain
     // exerciseSets actually contains our entire json (all patients)
     const [exerciseSets, setExerciseSets] = useState([]);
     const [loaded, setLoaded] = useState(false); // Unsure if we need this one
-    console.log("exerciseSets", exerciseSets);
-
 
     // Loading data, taken from PatientExerciseMain
     useEffect(() => {
         const fetchPatients = async () => {
             const snapshot = await db.once('value');
             const value = snapshot.val();
-            console.log(value)
-            return value
+            console.log(value);
+            return value;
         }
         fetchPatients().then((data) => {
             console.log(data);
@@ -122,7 +121,7 @@ const IndividualPatientView = (props) => {
     useEffect(() => {
         console.log(exerciseSets)
         if (exerciseSets.length != 0) {
-            setLoaded(true)
+            setLoaded(true);
         }
     }, [exerciseSets])
     // End loading data
@@ -130,17 +129,21 @@ const IndividualPatientView = (props) => {
     // Keeping track of which patient we are looking at
     useEffect(() => {
         // If prop is undefined, retrieve id local storage, then access via Firebase
-        if (props.location.patientProps == undefined) {
+        if (typeof (props.location.patientProps) === 'undefined') {
             var cpi = localStorage.getItem('currPatient');
 
             // Set patient data from Firebase
-            setPatientData(exerciseSets[cpi]);
-            console.log("patient data retrieved from local storage", patientData);
+            console.log('patient index fr local storage', patientIndex);
+            setPatientData(exerciseSets[patientIndex]);
+            console.log("patient data retrieved from local storage", exerciseSets[patientIndex]);
         }
         // Use prop if available. Also store in local storage for future use
         else {
-            setPatientData(props.location.patientProps.patientInfo);
+            // setPatientData(props.location.patientProps.patientInfo);
             localStorage.setItem('currPatient', patientData.id);
+            console.log('props', props.location.patientProps.patientInfo.id);
+            const pi = props.location.patientProps.patientInfo.id;
+            setPatientIndex(pi);
         }
     }, []);
 
@@ -257,7 +260,8 @@ const IndividualPatientView = (props) => {
                             Back
                         </Button>
                     </Link>
-                    <Typography variant="h4" className={classes.header}>{patientData.name}</Typography>
+                    {console.log("exercise sets",exerciseSets)}
+                    {/* <Typography variant="h4" className={classes.header}>{patientData.name}</Typography> */}
                     <div className={classes.accentDivider}></div>
                 </Container>
 
@@ -270,7 +274,7 @@ const IndividualPatientView = (props) => {
         return (
         <h1>
             Loading...
-            <CircularProgress variant="determinate" value={progress} />
+            <CircularProgress />
         </h1>)
     }
 
