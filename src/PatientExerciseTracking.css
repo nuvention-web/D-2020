@@ -9,13 +9,25 @@
   
   .carousel-caption {
     position: absolute;
-    bottom: -60px !important;
+    bottom: -65px !important;
     margin-bottom: 20;
     color: #6f7378 !important;
   }
 
-  .btn {
+  .timer-btn {
     padding: 0rem .75rem !important;
+    background-color: rgb(193, 207, 255) !important;
+    border-color: rgb(193, 207, 255) !important;
+    color: white;
+    margin-right: 8px;
+    margin-top: 5px;
+    font-size: 16px;
+    height: 35px;
+    padding-bottom: 7px;
+  }
+
+  .timer-btn:hover {
+    /* padding: 0rem .75rem !important; */
     background-color: #9DB4FF !important;
     border-color: #9DB4FF !important;
     color: white;
