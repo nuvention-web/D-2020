@@ -13,6 +13,7 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Divider from '@material-ui/core/Divider';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import {
     BrowserRouter as Router,
     Switch,
@@ -68,6 +69,7 @@ const useStyles = makeStyles(theme => ({
     backButton: {
         color: "#9DB4FF",
         border: "#9DB4FF",
+        padding: "5px 10px 5px 0px !important",
         '&:hover': {
             backgroundColor: "#9DB4FF"
         }
@@ -83,6 +85,9 @@ const useStyles = makeStyles(theme => ({
         height: ".325rem",
         marginTop: "1.5rem",
         background: "#9DB4FF"
+    },
+    arrowIcon: {
+        maxWidth: 20
     }
 }));
 
@@ -92,21 +97,20 @@ const IndividualPatientView = (props) => {
     const [patientData, setPatientData] = useState("");
     const classes = useStyles();
     const [newExercise, setNewExercise] = useState("Calf Wall Stretch");
+    const [patientIndex, setPatientIndex] = useState("");
 
     // For loading data, taken from PatientExerciseMain
     // exerciseSets actually contains our entire json (all patients)
     const [exerciseSets, setExerciseSets] = useState([]);
     const [loaded, setLoaded] = useState(false); // Unsure if we need this one
-    console.log("exerciseSets", exerciseSets);
-
 
     // Loading data, taken from PatientExerciseMain
     useEffect(() => {
         const fetchPatients = async () => {
             const snapshot = await db.once('value');
             const value = snapshot.val();
-            console.log(value)
-            return value
+            console.log(value);
+            return value;
         }
         fetchPatients().then((data) => {
             console.log(data);
@@ -117,7 +121,7 @@ const IndividualPatientView = (props) => {
     useEffect(() => {
         console.log(exerciseSets)
         if (exerciseSets.length != 0) {
-            setLoaded(true)
+            setLoaded(true);
         }
     }, [exerciseSets])
     // End loading data
@@ -125,17 +129,21 @@ const IndividualPatientView = (props) => {
     // Keeping track of which patient we are looking at
     useEffect(() => {
         // If prop is undefined, retrieve id local storage, then access via Firebase
-        if (props.location.patientProps == undefined) {
+        if (typeof (props.location.patientProps) === 'undefined') {
             var cpi = localStorage.getItem('currPatient');
 
             // Set patient data from Firebase
-            setPatientData(exerciseSets[cpi]);
-            console.log("patient data retrieved from local storage", patientData);
+            console.log('patient index fr local storage', patientIndex);
+            setPatientData(exerciseSets[patientIndex]);
+            console.log("patient data retrieved from local storage", exerciseSets[patientIndex]);
         }
         // Use prop if available. Also store in local storage for future use
         else {
-            setPatientData(props.location.patientProps.patientInfo);
+            // setPatientData(props.location.patientProps.patientInfo);
             localStorage.setItem('currPatient', patientData.id);
+            console.log('props', props.location.patientProps.patientInfo.id);
+            const pi = props.location.patientProps.patientInfo.id;
+            setPatientIndex(pi);
         }
     }, []);
 
@@ -247,9 +255,13 @@ const IndividualPatientView = (props) => {
             <div>
                 <Container>
                     <Link to="/PT" className={classes.link}>
-                        <Button className={classes.backButton} variant="outline-primary">Back</Button>
+                        <Button className={classes.backButton} variant="outline-primary">
+                            <img className={classes.arrowIcon} src="/img/arrowleft.png"></img>
+                            Back
+                        </Button>
                     </Link>
-                    <Typography variant="h4" className={classes.header}>{patientData.name}</Typography>
+                    {console.log("exercise sets",exerciseSets)}
+                    {/* <Typography variant="h4" className={classes.header}>{patientData.name}</Typography> */}
                     <div className={classes.accentDivider}></div>
                 </Container>
 
@@ -259,7 +271,11 @@ const IndividualPatientView = (props) => {
     }
 
     const renderLoading = () => {
-        return (<h1>Loading...</h1>)
+        return (
+        <h1>
+            Loading...
+            <CircularProgress />
+        </h1>)
     }
 
     return (
