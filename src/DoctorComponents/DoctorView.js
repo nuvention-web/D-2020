@@ -6,7 +6,7 @@ import PatientData from '../ModelJSON/Patients.json'
 import { render } from '@testing-library/react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
+import Button from 'react-bootstrap/Button';
 import {
     BrowserRouter as Router,
     Switch,
@@ -14,7 +14,6 @@ import {
     Link
 } from "react-router-dom";
 import IndividualPatientView from './IndividualPatientView';
-import { Button } from '@material-ui/core';
 import PatientExerciseData from '../ModelJSON/PatientExercises.json';
 
 
@@ -43,6 +42,11 @@ const useStyles = makeStyles(theme => ({
             color: 'white'
         },
     },
+    blueButton: {
+        backgroundColor: "#9DB4FF",
+        border: "none",
+        height: "calc(1.5em + .75rem + 2px)"
+    },
     patientInfoCard: {
         width: 300,
         minHeight: 430,
@@ -65,16 +69,12 @@ const DoctorView = () => {
     const patientData = PatientExerciseData;
     console.log("patientData", patientData);
 
-
-    // const renderPatients = () => {
-    //     render(
-    //        <div>trash</div>
-    //     )
-    // }
-
     return (
         <div>
             <Container fixed>
+                <Link to="/" className={classes.link}>
+                    <Button className={classes.blueButton} variant="outline-primary">Back</Button>
+                </Link>
                 <Typography variant="h4" className={classes.header}>Patient Dashboard</Typography>
                 <div className={classes.accentDivider}></div>
 

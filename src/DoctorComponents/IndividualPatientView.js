@@ -14,6 +14,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@material-ui/core/TextField';
 import {
     BrowserRouter as Router,
     Switch,
@@ -66,17 +67,10 @@ const useStyles = makeStyles(theme => ({
     exerciseBox: {
         width: 200
     },
-    backButton: {
-        color: "#9DB4FF",
-        border: "#9DB4FF",
-        padding: "5px 10px 5px 0px !important",
-        '&:hover': {
-            backgroundColor: "#9DB4FF"
-        }
-    },
-    addButton: {
+    blueButton: {
         backgroundColor: "#9DB4FF",
-        border: "none"
+        border: "none",
+        height: "calc(1.5em + .75rem + 2px)"
     },
     accentDivider: {
         content: "",
@@ -88,6 +82,12 @@ const useStyles = makeStyles(theme => ({
     },
     arrowIcon: {
         maxWidth: 20
+    },
+    inputBox: {
+        width: 50,
+        height: "calc(1.5em + .75rem + 2px)",
+        borderRadius: 5,
+        border: "1px solid #ccc",
     }
 }));
 
@@ -97,6 +97,9 @@ const IndividualPatientView = (props) => {
     const [patientData, setPatientData] = useState("");
     const classes = useStyles();
     const [newExercise, setNewExercise] = useState("Calf Wall Stretch");
+    const [newReps, setNewReps] = useState(1);
+    const [newDuration, setNewDuration] = useState(5);
+
     const [patientIndex, setPatientIndex] = useState("");
 
     // For loading data, taken from PatientExerciseMain
@@ -147,19 +150,29 @@ const IndividualPatientView = (props) => {
         }
     }, []);
 
-    const findExercise = (exercise) => {
-        const exercises = Object.values(PresetExercisesData);
-        for (var i = 0; i < exercises.length; i++) {
-            if (exercises[i].name === exercise) {
-                return exercises[i];
-            }
-        }
-    }
+    // const findExercise = (exercise) => {
+    //     const exercises = Object.values(PresetExercisesData);
+    //     for (var i = 0; i < exercises.length; i++) {
+    //         if (exercises[i].name === exercise) {
+    //             return exercises[i];
+    //         }
+    //     }
+    // }
 
+    // Submit new exercise to firebase
     const addExercise = (setIndex) => {
         console.log("Adding this exercise to firebase! :)", newExercise);
-        var exerciseObjectData = findExercise(newExercise);
+        var exerciseObjectData = 
+        {
+            "id": 0,
+            "name": newExercise,
+            "reps": newReps,
+            "duration": newDuration,
+            "videoId": "MW2WG5l-fYE"
+         }
+        // var exerciseObjectData = findExercise(newExercise);
         var exerciseListRef = db.child('Anni Rogers/sets/' + setIndex.toString() + '/exercise').push(exerciseObjectData);
+
     }
 
     // Repeat function from PatientExerciseMain
@@ -188,6 +201,10 @@ const IndividualPatientView = (props) => {
         return (
             <div>
                 <div>
+                    <Container>
+                      <Typography variant="h4" className={classes.header}>{person.name}</Typography>
+                      <div className={classes.accentDivider}></div>
+                      </Container>
                     {person.sets.map((s, i) => {
                         return (
                             <div>
@@ -219,7 +236,7 @@ const IndividualPatientView = (props) => {
                                                 <Form.Group controlId="exampleForm.ControlSelect1">
                                                     <Form.Control as="select"
                                                         className={classes.exerciseBox}
-                                                        onChange={(event) => { setNewExercise(event.target.value); console.log(newExercise) }}>
+                                                        onChange={(event) => { setNewExercise(event.target.value)}}>
                                                         {
                                                             PresetExercisesData.map((exercise, i) => {
                                                                 return (
@@ -232,10 +249,14 @@ const IndividualPatientView = (props) => {
                                                     </Form.Control>
                                                 </Form.Group>
                                             </Col>
-                                            <Col>TBD</Col>
-                                            <Col>TBD</Col>
                                             <Col>
-                                                <Button variant="primary" type="submit" className={classes.addButton} onClick={() => { addExercise(i) }}>
+                                                <input type="text" className={classes.inputBox} onChange={(event) => {setNewReps(event.target.value)}}/>
+                                            </Col>
+                                            <Col>
+                                                <input type="text" className={classes.inputBox} onChange={(event) => {setNewDuration(event.target.value)}}/>
+                                            </Col>
+                                            <Col>
+                                                <Button variant="primary" className={classes.inputBox} type="submit" className={classes.blueButton} onClick={() => { addExercise(i) }}>
                                                     Add
                                                 </Button>
                                             </Col>
@@ -255,14 +276,12 @@ const IndividualPatientView = (props) => {
             <div>
                 <Container>
                     <Link to="/PT" className={classes.link}>
-                        <Button className={classes.backButton} variant="outline-primary">
-                            <img className={classes.arrowIcon} src="/img/arrowleft.png"></img>
+                        <Button className={classes.blueButton} variant="outline-primary">
+                            {/* <img className={classes.arrowIcon} src="/img/arrowleft.png"></img> */}
                             Back
                         </Button>
                     </Link>
-                    {console.log("exercise sets",exerciseSets)}
-                    {/* <Typography variant="h4" className={classes.header}>{patientData.name}</Typography> */}
-                    <div className={classes.accentDivider}></div>
+                    {console.log("exercise sets", exerciseSets)}
                 </Container>
 
                 {renderItems()}
@@ -272,10 +291,9 @@ const IndividualPatientView = (props) => {
 
     const renderLoading = () => {
         return (
-        <h1>
-            Loading...
-            <CircularProgress />
-        </h1>)
+            <h1>
+                <CircularProgress />
+            </h1>)
     }
 
     return (
