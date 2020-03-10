@@ -1,39 +1,12 @@
 [
     {
-        "id": 0,
-        "name": "Anni Rogers",
-        "photo": "/img/Annie.jpg", 
-        "profile": {
-            "gender": "female",
-            "birthdate": "01/10/1989",
-            "bio": "Anni loves running, cooking, and playing with her dogs (Cocoa and Peanut). She has one child (Jason) who is 8 years old and loves playing baseball."
-        },
-        "sets": [
-            {
-                "day": "Monday",
-                "exercise": [
-                    {"id": 0, "name" : "Calf Wall Stretch", "reps": 1, "duration": 5, "videoId": "bv373Y1oeck"},
-                    {"id": 1, "name" : "Sideways Leg Lifts", "reps": 10, "duration": 2, "videoId": "jgh6sGwtTwk"},
-                    {"id": 2, "name" : "Heel Raise", "reps": 20, "duration": 2, "videoId": "MW2WG5l-fYE"}
-                ]
-            },
-            {
-                "day": "Tuesday",
-                "exercise": [
-                    {"id": 3, "name" : "Bilateral Calf Stretch", "reps": 5, "duration": 3, "videoId": "InbD-ANnZhk"},
-                    {"id": 4, "name" : "Ankle Plantarflexion", "reps": 10, "duration": 2, "videoId": "MujwFGJSQ_k"}
-                ]
-            }
-        ]
-    }, 
-    {
-        "id": 1,
-        "name": "Chloe Kim",
+        "id": 2,
+        "name": "Vanessa Kim",
         "photo": "/img/chloekim.jpg", 
         "profile": {
             "gender": "female",
             "birthdate": "01/10/2000",
-            "bio": "Chloe has a dog. Her favorite cereal is Corn Flakes. She has two sisters, Tracy and Erica."
+            "bio": "Vanessa is on the track and field team. She has a dog named Sadie and a cat named Jason."
         },
         "sets": [
             {
@@ -54,13 +27,40 @@
         ]
     },
     {
-        "id": 2,
-        "name": "Alyosha Karamazov",
-        "photo": "/img/km.jpg", 
+        "id": 1,
+        "name": "Jordan Chu",
+        "photo": "/img/jordanchu.jpg", 
         "profile": {
-            "gender": "male",
+            "gender": "female",
             "birthdate": "01/10/2000",
-            "bio": "Alyosha has 3 dogs. His wife, Liza and him enjoy travelling together."
+            "bio": "Jordan has a dog. His favorite cereal is Corn Flakes. He has two sisters, Tracy and Erica."
+        },
+        "sets": [
+            {
+                "day": "Monday",
+                "exercise": [
+                    {"id": 0, "name" : "Calf Wall Stretch", "reps": 1, "duration": 5, "videoId": "bv373Y1oeck"},
+                    {"id": 1, "name" : "Sideways Leg Lifts", "reps": 10, "duration": 2, "videoId": "jgh6sGwtTwk"},
+                    {"id": 2, "name" : "Heel Raise", "reps": 20, "duration": 2, "videoId": "MW2WG5l-fYE"}
+                ]
+            },
+            {
+                "day": "Tuesday",
+                "exercise": [
+                    {"id": 3, "name" : "Bilateral Calf Stretch", "reps": 5, "duration": 3, "videoId": "InbD-ANnZhk"},
+                    {"id": 4, "name" : "Ankle Plantarflexion", "reps": 10, "duration": 2, "videoId": "MujwFGJSQ_k"}
+                ]
+            }
+        ]
+    },
+    {
+        "id": 0,
+        "name": "Anni Rogers",
+        "photo": "/img/Annie.jpg", 
+        "profile": {
+            "gender": "female",
+            "birthdate": "01/10/1989",
+            "bio": "Anni loves running, cooking, and playing with her dogs (Cocoa and Peanut). She has one child (Jason) who is 8 years old and loves playing baseball."
         },
         "sets": [
             {

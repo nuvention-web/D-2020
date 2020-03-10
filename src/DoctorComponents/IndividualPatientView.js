@@ -171,7 +171,7 @@ const IndividualPatientView = (props) => {
             "videoId": "MW2WG5l-fYE"
          }
         // var exerciseObjectData = findExercise(newExercise);
-        var exerciseListRef = db.child('Anni Rogers/sets/' + setIndex.toString() + '/exercise').push(exerciseObjectData);
+        var exerciseListRef = db.child('Vanessa Jones/sets/' + setIndex.toString() + '/exercise').push(exerciseObjectData);
 
     }
 
@@ -196,7 +196,7 @@ const IndividualPatientView = (props) => {
 
     const renderItems = () => {
         // For now, our patient is default to Anni Rogers
-        const person = exerciseSets[0];
+        const person = exerciseSets[2];
 
         return (
             <div>
