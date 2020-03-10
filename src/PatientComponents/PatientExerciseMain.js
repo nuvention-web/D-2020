@@ -29,8 +29,7 @@ import db from '../Firebase.js';
 
 const useStyles = makeStyles(theme => ({
     exercises: {
-        marginTop: 15,
-        minWidth: 250
+        height: '55%'
     },
     header: {
         marginTop: 10,
@@ -47,7 +46,10 @@ const useStyles = makeStyles(theme => ({
         width: 460,
     },
     exerciseContainer: {
-        marginTop: 30
+        marginTop: 30,
+        marginBottom: 40,
+        width: '80%',
+        margin: '0 auto'
     },
     link: {
         textDecoration: 'none',
@@ -60,11 +62,46 @@ const useStyles = makeStyles(theme => ({
         padding: '0.375rem 0.9rem !important',
         marginTop: 20
     },
-    stretchGraphic: {
-        height: 225,
-        marginLeft: 15,
-        marginTop: 55
+    stretchGraphic1: {
+        height: 240,
+        marginLeft: '8%',
+        marginTop: 30
     },
+    stretchGraphic2: {
+        height: 170,
+        marginLeft: '4%',
+        marginTop: 30,
+        marginBottom: '5%'
+    },
+    footer: {
+        // position: 'fixed',
+        // bottom: 0,
+        // right: 0,
+        display: 'flex',
+        flexDirection: 'row',
+        marginTop: '7%',
+        width: '100%',
+        height: 300,
+        backgroundColor: '#e8ebed',
+    },
+    circle: {
+        marginTop: 25,
+        backgroundColor: 'white',
+        borderRadius: '300px 0px 0px 0px',
+        height: 225,
+        width: '30%',
+        float: 'right'
+    },
+    window: {
+        height: '100%'
+    },
+    quote: {
+        marginTop: '5%',
+        color: '#80858a',
+        marginLeft: '20%',
+        fontWeight: '530',
+        fontSize: 25
+    }
 }));
 
 const calculateTotalTime = (s) => {
@@ -115,12 +152,11 @@ const PatientExerciseMain = () => {
         const person = exerciseSets[0];
 
         return (
-            <div>
-                <div>
+                <div className={classes.window}>
+                <div className={classes.exercises}>
                     {person.sets.map((s, i) => {
                         return (
-                            <div>
-                                <Container className={classes.exerciseContainer} key={i}>
+                                <div className={classes.exerciseContainer} key={i}>
                                     <Typography variant="h4" className={classes.header}>{s.day} Exercises ({calculateTotalTime(s)} minutes)</Typography>
                                     <Row>
                                         <Col>Exercise</Col>
@@ -146,20 +182,29 @@ const PatientExerciseMain = () => {
                                     }}>
                                         <Button variant="light" className={classes.startButton}>Start</Button>
                                     </Link>
-                                </Container>
-                            </div>)
+                                </div>)
                     })}
+                    </div>
+                    <footer className={classes.footer}>
+                        <img src={"/img/StretchGraphic2.png"} className={classes.stretchGraphic2} />
+                        <img src={"/img/StretchGraphic1.png"} className={classes.stretchGraphic1} />
+                        <Typography className={classes.quote}>
+                            "Movement is a medicine for creating change <br />
+                            in a person's physical, emotional, and mental states."
+                            <Typography variant="h6">
+                            <br />
+                            - Carol Welch
+                            </Typography>
+                        </Typography>
+                    </footer>
                 </div>
-                {/* })} */}
-            </div>
         )
     }
 
     const renderTable = () => {
         return (
-            <div>
+            <div className={classes.window}>
                 {renderItems()}
-                <img src={"/img/StretchGraphic.png"} className={classes.stretchGraphic} />
             </div>
         )
     }
@@ -169,7 +214,7 @@ const PatientExerciseMain = () => {
     }
 
     return (
-        <div>
+        <div className={classes.window}>
             {loaded ? renderTable() : renderLoading()}
         </div>
     );

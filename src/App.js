@@ -68,6 +68,9 @@ const useStyles = makeStyles(theme => ({
     height: ".325rem",
     marginTop: "1.5rem",
     background: "#9DB4FF"
+  },
+  window: {
+    height: '100%'
   }
 }));
 
@@ -76,7 +79,7 @@ const App = () => {
 
   return (
     <Router>
-      <div>
+      <div className={classes.window}>
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         
