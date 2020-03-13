@@ -11,4 +11,4 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 A link to the deployed version: https://nuvention-team-d.firebaseapp.com
 
-Designated contact person: TBD
+Designated contact person: vanessachu2020@u.northwestern.edu
