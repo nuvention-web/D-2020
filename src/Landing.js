@@ -121,6 +121,7 @@ const Landing = () => {
   //Access currentUser info from anywhere in the app using context
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
+  console.log(currUser);
 
   return (
     <div className={classes.background}>
@@ -146,19 +147,19 @@ const Landing = () => {
             </Link>
             <div className={classes.space}></div>
             <div className={classes.rightButtons}>
-              {currUser ? (
+              {Object.entries(currUser) < 1 ? (
+                <SignIn />
+              ) : (
                 <Button
                   variant="light"
                   clasName={classes.registerButton}
                   onClick={() => {
                     LogOut();
-                    setCurrUser();
+                    setCurrUser({});
                   }}
                 >
                   Log Out
                 </Button>
-              ) : (
-                <SignIn />
               )}
             </div>
           </Toolbar>
