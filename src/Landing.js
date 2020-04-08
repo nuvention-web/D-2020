@@ -92,12 +92,14 @@ const useStyles = makeStyles((theme) => ({
   },
   registerButton: {
     backgroundColor: "transparent",
-    color: "white",
     border: "none",
-    fontSize: "18px",
+    fontSize: "14px",
     padding: "8px",
-    fontWeight: "600",
-    marginRight: "55px",
+    marginRight: "0px",
+    "&:hover": {
+      color: "#9DB4FF !important",
+      backgroundColor: "inherit",
+    }
   },
   logInButton: {
     borderRadius: "11px",
@@ -111,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "600",
   },
   space: {
-    width: "50px",
+    width: "100px",
   },
 }));
 
@@ -152,7 +154,7 @@ const Landing = () => {
               ) : (
                 <Button
                   variant="light"
-                  clasName={classes.registerButton}
+                  className={classes.registerButton}
                   onClick={() => {
                     LogOut();
                     setCurrUser({});
