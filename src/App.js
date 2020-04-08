@@ -1,41 +1,37 @@
-import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
-import './App.css';
-import PatientView from './PatientComponents/PatientView';
-import DoctorView from './DoctorComponents/DoctorView';
-import ExerciseTracking from './PatientComponents/PatientExerciseTracking';
-import PatientExerciseMain from './PatientComponents/PatientExerciseMain';
-import IndividualPatientView from './DoctorComponents/IndividualPatientView';
-import Landing from './Landing'
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Button from 'react-bootstrap/Button';
-import Toolbar from '@material-ui/core/Toolbar';
+import React from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import "./App.css";
+import PatientView from "./PatientComponents/PatientView";
+import DoctorView from "./DoctorComponents/DoctorView";
+import ExerciseTracking from "./PatientComponents/PatientExerciseTracking";
+import PatientExerciseMain from "./PatientComponents/PatientExerciseMain";
+import IndividualPatientView from "./DoctorComponents/IndividualPatientView";
+import Landing from "./Landing";
+import { makeStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Button from "react-bootstrap/Button";
+import Toolbar from "@material-ui/core/Toolbar";
+import UserProvider from "./contexts/UserContext";
+import firebase from "firebase/app";
 
-
-// Add login/auth logic here, add react routing to correct pages 
+// Add login/auth logic here, add react routing to correct pages
 // React routing flow
 // Landing Page (doctor signin and patient signin)
 // PatientView
-// PateintExerciseMain.js: screen with the week's worth of exercises on it 
-// PatientExerciseTracking.js: screen for actual exercise section 
-// DoctorView 
+// PateintExerciseMain.js: screen with the week's worth of exercises on it
+// PatientExerciseTracking.js: screen for actual exercise section
+// DoctorView
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   appBar: {
-    backgroundColor: 'white',
-    boxShadow: 'none',
+    backgroundColor: "white",
+    boxShadow: "none",
     height: 100,
-    display: 'inline-block'
+    display: "inline-block",
   },
   appBackground: {
     backgroundColor: "#FEFEFE",
-    height: "100vh"
+    height: "100vh",
   },
   tendonLogo: {
     width: 150,
@@ -47,7 +43,7 @@ const useStyles = makeStyles(theme => ({
     float: "right",
     width: "70vh",
     justifyContent: "center",
-    margin: "20px 0px"
+    margin: "20px 0px",
   },
   navButton: {
     display: "inline-block",
@@ -56,10 +52,10 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "inherit",
     border: "none",
     // fontFamily: "San Francisco",
-    '&:hover': {
+    "&:hover": {
       color: "#9DB4FF",
-      backgroundColor: "inherit"
-    }
+      backgroundColor: "inherit",
+    },
   },
   accentDivider: {
     content: "",
@@ -67,35 +63,53 @@ const useStyles = makeStyles(theme => ({
     width: "6.25rem",
     height: ".325rem",
     marginTop: "1.5rem",
-    background: "#9DB4FF"
+    background: "#9DB4FF",
   },
   window: {
-    height: '100%'
-  }
+    height: "100%",
+  },
 }));
 
 const App = () => {
   const classes = useStyles();
 
   return (
-    <Router>
-      <div className={classes.window}>
-        {/* A <Switch> looks through its children <Route>s and
+    <UserProvider>
+      <Router>
+        <div className={classes.window}>
+          {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
-        
-        <Switch>
-          <Route exact path="/" component={(props) => <Landing />}></Route>
-          <Route path="/workout/dotw" component={(props) => <ExerciseTracking {...props}></ExerciseTracking>}></Route>
-          <Route path="/workout" component={(props) => <PatientExerciseMain></PatientExerciseMain>}></Route>
-          {/* <Route path="/users">
+
+          <Switch>
+            <Route exact path="/" component={(props) => <Landing />}></Route>
+            <Route
+              path="/workout/dotw"
+              component={(props) => (
+                <ExerciseTracking {...props}></ExerciseTracking>
+              )}
+            ></Route>
+            <Route
+              path="/workout"
+              component={(props) => <PatientExerciseMain></PatientExerciseMain>}
+            ></Route>
+            {/* <Route path="/users">
             <Users />
           </Route> */}
-          <Route path="/PT/patient" component={(props) => <IndividualPatientView {...props}></IndividualPatientView>}></Route>
-          <Route path="/PT" component={(props) => <DoctorView></DoctorView>}></Route>
-        </Switch>
-      </div>
-    </Router>
+            <Route
+              path="/PT/patient"
+              component={(props) => (
+                <IndividualPatientView {...props}></IndividualPatientView>
+              )}
+            ></Route>
+            <Route
+              path="/PT"
+              component={(props) => <DoctorView></DoctorView>}
+            ></Route>
+          </Switch>
+        </div>
+      </Router>
+    </UserProvider>
   );
-}
+};
 
 export default App;
