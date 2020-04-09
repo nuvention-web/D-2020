@@ -15,10 +15,22 @@ import {
 } from "react-router-dom";
 import IndividualPatientView from './IndividualPatientView';
 import PatientExerciseData from '../ModelJSON/PatientExercises.json';
-
+import AppBar from "@material-ui/core/AppBar";
 
 
 const useStyles = makeStyles(theme => ({
+    appBar: {
+        backgroundColor: "transparent",
+        boxShadow: "none",
+        height: 100,
+        display: "inline-block",
+    },
+    tendonLogo: {
+        width: 150,
+        float: "left",
+        display: "inline-block",
+        margin: "40px 30px",
+    },
     exercises: {
         marginTop: 15,
         minWidth: 250
@@ -27,10 +39,6 @@ const useStyles = makeStyles(theme => ({
         marginTop: 10,
         marginBottom: 8,
         color: '#80858a'
-    },
-    appBar: {
-        backgroundColor: '#bfd9ff',
-        boxShadow: 'none'
     },
     exerciseContainer: {
         marginTop: 30
@@ -44,8 +52,13 @@ const useStyles = makeStyles(theme => ({
     },
     blueButton: {
         backgroundColor: "#9DB4FF",
+        color: "white",
         border: "none",
-        height: "calc(1.5em + .75rem + 2px)"
+        height: "calc(1.5em + .75rem + 2px)",
+        '&:hover': {
+            color: 'white',
+            backgroundColor: "#3358C4",
+        }
     },
     patientInfoCard: {
         width: 300,
@@ -59,7 +72,7 @@ const useStyles = makeStyles(theme => ({
         height: ".325rem",
         marginTop: "1.5rem",
         background: "#9DB4FF"
-      }
+    }
 }));
 
 
@@ -71,6 +84,9 @@ const DoctorView = () => {
 
     return (
         <div>
+            <AppBar position="static" className={classes.appBar}>
+                <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
+            </AppBar>
             <Container fixed>
                 <Link to="/" className={classes.link}>
                     <Button className={classes.blueButton} variant="outline-primary">Back</Button>

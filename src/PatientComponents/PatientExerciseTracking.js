@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Patient from '../PatientComponents/Patient'
+import Patient from './Patient'
 import PatientExercises from '../ModelJSON/PatientExercises.json';
 import Container from '@material-ui/core/Container';
 import { render } from '@testing-library/react';

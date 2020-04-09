@@ -39,14 +39,14 @@ const Patient = ({name, photo, profile}) => {
           </Typography>
         </CardContent>
       </CardActionArea>
-      <CardActions>
+      {/* <CardActions>
         <Button size="small" color="primary">
-          Visits
+          View Routine
         </Button>
         <Button size="small" color="primary">
-          Contact
+          Progress
         </Button>
-      </CardActions>
+      </CardActions> */}
     </Card>
   );
 }
