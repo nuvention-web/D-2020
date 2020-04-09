@@ -35,7 +35,7 @@ const Patient = ({name, photo, profile}) => {
             {name}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            {profile.bio}
+            {/* {profile.bio} */}
           </Typography>
         </CardContent>
       </CardActionArea>

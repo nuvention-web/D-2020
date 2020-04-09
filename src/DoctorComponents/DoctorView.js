@@ -88,26 +88,17 @@ const DoctorView = () => {
         const fetchPatients = async () => {
 
             // Newly added to load Firestore data
-            const p = [];
+            var p = [];
             db.collection("patients").get().then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                     p.push(doc.data());
-                    console.log(`${doc.id} => ${doc.data()}`);
                 });
+                setPatients(p);
             });
 
-            // const snapshot = await db.once("value");
-            // const value = snapshot.val();
-            // return value;
-            console.log('p', p);
-            return p;
         };
-        fetchPatients().then((data) => {
-            // setPatients(Object.values(data));
-            console.log('data', data);
-            console.log('data length', data.length);
-            setPatients(data);
-        });
+        
+        fetchPatients();
     }, []);
 
     useEffect(() => {
@@ -137,8 +128,6 @@ const DoctorView = () => {
                         alignItems="center"
                         spacing={1}
                     >
-                        {console.log("patients", patients)}
-                        {console.log("patient 1", patients[0])}
 
                         {patients.map((p, i) => {
                             return (
