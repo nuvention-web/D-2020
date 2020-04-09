@@ -16,6 +16,8 @@ import {
 import IndividualPatientView from './IndividualPatientView';
 import PatientExerciseData from '../ModelJSON/PatientExercises.json';
 import AppBar from "@material-ui/core/AppBar";
+import { db } from "../Firebase.js";
+
 
 
 const useStyles = makeStyles(theme => ({
@@ -78,54 +80,106 @@ const useStyles = makeStyles(theme => ({
 
 const DoctorView = () => {
     const classes = useStyles();
-    const [patients, setPatient] = useState(PatientData.patients);
+    const [patients, setPatients] = useState([]);
     const patientData = PatientExerciseData;
-    console.log("patientData", patientData);
+    const [loaded, setLoaded] = useState(false);
+
+    useEffect(() => {
+        const fetchPatients = async () => {
+
+            // Newly added to load Firestore data
+            const p = [];
+            db.collection("patients").get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    p.push(doc.data());
+                    console.log(`${doc.id} => ${doc.data()}`);
+                });
+            });
+
+            // const snapshot = await db.once("value");
+            // const value = snapshot.val();
+            // return value;
+            console.log('p', p);
+            return p;
+        };
+        fetchPatients().then((data) => {
+            // setPatients(Object.values(data));
+            console.log('data', data);
+            console.log('data length', data.length);
+            setPatients(data);
+        });
+    }, []);
+
+    useEffect(() => {
+        if (patients.length != 0) {
+            setLoaded(true);
+        }
+    }, [patients]);
+
+
+    const renderItems = () => {
+        return (
+            <div>
+                <AppBar position="static" className={classes.appBar}>
+                    <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
+                </AppBar>
+                <Container fixed>
+                    <Link to="/" className={classes.link}>
+                        <Button className={classes.blueButton} variant="outline-primary">Back</Button>
+                    </Link>
+                    <Typography variant="h4" className={classes.header}>Patient Dashboard</Typography>
+                    <div className={classes.accentDivider}></div>
+
+                    <Grid
+                        container
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                        spacing={1}
+                    >
+                        {console.log("patients", patients)}
+                        {console.log("patient 1", patients[0])}
+
+                        {patients.map((p, i) => {
+                            return (
+                                <Link to={{
+                                    pathname: "/PT/patient",
+                                    patientProps: { patientInfo: p }
+                                }}
+                                    className={classes.link}
+                                >
+                                    <div>
+                                        <Grid item className={classes.patientInfoCard} key={i}>
+                                            <Patient
+                                                name={p.name}
+                                                photo={p.photo}
+                                                profile={p.profile}
+                                            />
+                                        </Grid>
+                                    </div>
+                                </Link>)
+                        })
+                        }
+                    </Grid>
+                </Container>
+            </div>
+        );
+    };
+
+    const renderTable = () => {
+        return <div className={classes.window}>{renderItems()}</div>;
+    };
+
+    const renderLoading = () => {
+        return <h1>Loading...</h1>;
+    };
 
     return (
-        <div>
-            <AppBar position="static" className={classes.appBar}>
-                <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
-            </AppBar>
-            <Container fixed>
-                <Link to="/" className={classes.link}>
-                    <Button className={classes.blueButton} variant="outline-primary">Back</Button>
-                </Link>
-                <Typography variant="h4" className={classes.header}>Patient Dashboard</Typography>
-                <div className={classes.accentDivider}></div>
-
-                <Grid
-                    container
-                    direction="row"
-                    justify="center"
-                    alignItems="center"
-                    spacing={1}
-                >
-                    {patientData.map((p, i) => {
-                        return (
-                            <Link to={{
-                                pathname: "/PT/patient",
-                                patientProps: { patientInfo: p }
-                            }}
-                                className={classes.link}
-                            >
-                                <div>
-                                    <Grid item className={classes.patientInfoCard} key={i}>
-                                        <Patient
-                                            name={p.name}
-                                            photo={p.photo}
-                                            profile={p.profile}
-                                        />
-                                    </Grid>
-                                </div>
-                            </Link>)
-                    })
-                    }
-                </Grid>
-            </Container>
+        <div className={classes.window}>
+            {loaded ? renderTable() : renderLoading()}
         </div>
     );
-}
+};
 
 export default DoctorView;
 
