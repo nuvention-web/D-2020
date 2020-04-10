@@ -181,20 +181,52 @@ const IndividualPatientView = (props) => {
   //     }
   // }
 
-  // Submit new exercise to firebase
-  const addExercise = (setIndex) => {
-    console.log("Adding this exercise to firebase! :)", newExercise);
+
+
+  const getUpdatedSet = (setIndex) => {
+    // Generate new exercise
     var exerciseObjectData = {
       id: 0,
       name: newExercise,
-      reps: newReps,
-      duration: newDuration,
+      reps: parseInt(newReps),
+      duration: parseInt(newDuration),
       videoId: "MW2WG5l-fYE",
     };
     // var exerciseObjectData = findExercise(newExercise);
-    var exerciseListRef = db
-      .child("Vanessa Jones/sets/" + setIndex.toString() + "/exercise")
-      .push(exerciseObjectData);
+    console.log("Adding this exercise to firebase! :)", newExercise);
+
+    const currSet = patientData.sets;
+    (currSet[setIndex]).exercise.push(exerciseObjectData);
+    console.log("new currSet:", currSet);
+    return currSet;
+  }
+
+  // Submit new exercise to firebase
+  const addExercise = async (e, setIndex) => {
+    // For debugging purposes - pauses refresh on submit
+    // e.preventDefault();
+
+    const currSet = await getUpdatedSet(setIndex);
+    console.log("currSet:", currSet);
+
+    // Firestore reference
+    var patientRef = db.collection("patients").doc(patientIndex);
+
+    return patientRef.update({
+      sets: currSet
+    })
+      .then(function () {
+        console.log("Document successfully updated!");
+      })
+      .catch(function (error) {
+        // The document probably doesn't exist.
+        console.error("Error updating document: ", error);
+      });
+
+    // Old RTD update
+    // var exerciseListRef = db
+    //   .child("Vanessa Jones/sets/" + setIndex.toString() + "/exercise")
+    //   .push(exerciseObjectData);
   };
 
   // Repeat function from PatientExerciseMain
@@ -217,8 +249,6 @@ const IndividualPatientView = (props) => {
   };
 
   const renderItems = () => {
-    // For now, our patient is default to Anni Rogers
-    // const person = exerciseSets[2];
     const person = patientData;
 
     return (
@@ -233,6 +263,7 @@ const IndividualPatientView = (props) => {
           {person.sets.map((s, i) => {
             return (
               <div>
+                {/* {console.log("???", mySet)} */}
                 <Container className={classes.exerciseContainer} key={i}>
                   <Typography variant="h4" className={classes.header}>
                     {s.day} Exercises ({calculateTotalTime(s)} minutes)
@@ -302,8 +333,8 @@ const IndividualPatientView = (props) => {
                           className={classes.inputBox}
                           type="submit"
                           className={classes.blueButton}
-                          onClick={() => {
-                            addExercise(i);
+                          onClick={(e) => {
+                            addExercise(e, i);
                           }}
                         >
                           Add
