@@ -91,13 +91,16 @@ const DoctorView = () => {
             var p = [];
             db.collection("patients").get().then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
-                    p.push(doc.data());
+                    var d = doc.data();
+                    d.docId = doc.id;
+                    p.push(d);
                 });
+                console.log("p!",p);
                 setPatients(p);
             });
 
         };
-        
+
         fetchPatients();
     }, []);
 

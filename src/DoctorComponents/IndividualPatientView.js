@@ -99,9 +99,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const IndividualPatientView = (props) => {
-  // patientData stores the specific patient we are looking at
-  const [patientData, setPatientData] = useState("");
   const classes = useStyles();
+  // patientData stores the specific patient we are looking at
+  const [patientData, setPatientData] = useState([]);
   const [newExercise, setNewExercise] = useState("Calf Wall Stretch");
   const [newReps, setNewReps] = useState(1);
   const [newDuration, setNewDuration] = useState(5);
@@ -110,54 +110,67 @@ const IndividualPatientView = (props) => {
 
   // For loading data, taken from PatientExerciseMain
   // exerciseSets actually contains our entire json (all patients)
-  const [exerciseSets, setExerciseSets] = useState([]);
-  const [loaded, setLoaded] = useState(false); // Unsure if we need this one
+  const [exerciseSets, setExerciseSets] = useState([]); //delete later
+  const [loaded, setLoaded] = useState(false);
+  const [foundDID, setfoundDID] = useState(false);
 
-  // Loading data, taken from PatientExerciseMain
-  useEffect(() => {
-    const fetchPatients = async () => {
-      const snapshot = await db.once("value");
-      const value = snapshot.val();
-      console.log(value);
-      return value;
-    };
-    fetchPatients().then((data) => {
-      console.log(data);
-      setExerciseSets(Object.values(data));
-    });
-  }, []);
-
-  useEffect(() => {
-    console.log(exerciseSets);
-    if (exerciseSets.length != 0) {
-      setLoaded(true);
-    }
-  }, [exerciseSets]);
-  // End loading data
-
-  // Keeping track of which patient we are looking at
+  // Retrieve the docID from either prop or local storage if prop is unavailable (refresh)
   useEffect(() => {
     // If prop is undefined, retrieve id local storage, then access via Firebase
     if (typeof props.location.patientProps === "undefined") {
-      var cpi = localStorage.getItem("currPatient");
-
-      // Set patient data from Firebase
-      console.log("patient index fr local storage", patientIndex);
-      setPatientData(exerciseSets[patientIndex]);
-      console.log(
-        "patient data retrieved from local storage",
-        exerciseSets[patientIndex]
-      );
+      var pi = localStorage.getItem("currPatient");
+      setPatientIndex(pi);
     }
     // Use prop if available. Also store in local storage for future use
     else {
-      // setPatientData(props.location.patientProps.patientInfo);
-      localStorage.setItem("currPatient", patientData.id);
-      console.log("props", props.location.patientProps.patientInfo.id);
-      const pi = props.location.patientProps.patientInfo.id;
+      localStorage.setItem("currPatient", props.location.patientProps.patientInfo.docId);
+      console.log("props", props.location.patientProps.patientInfo);
+      const pi = props.location.patientProps.patientInfo.docId;
       setPatientIndex(pi);
     }
   }, []);
+
+  // To check that we have retrieved the docID (from storage or prop) so that Firestore retrieval works
+  useEffect(() => {
+    console.log("patientIndex", patientIndex);
+    if (patientIndex !== "") {
+      setfoundDID(true);
+    }
+  }, [patientIndex]);
+
+  // Use docID to retreive a specific patient's data from Firestore
+  useEffect(() => {
+
+    const fetchPatient = async () => {
+      console.log('fet patient', foundDID);
+      if (foundDID) {
+        // Newly added to load Firestore data
+        var patientRef = db.collection("patients").doc(patientIndex);
+        console.log(patientRef);
+
+        patientRef.get().then(function (doc) {
+          if (doc.exists) {
+            setPatientData(doc.data());
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }
+        }).catch(function (error) {
+          console.log("Error getting document:", error);
+        });
+      }
+    };
+    fetchPatient();
+  }, [foundDID]);
+  // last line refers to how this useEffect will rerun if value of foundDID changes
+
+  useEffect(() => {
+    console.log("patientData", patientData);
+    if (patientData.length != 0) {
+      setLoaded(true);
+    }
+  }, [patientData]);
+  // End loading data
 
   // const findExercise = (exercise) => {
   //     const exercises = Object.values(PresetExercisesData);
@@ -205,7 +218,8 @@ const IndividualPatientView = (props) => {
 
   const renderItems = () => {
     // For now, our patient is default to Anni Rogers
-    const person = exerciseSets[2];
+    // const person = exerciseSets[2];
+    const person = patientData;
 
     return (
       <div>
