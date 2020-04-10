@@ -116,21 +116,60 @@ const formatExerciseName = (n) => {
   return splitStr.join(" ");
 };
 
-const PatientExerciseMain = () => {
+const findPatient = (userId, patients) => {
+  for (var i = 0; i < patients.length; i++) {
+    if (patients[i].uid == userId) {
+      return patients[i]
+    }
+  }
+}
+
+const PatientExerciseMain = (props) => {
   const [exerciseSets, setExerciseSets] = useState([]);
   const [percentFinished, setPercentFinished] = useState(0);
   const [loaded, setLoaded] = useState(false);
+
+  //user id used to load correct user exercises (taken from landing page)
+  console.log('stored user', localStorage.getItem('currUser'))
+  const [user, setUser] = useState('');
   const classes = useStyles();
 
   // note: need to load data asynchronously first
   useEffect(() => {
+    
     const fetchPatients = async () => {
-      db.collection('patients')
+      //load firestore data
+      var p = [];
+      db.collection("patients").get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+              var d = doc.data();
+              d.uid = doc.id;
+              p.push(d);
+          });
+
+          setExerciseSets(p);
+      });
     };
-    fetchPatients().then((data) => {
-      setExerciseSets(Object.values(data));
-    });
+
+    fetchPatients();
   }, []);
+
+
+  useEffect(() => {
+
+    //handles when user hits back button on PatientExerciseTracking
+    if (user === '') {
+      var retrievedUser = localStorage.getItem('currUser');
+      setUser(retrievedUser);
+    }
+
+    //stores userId in local storage to be retrieved for case above ^^
+    else {
+      setUser(props.location.state.userId)
+      localStorage.setItem('currUser', props.location.state.userId)
+    }
+  }, []);
+
 
   useEffect(() => {
     if (exerciseSets.length != 0) {
@@ -139,7 +178,7 @@ const PatientExerciseMain = () => {
   }, [exerciseSets]);
 
   const renderItems = () => {
-    const person = exerciseSets[0];
+    const person = findPatient(user, exerciseSets);
 
     return (
       <div className={classes.window}>

@@ -123,7 +123,6 @@ const Landing = () => {
   //Access currentUser info from anywhere in the app using context
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
-  console.log(currUser);
 
   return (
     <div className={classes.background}>
@@ -142,7 +141,8 @@ const Landing = () => {
                 PT View
               </Button>
             </Link>
-            <Link to="/workout">
+            <Link to={{pathname: "/workout",
+                       state: {userId: currUser.uid}}}>
               <Button variant="light" className={classes.navButton}>
                 Patient View
               </Button>

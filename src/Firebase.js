@@ -3,6 +3,7 @@ import firebase from "firebase/app";
 import "firebase/database";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import "firebase/auth";
+import 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHfqEdRxQ-wMpv99CjH9lRUIGOd6h6EOs",
@@ -24,7 +25,11 @@ const uiConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database().ref();
+// Previously using RTD
+// const db = firebase.database().ref();
+
+// Using firestore
+var db = firebase.firestore();
 
 const SignIn = () => (
   <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
