@@ -90,7 +90,7 @@ const App = () => {
             ></Route>
             <Route
               path="/workout"
-              component={(props) => <PatientExerciseMain></PatientExerciseMain>}
+              component={(props) => <PatientExerciseMain {...props}></PatientExerciseMain>}
             ></Route>
             {/* <Route path="/users">
             <Users />
