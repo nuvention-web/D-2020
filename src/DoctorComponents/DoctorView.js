@@ -142,7 +142,7 @@ const DoctorView = () => {
                                             <Patient
                                                 name={p.name}
                                                 photo={p.photo}
-                                                profile={p.profile}
+                                                bio={p.bio}
                                             />
                                         </Grid>
                                     </div>
