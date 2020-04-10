@@ -125,9 +125,7 @@ const PatientExerciseMain = () => {
   // note: need to load data asynchronously first
   useEffect(() => {
     const fetchPatients = async () => {
-      const snapshot = await db.once("value");
-      const value = snapshot.val();
-      return value;
+      db.collection('patients')
     };
     fetchPatients().then((data) => {
       setExerciseSets(Object.values(data));
