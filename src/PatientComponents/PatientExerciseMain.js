@@ -160,7 +160,7 @@ const PatientExerciseMain = (props) => {
     //handles when user hits back button on PatientExerciseTracking
     if (user === '') {
       var retrievedUser = localStorage.getItem('currUser');
-      setUser(retrievedUser);
+      setUser(retrievedUser);  
     }
 
     //stores userId in local storage to be retrieved for case above ^^
