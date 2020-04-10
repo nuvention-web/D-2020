@@ -1,8 +1,9 @@
 import React from "react";
-import firebase from "firebase/app";
+// import firebase from "firebase/app";
 import "firebase/database";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import "firebase/auth";
+import * as firebase from 'firebase';
 import 'firebase/firestore';
 
 const firebaseConfig = {

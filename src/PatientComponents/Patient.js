@@ -17,7 +17,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Patient = ({name, photo, profile}) => {
+const Patient = ({name, photo, bio}) => {
   const classes = useStyles();
 
   return (
@@ -35,18 +35,18 @@ const Patient = ({name, photo, profile}) => {
             {name}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            {profile.bio}
+            {bio}
           </Typography>
         </CardContent>
       </CardActionArea>
-      <CardActions>
+      {/* <CardActions>
         <Button size="small" color="primary">
-          Visits
+          View Routine
         </Button>
         <Button size="small" color="primary">
-          Contact
+          Progress
         </Button>
-      </CardActions>
+      </CardActions> */}
     </Card>
   );
 }
