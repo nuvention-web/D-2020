@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Patient from "./Patient";
 import PatientExerciseData from "../ModelJSON/PatientExercises.json";
 import Container from "@material-ui/core/Container";
@@ -20,6 +20,8 @@ import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { db } from "../Firebase.js";
+
+import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -119,57 +121,57 @@ const formatExerciseName = (n) => {
 const findPatient = (userId, patients) => {
   for (var i = 0; i < patients.length; i++) {
     if (patients[i].uid == userId) {
-      return patients[i]
+      return patients[i];
     }
   }
-}
+};
 
 const PatientExerciseMain = (props) => {
   const [exerciseSets, setExerciseSets] = useState([]);
   const [percentFinished, setPercentFinished] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const currUser = useContext(UserContext).user;
 
   //user id used to load correct user exercises (taken from landing page)
-  console.log('stored user', localStorage.getItem('currUser'))
-  const [user, setUser] = useState('');
+  console.log(currUser);
+  console.log(props.location.state.userId);
+  const [user, setUser] = useState("");
   const classes = useStyles();
 
   // note: need to load data asynchronously first
   useEffect(() => {
-    
     const fetchPatients = async () => {
       //load firestore data
       var p = [];
-      db.collection("patients").get().then((querySnapshot) => {
+      db.collection("patients")
+        .get()
+        .then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-              var d = doc.data();
-              d.uid = doc.id;
-              p.push(d);
+            var d = doc.data();
+            d.uid = doc.id;
+            p.push(d);
           });
 
           setExerciseSets(p);
-      });
+        });
     };
 
     fetchPatients();
   }, []);
 
-
   useEffect(() => {
-
+    if (props.location.state.userId) {
+      setUser(props.location.state.userId);
+      localStorage.setItem("currUser", props.location.state.userId);
+    }
     //handles when user hits back button on PatientExerciseTracking
-    if (user === '') {
-      var retrievedUser = localStorage.getItem('currUser');
-      setUser(retrievedUser);  
+    else {
+      var retrievedUser = localStorage.getItem("currUser");
+      setUser(retrievedUser);
     }
 
     //stores userId in local storage to be retrieved for case above ^^
-    else {
-      setUser(props.location.state.userId)
-      localStorage.setItem('currUser', props.location.state.userId)
-    }
   }, []);
-
 
   useEffect(() => {
     if (exerciseSets.length != 0) {
