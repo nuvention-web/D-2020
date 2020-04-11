@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       color: "#9DB4FF !important",
       backgroundColor: "inherit",
-    }
+    },
   },
   logInButton: {
     borderRadius: "11px",
@@ -123,7 +123,7 @@ const Landing = () => {
   //Access currentUser info from anywhere in the app using context
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
-
+  console.log(currUser);
   return (
     <div className={classes.background}>
       {/* <h1>hi</h1> */}
@@ -141,8 +141,9 @@ const Landing = () => {
                 PT View
               </Button>
             </Link>
-            <Link to={{pathname: "/workout",
-                       state: {userId: currUser.uid}}}>
+            <Link
+              to={{ pathname: "/workout", state: { userId: currUser.uid } }}
+            >
               <Button variant="light" className={classes.navButton}>
                 Patient View
               </Button>
