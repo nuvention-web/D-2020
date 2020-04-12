@@ -1,5 +1,6 @@
-import React, { useState, useContext } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext, useState } from "react";
+import { UserContext } from "../contexts/UserContext";
+import { db, storageRef } from "../Firebase";
 import {
   Button,
   FormControl,
@@ -9,24 +10,25 @@ import {
   FormHelperText,
   TextField,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
-import { db, storageRef } from "./Firebase";
-import { UserContext } from "./contexts/UserContext";
+import { useHistory, useLocation } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme) => ({
-  form: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: "25ch",
-      textAlign: "center",
-      justifyContent: "center",
+const ProfileEdit = () => {
+  const useStyles = makeStyles((theme) => ({
+    form: {
+      "& > *": {
+        margin: theme.spacing(1),
+        width: "25ch",
+        textAlign: "center",
+        justifyContent: "center",
+      },
     },
-  },
-}));
+    image: {
+      width: "25%",
+      height: "25%",
+    },
+  }));
 
-const NewUserForm = () => {
-  const classes = useStyles();
-  const history = useHistory();
   const currUser = useContext(UserContext).user;
   const [photo, setPhoto] = useState();
   const [userInfo, setUserInfo] = useState({
@@ -34,6 +36,10 @@ const NewUserForm = () => {
     name: "",
     bio: "",
   });
+  const history = useHistory();
+  const location = useLocation();
+  const classes = useStyles();
+  const preType = localStorage.getItem("type");
 
   const setUserField = (field, data) => {
     setUserInfo({ ...userInfo, [field]: data });
@@ -66,10 +72,9 @@ const NewUserForm = () => {
         console.error("Error writing document: ", error);
       });
   };
-
   return (
     <div>
-      <h1>Welcome to our website! Let's get you started!</h1>
+      <h1>Edit your Profile!</h1>
 
       <form
         className={classes.form}
@@ -83,7 +88,7 @@ const NewUserForm = () => {
             <Select
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
-              value={userInfo.type}
+              value={userInfo.type !== "" ? userInfo.type : preType}
               onChange={(e) => setUserField("type", e.target.value)}
               label="Type"
             >
@@ -100,7 +105,9 @@ const NewUserForm = () => {
           <TextField
             id="standard-basic"
             label="Name"
-            value={userInfo.name}
+            value={
+              userInfo.name !== "" ? userInfo.name : location.userProfile.name
+            }
             onChange={(e) => setUserField("name", e.target.value)}
           />
         </div>
@@ -109,7 +116,9 @@ const NewUserForm = () => {
             id="outlined-multiline-static"
             label="Multiline"
             multiline
-            value={userInfo.bio}
+            value={
+              userInfo.bio !== "" ? userInfo.bio : location.userProfile.bio
+            }
             onChange={(e) => setUserField("bio", e.target.value)}
             rows={4}
             defaultValue="Default Value"
@@ -134,4 +143,4 @@ const NewUserForm = () => {
   );
 };
 
-export default NewUserForm;
+export default ProfileEdit;

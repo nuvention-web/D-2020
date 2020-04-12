@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   Container,
-  AppBar,
   Typography,
   Divider,
   CircularProgress,
@@ -13,18 +12,6 @@ import PresetExercisesData from "../ModelJSON/PresetExercises.json";
 import { db } from "../Firebase.js";
 
 const useStyles = makeStyles((theme) => ({
-  appBar: {
-    backgroundColor: "transparent",
-    boxShadow: "none",
-    height: 100,
-    display: "inline-block",
-  },
-  tendonLogo: {
-    width: 150,
-    float: "left",
-    display: "inline-block",
-    margin: "40px 30px",
-  },
   exercises: {
     marginTop: 15,
     minWidth: 250,
@@ -352,9 +339,6 @@ const IndividualPatientView = (props) => {
   const renderTable = () => {
     return (
       <div>
-        <AppBar position="static" className={classes.appBar}>
-          <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
-        </AppBar>
         <Container>
           <Link to="/PT" className={classes.link}>
             <Button className={classes.blueButton} variant="outline-primary">

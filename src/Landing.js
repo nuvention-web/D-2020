@@ -1,26 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button } from "@material-ui/core";
-import AppBar from "@material-ui/core/AppBar";
 import { makeStyles } from "@material-ui/core/styles";
 import landing_background from "./images/background.png";
-import Toolbar from "@material-ui/core/Toolbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsAltH,
   faLongArrowAltRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
 import "./App.css";
-import { SignIn, LogOut } from "./Firebase";
 import { UserContext } from "./contexts/UserContext";
 import { db } from "./Firebase";
 import { useHistory } from "react-router-dom";
+import NavBar from "./NavBar";
 
 const useStyles = makeStyles((theme) => ({
   background: {
     backgroundImage: `url(${landing_background})`,
     height: "100vh",
     backgroundRepeat: "no-repeat",
+    marginTop: "-17vh",
   },
   appBar: {
     backgroundColor: "transparent",
@@ -66,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     background: "#9DB4FF",
   },
   landingLeftText: {
-    marginTop: "15vh",
+    marginTop: "20vh",
     marginLeft: "3vw",
     color: "#3358C4",
     fontSize: "64px",
@@ -187,54 +184,6 @@ const Landing = () => {
   return (
     <div>
       <div className={classes.background}>
-        <nav>
-          <AppBar position="static" className={classes.appBar}>
-            <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
-            <Toolbar className={classes.navBar}>
-              <Link to="/">
-                <Button variant="light" className={classes.navButton}>
-                  Landing Page
-                </Button>
-              </Link>
-              <Link to="/PT">
-                <Button variant="light" className={classes.navButton}>
-                  PT View
-                </Button>
-              </Link>
-              <Link
-                to={{ pathname: "/workout", state: { userId: currUser.uid } }}
-              >
-                <Button variant="light" className={classes.navButton}>
-                  Patient View
-                </Button>
-              </Link>
-              {Object.entries(currUser).length >= 1 ? (
-                <Link to={{ pathname: "/profile" }}>
-                  <Button variant="light" className={classes.navButton}>
-                    User Profile
-                  </Button>
-                </Link>
-              ) : null}
-              <div className={classes.space}></div>
-              <div className={classes.rightButtons}>
-                {Object.entries(currUser).length < 1 ? (
-                  <SignIn />
-                ) : (
-                  <Button
-                    variant="light"
-                    className={classes.registerButton}
-                    onClick={() => {
-                      LogOut();
-                      setCurrUser({});
-                    }}
-                  >
-                    Log Out
-                  </Button>
-                )}
-              </div>
-            </Toolbar>
-          </AppBar>
-        </nav>
         <div className={classes.landingLeftText}>
           <p>
             PT <FontAwesomeIcon icon={faArrowsAltH} color="#9DB4FF" />{" "}
