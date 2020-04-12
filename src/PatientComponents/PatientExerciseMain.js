@@ -1,26 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import Patient from "./Patient";
-import PatientExerciseData from "../ModelJSON/PatientExercises.json";
-import Container from "@material-ui/core/Container";
-import { render } from "@testing-library/react";
 import { makeStyles } from "@material-ui/core/styles";
-// import { Button } from '@material-ui/core';
-import Checkbox from "@material-ui/core/Checkbox";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import YouTube from "react-youtube";
-import { withStyles } from "@material-ui/core";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import ExerciseTracking from "./PatientExerciseTracking";
-import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { Divider, Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import { Row, Col, Button } from "react-bootstrap";
 import { db } from "../Firebase.js";
-
 import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -174,7 +157,7 @@ const PatientExerciseMain = (props) => {
   }, []);
 
   useEffect(() => {
-    if (exerciseSets.length != 0) {
+    if (exerciseSets.length !== 0) {
       setLoaded(true);
     }
   }, [exerciseSets]);
@@ -227,10 +210,12 @@ const PatientExerciseMain = (props) => {
           <img
             src={"/img/StretchGraphic2.png"}
             className={classes.stretchGraphic2}
+            alt=""
           />
           <img
             src={"/img/StretchGraphic1.png"}
             className={classes.stretchGraphic1}
+            alt=""
           />
           <Typography className={classes.quote}>
             "Movement is a medicine for creating change <br />
