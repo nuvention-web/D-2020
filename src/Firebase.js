@@ -3,8 +3,9 @@ import React from "react";
 import "firebase/database";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import "firebase/auth";
-import * as firebase from 'firebase';
-import 'firebase/firestore';
+import * as firebase from "firebase";
+import "firebase/firestore";
+import "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHfqEdRxQ-wMpv99CjH9lRUIGOd6h6EOs",
@@ -30,11 +31,12 @@ firebase.initializeApp(firebaseConfig);
 // const db = firebase.database().ref();
 
 // Using firestore
-var db = firebase.firestore();
+const db = firebase.firestore();
+const storageRef = firebase.storage().ref();
 
 const SignIn = () => (
   <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
 );
 const LogOut = () => firebase.auth().signOut();
 
-export { db, SignIn, LogOut };
+export { db, SignIn, LogOut, storageRef };

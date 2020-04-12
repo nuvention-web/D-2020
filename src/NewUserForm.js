@@ -10,7 +10,7 @@ import {
   FormHelperText,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
-import { db } from "./Firebase";
+import { db, storageRef } from "./Firebase";
 import { UserContext } from "./contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -28,7 +28,7 @@ const NewUserForm = () => {
   const classes = useStyles();
   const history = useHistory();
   const currUser = useContext(UserContext).user;
-
+  const [photo, setPhoto] = useState();
   const [userInfo, setUserInfo] = useState({
     type: "",
     name: "",
@@ -39,18 +39,28 @@ const NewUserForm = () => {
     setUserInfo({ ...userInfo, [field]: data });
   };
 
-  const handleSubmit = (e) => {
+  const onPhotoChange = (e) => {
+    setPhoto(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { type, name, bio } = userInfo;
     const Ref = db.collection(type);
+    const imageRef = storageRef.child(`images/${photo.name}`);
+    const snapshot = await imageRef.put(photo);
+    const downloadUrl = await snapshot.ref.getDownloadURL();
+
     Ref.doc(currUser.uid)
       .set({
+        ...userInfo,
         name: name,
         bio: bio,
+        img: downloadUrl,
       })
       .then(function () {
         console.log("Document successfully written!");
-        history.push("/");
+        history.push("/profile");
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
@@ -106,6 +116,16 @@ const NewUserForm = () => {
             variant="outlined"
           />
         </div>
+        <p>Add a photo of you:</p>
+        <input
+          fullWidth
+          margin="normal"
+          variant="outlined"
+          type="file"
+          className="input-button"
+          accept="image/*"
+          onChange={onPhotoChange}
+        />
         <Button variant="contained" color="primary" type="submit">
           Submit
         </Button>
