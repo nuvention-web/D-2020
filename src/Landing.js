@@ -171,6 +171,8 @@ const Landing = () => {
     if (Object.entries(currUser).length >= 1) {
       console.log("is PT: ", isPT, "is Patient: ", isPatient);
       if (isPT != null && isPatient != null) {
+        if (isPT === true) localStorage.setItem("type", "therapists");
+        if (isPatient === true) localStorage.setItem("type", "patients");
         const isNewUser = !isPT && !isPatient;
         console.log("is New User?: ", isNewUser);
         // If the new user was set
@@ -206,9 +208,16 @@ const Landing = () => {
                   Patient View
                 </Button>
               </Link>
+              {Object.entries(currUser).length >= 1 ? (
+                <Link to={{ pathname: "/profile" }}>
+                  <Button variant="light" className={classes.navButton}>
+                    User Profile
+                  </Button>
+                </Link>
+              ) : null}
               <div className={classes.space}></div>
               <div className={classes.rightButtons}>
-                {Object.entries(currUser) < 1 ? (
+                {Object.entries(currUser).length < 1 ? (
                   <SignIn />
                 ) : (
                   <Button

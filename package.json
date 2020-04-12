@@ -24,7 +24,8 @@
     "react-scripts": "3.4.0",
     "react-sidebar": "^3.0.2",
     "react-youtube": "^7.9.0",
-    "recharts": "^2.0.0-beta.1"
+    "recharts": "^2.0.0-beta.1",
+    "shortid": "^2.2.15"
   },
   "scripts": {
     "start": "react-scripts start",

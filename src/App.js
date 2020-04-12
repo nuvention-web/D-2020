@@ -108,7 +108,10 @@ const App = () => {
               path="/newUser"
               component={(props) => <NewUserForm />}
             ></Route>
-            <Route path="/profile" component={(props) => <Profile />}></Route>
+            <Route
+              path="/profile"
+              component={(...props) => <Profile />}
+            ></Route>
           </Switch>
         </div>
       </Router>
