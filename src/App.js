@@ -1,18 +1,15 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.css";
-import PatientView from "./PatientComponents/PatientView";
 import DoctorView from "./DoctorComponents/DoctorView";
 import ExerciseTracking from "./PatientComponents/PatientExerciseTracking";
 import PatientExerciseMain from "./PatientComponents/PatientExerciseMain";
 import IndividualPatientView from "./DoctorComponents/IndividualPatientView";
 import Landing from "./Landing";
 import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Button from "react-bootstrap/Button";
-import Toolbar from "@material-ui/core/Toolbar";
 import UserProvider from "./contexts/UserContext";
-import firebase from "firebase/app";
+import Profile from "./Profile";
+import NewUserForm from "./NewUserForm";
 
 // Add login/auth logic here, add react routing to correct pages
 // React routing flow
@@ -90,7 +87,9 @@ const App = () => {
             ></Route>
             <Route
               path="/workout"
-              component={(props) => <PatientExerciseMain {...props}></PatientExerciseMain>}
+              component={(props) => (
+                <PatientExerciseMain {...props}></PatientExerciseMain>
+              )}
             ></Route>
             {/* <Route path="/users">
             <Users />
@@ -105,6 +104,11 @@ const App = () => {
               path="/PT"
               component={(props) => <DoctorView></DoctorView>}
             ></Route>
+            <Route
+              path="/newUser"
+              component={(props) => <NewUserForm />}
+            ></Route>
+            <Route path="/profile" component={(props) => <Profile />}></Route>
           </Switch>
         </div>
       </Router>
