@@ -99,9 +99,6 @@ const DoctorView = () => {
   const renderItems = () => {
     return (
       <div>
-        <AppBar position="static" className={classes.appBar}>
-          <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
-        </AppBar>
         <Container fixed>
           <Link to="/" className={classes.link}>
             <Button className={classes.blueButton} variant="outline-primary">
