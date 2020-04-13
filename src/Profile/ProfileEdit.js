@@ -53,13 +53,17 @@ const ProfileEdit = () => {
     e.preventDefault();
 
     let { type, name, bio } = userInfo;
-    if (type === "") type = preType;
+    if (type === "") type = location.userProfile.type;
     if (name === "") name = location.userProfile.name;
     if (bio == "") bio = location.userProfile.bio;
     console.log("type: ", type, "name: ", name, "bio", bio);
     const Ref = db.collection(type);
     // If photo was selected
     if (photo) {
+      const previmgRef = storageRef.child(
+        `images/${location.userProfile.img_name}`
+      );
+      await previmgRef.delete();
       const imageRef = storageRef.child(`images/${photo.name}`);
       const snapshot = await imageRef.put(photo);
       const downloadUrl = await snapshot.ref.getDownloadURL();
@@ -67,9 +71,11 @@ const ProfileEdit = () => {
       Ref.doc(currUser.uid)
         .set({
           ...userInfo,
+          type: type,
           name: name,
           bio: bio,
           img: downloadUrl,
+          img_name: photo.name,
         })
         .then(function () {
           console.log("Document successfully written!");
@@ -85,6 +91,7 @@ const ProfileEdit = () => {
           name: name,
           bio: bio,
           img: location.userProfile.img,
+          img_name: location.userProfile.img_name,
         })
         .then(function () {
           console.log("Document successfully written!");
