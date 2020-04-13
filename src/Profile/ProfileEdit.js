@@ -51,26 +51,49 @@ const ProfileEdit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { type, name, bio } = userInfo;
-    const Ref = db.collection(type);
-    const imageRef = storageRef.child(`images/${photo.name}`);
-    const snapshot = await imageRef.put(photo);
-    const downloadUrl = await snapshot.ref.getDownloadURL();
 
-    Ref.doc(currUser.uid)
-      .set({
-        ...userInfo,
-        name: name,
-        bio: bio,
-        img: downloadUrl,
-      })
-      .then(function () {
-        console.log("Document successfully written!");
-        history.push("/profile");
-      })
-      .catch(function (error) {
-        console.error("Error writing document: ", error);
-      });
+    let { type, name, bio } = userInfo;
+    if (type === "") type = preType;
+    if (name === "") name = location.userProfile.name;
+    if (bio == "") bio = location.userProfile.bio;
+    console.log("type: ", type, "name: ", name, "bio", bio);
+    const Ref = db.collection(type);
+    // If photo was selected
+    if (photo) {
+      const imageRef = storageRef.child(`images/${photo.name}`);
+      const snapshot = await imageRef.put(photo);
+      const downloadUrl = await snapshot.ref.getDownloadURL();
+
+      Ref.doc(currUser.uid)
+        .set({
+          ...userInfo,
+          name: name,
+          bio: bio,
+          img: downloadUrl,
+        })
+        .then(function () {
+          console.log("Document successfully written!");
+          history.push("/profile");
+        })
+        .catch(function (error) {
+          console.error("Error writing document: ", error);
+        });
+    } else {
+      Ref.doc(currUser.uid)
+        .set({
+          ...userInfo,
+          name: name,
+          bio: bio,
+          img: location.userProfile.img,
+        })
+        .then(function () {
+          console.log("Document successfully written!");
+          history.push("/profile");
+        })
+        .catch(function (error) {
+          console.error("Error writing document: ", error);
+        });
+    }
   };
   return (
     <div>
