@@ -145,19 +145,49 @@ const IndividualPatientView = (props) => {
       console.log('fet patient', foundDID);
       if (foundDID) {
         // Newly added to load Firestore data
-        var patientRef = db.collection("patients").doc(patientIndex);
-        console.log(patientRef);
+        var patientRef = db.collection("patients").doc(patientIndex).collection("exerciseset");
 
-        patientRef.get().then(function (doc) {
-          if (doc.exists) {
-            setPatientData(doc.data());
-          } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-          }
-        }).catch(function (error) {
-          console.log("Error getting document:", error);
+        // Newly added to load Firestore data
+        var fullset = [];
+        var setcount = 0;
+        patientRef.get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            console.log(doc.id, " => ", doc.data());
+            var oneset = {};
+
+            // Nested inner
+            patientRef.doc(doc.id).collection("exercise").get().then((querySnapshot) => {
+              var ex = [];
+              querySnapshot.forEach((doc) => {
+                console.log("each exercise:", doc.id, " => ", doc.data());
+                ex.push(doc.data());
+              });
+              oneset.exercises = ex;
+              oneset.day = doc.data().day;
+            });
+            // End inner
+            setcount += 1;
+            fullset.push(oneset);
+
+
+
+
+          });
+          console.log("fullset!", fullset);
+          setPatientData(fullset);
         });
+
+        // Old
+        // patientRef.get().then(function (doc) {
+        //   if (doc.exists) {
+        //     setPatientData(doc.data());
+        //   } else {
+        //     // doc.data() will be undefined in this case
+        //     console.log("No such document!");
+        //   }
+        // }).catch(function (error) {
+        //   console.log("Error getting document:", error);
+        // });
       }
     };
     fetchPatient();
@@ -232,7 +262,8 @@ const IndividualPatientView = (props) => {
   // Repeat function from PatientExerciseMain
   const calculateTotalTime = (s) => {
     var t = 0;
-    for (const [i, entry] of Object.entries(s.exercise)) {
+    console.log('len', s.exercises);
+    for (const [i, entry] of Object.entries(s.exercises)) {
       t += entry.duration;
     }
     return t;
@@ -260,13 +291,17 @@ const IndividualPatientView = (props) => {
             </Typography>
             <div className={classes.accentDivider}></div>
           </Container>
-          {person.sets.map((s, i) => {
+          {patientData.map((s, i) => {
             return (
               <div>
-                {/* {console.log("???", mySet)} */}
+                {console.log("???", s)}
                 <Container className={classes.exerciseContainer} key={i}>
                   <Typography variant="h4" className={classes.header}>
-                    {s.day} Exercises ({calculateTotalTime(s)} minutes)
+                    {s.day} Exercises 
+                    {console.log("day", s.day)}
+                    {console.log("exercises", s.exercises)}
+
+                    {/* ({calculateTotalTime(s)} minutes) */}
                   </Typography>
                   <Row>
                     <Col>Exercise</Col>
@@ -275,7 +310,7 @@ const IndividualPatientView = (props) => {
                     <Col></Col>
                   </Row>
                   <Divider />
-                  {Object.values(s.exercise).map((ex, k) => {
+                  {/* {Object.values(s.exercises).map((ex, k) => {
                     return (
                       <div>
                         <Row key={k}>
@@ -286,7 +321,7 @@ const IndividualPatientView = (props) => {
                         </Row>
                       </div>
                     );
-                  })}
+                  })} */}
                   <Form>
                     <br />
                     <Row>
