@@ -1,38 +1,17 @@
 import React, { useState, useEffect } from "react";
-import Patient from "../PatientComponents/Patient";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import PatientData from "../ModelJSON/Patients.json";
-import { render } from "@testing-library/react";
-import AppBar from "@material-ui/core/AppBar";
-import Typography from "@material-ui/core/Typography";
+import {
+  Container,
+  Typography,
+  Divider,
+  CircularProgress,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Divider from "@material-ui/core/Divider";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import TextField from "@material-ui/core/TextField";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { Button, Form, Row, Col } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import PresetExercisesData from "../ModelJSON/PresetExercises.json";
-// import PatientExerciseData from '../ModelJSON/PatientExercises.json';
 import { db } from "../Firebase.js";
 
 const useStyles = makeStyles((theme) => ({
-  appBar: {
-    backgroundColor: "transparent",
-    boxShadow: "none",
-    height: 100,
-    display: "inline-block",
-  },
-  tendonLogo: {
-    width: 150,
-    float: "left",
-    display: "inline-block",
-    margin: "40px 30px",
-  },
   exercises: {
     marginTop: 15,
     minWidth: 250,
@@ -74,10 +53,10 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     border: "none",
     height: "calc(1.5em + .75rem + 2px)",
-    '&:hover': {
-      color: 'white',
+    "&:hover": {
+      color: "white",
       backgroundColor: "#3358C4",
-    }
+    },
   },
   accentDivider: {
     content: "",
@@ -110,7 +89,7 @@ const IndividualPatientView = (props) => {
 
   // For loading data, taken from PatientExerciseMain
   // exerciseSets actually contains our entire json (all patients)
-  const [exerciseSets, setExerciseSets] = useState([]); //delete later
+  const [exerciseSets] = useState([]); //delete later
   const [loaded, setLoaded] = useState(false);
   const [foundDID, setfoundDID] = useState(false);
 
@@ -123,7 +102,10 @@ const IndividualPatientView = (props) => {
     }
     // Use prop if available. Also store in local storage for future use
     else {
-      localStorage.setItem("currPatient", props.location.patientProps.patientInfo.docId);
+      localStorage.setItem(
+        "currPatient",
+        props.location.patientProps.patientInfo.docId
+      );
       console.log("props", props.location.patientProps.patientInfo);
       const pi = props.location.patientProps.patientInfo.docId;
       setPatientIndex(pi);
@@ -140,11 +122,11 @@ const IndividualPatientView = (props) => {
 
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
-
     const fetchPatient = async () => {
-      console.log('fet patient', foundDID);
+      console.log("fet patient", foundDID);
       if (foundDID) {
         // Newly added to load Firestore data
+<<<<<<< HEAD
         var patientRef = db.collection("patients").doc(patientIndex).collection("exerciseset");
 
         // Newly added to load Firestore data
@@ -188,6 +170,24 @@ const IndividualPatientView = (props) => {
         // }).catch(function (error) {
         //   console.log("Error getting document:", error);
         // });
+=======
+        var patientRef = db.collection("patients").doc(patientIndex);
+        console.log(patientRef);
+
+        patientRef
+          .get()
+          .then(function (doc) {
+            if (doc.exists) {
+              setPatientData(doc.data());
+            } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
+            }
+          })
+          .catch(function (error) {
+            console.log("Error getting document:", error);
+          });
+>>>>>>> 82c2a243dd38f8e3385fd2ade60af7eeb27dd5db
       }
     };
     fetchPatient();
@@ -196,7 +196,7 @@ const IndividualPatientView = (props) => {
 
   useEffect(() => {
     console.log("patientData", patientData);
-    if (patientData.length != 0) {
+    if (patientData.length !== 0) {
       setLoaded(true);
     }
   }, [patientData]);
@@ -211,8 +211,6 @@ const IndividualPatientView = (props) => {
   //     }
   // }
 
-
-
   const getUpdatedSet = (setIndex) => {
     // Generate new exercise
     var exerciseObjectData = {
@@ -225,11 +223,12 @@ const IndividualPatientView = (props) => {
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
 
-    const currSet = patientData.sets;
-    (currSet[setIndex]).exercise.push(exerciseObjectData);
+    let currSet = patientData.sets;
+    currSet = [...currSet[setIndex].exercise, exerciseObjectData];
+    currSet[setIndex].exercise.push(exerciseObjectData);
     console.log("new currSet:", currSet);
     return currSet;
-  }
+  };
 
   // Submit new exercise to firebase
   const addExercise = async (e, setIndex) => {
@@ -242,9 +241,10 @@ const IndividualPatientView = (props) => {
     // Firestore reference
     var patientRef = db.collection("patients").doc(patientIndex);
 
-    return patientRef.update({
-      sets: currSet
-    })
+    return patientRef
+      .update({
+        sets: currSet,
+      })
       .then(function () {
         console.log("Document successfully updated!");
       })
@@ -390,9 +390,6 @@ const IndividualPatientView = (props) => {
   const renderTable = () => {
     return (
       <div>
-        <AppBar position="static" className={classes.appBar}>
-          <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
-        </AppBar>
         <Container>
           <Link to="/PT" className={classes.link}>
             <Button className={classes.blueButton} variant="outline-primary">

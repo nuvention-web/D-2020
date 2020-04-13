@@ -1,19 +1,17 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.css";
-import PatientView from "./PatientComponents/PatientView";
 import DoctorView from "./DoctorComponents/DoctorView";
 import ExerciseTracking from "./PatientComponents/PatientExerciseTracking";
 import PatientExerciseMain from "./PatientComponents/PatientExerciseMain";
 import IndividualPatientView from "./DoctorComponents/IndividualPatientView";
 import Landing from "./Landing";
 import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Button from "react-bootstrap/Button";
-import Toolbar from "@material-ui/core/Toolbar";
 import UserProvider from "./contexts/UserContext";
-import firebase from "firebase/app";
-
+import Profile from "./Profile/Profile";
+import ProfileEdit from "./Profile/ProfileEdit";
+import NewUserForm from "./NewUserForm";
+import NavBar from "./NavBar";
 // Add login/auth logic here, add react routing to correct pages
 // React routing flow
 // Landing Page (doctor signin and patient signin)
@@ -23,49 +21,8 @@ import firebase from "firebase/app";
 // DoctorView
 
 const useStyles = makeStyles((theme) => ({
-  appBar: {
-    backgroundColor: "white",
-    boxShadow: "none",
-    height: 100,
-    display: "inline-block",
-  },
-  appBackground: {
-    backgroundColor: "#FEFEFE",
-    height: "100vh",
-  },
-  tendonLogo: {
-    width: 150,
-    float: "left",
-    display: "inline-block",
-    margin: "25px 30px",
-  },
-  navBar: {
-    float: "right",
-    width: "70vh",
-    justifyContent: "center",
-    margin: "20px 0px",
-  },
-  navButton: {
-    display: "inline-block",
-    margin: "0px 10px",
-    fontSize: 14,
-    backgroundColor: "inherit",
-    border: "none",
-    // fontFamily: "San Francisco",
-    "&:hover": {
-      color: "#9DB4FF",
-      backgroundColor: "inherit",
-    },
-  },
-  accentDivider: {
-    content: "",
-    display: "block",
-    width: "6.25rem",
-    height: ".325rem",
-    marginTop: "1.5rem",
-    background: "#9DB4FF",
-  },
   window: {
+    marginTop: '5%',
     height: "100%",
   },
 }));
@@ -76,10 +33,11 @@ const App = () => {
   return (
     <UserProvider>
       <Router>
+        <NavBar />
+
         <div className={classes.window}>
           {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
-
           <Switch>
             <Route exact path="/" component={(props) => <Landing />}></Route>
             <Route
@@ -90,7 +48,9 @@ const App = () => {
             ></Route>
             <Route
               path="/workout"
-              component={(props) => <PatientExerciseMain {...props}></PatientExerciseMain>}
+              component={(props) => (
+                <PatientExerciseMain {...props}></PatientExerciseMain>
+              )}
             ></Route>
             {/* <Route path="/users">
             <Users />
@@ -104,6 +64,18 @@ const App = () => {
             <Route
               path="/PT"
               component={(props) => <DoctorView></DoctorView>}
+            ></Route>
+            <Route
+              path="/newUser"
+              component={(props) => <NewUserForm />}
+            ></Route>
+            <Route
+              path="/profile/edit"
+              component={(...props) => <ProfileEdit />}
+            ></Route>
+            <Route
+              path="/profile"
+              component={(...props) => <Profile />}
             ></Route>
           </Switch>
         </div>

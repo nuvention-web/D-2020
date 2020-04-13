@@ -1,24 +1,24 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button } from "@material-ui/core";
-import AppBar from "@material-ui/core/AppBar";
 import { makeStyles } from "@material-ui/core/styles";
 import landing_background from "./images/background.png";
-import Toolbar from "@material-ui/core/Toolbar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsAltH,
   faLongArrowAltRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "./App.css";
-import { SignIn, LogOut } from "./Firebase";
 import { UserContext } from "./contexts/UserContext";
+import { db } from "./Firebase";
+import { useHistory } from "react-router-dom";
+import NavBar from "./NavBar";
 
 const useStyles = makeStyles((theme) => ({
   background: {
     backgroundImage: `url(${landing_background})`,
     height: "100vh",
     backgroundRepeat: "no-repeat",
+    marginTop: "-8vh",
+    paddingTop: "2vh"
   },
   appBar: {
     backgroundColor: "transparent",
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     background: "#9DB4FF",
   },
   landingLeftText: {
-    marginTop: "15vh",
+    marginTop: "20vh",
     marginLeft: "3vw",
     color: "#3358C4",
     fontSize: "64px",
@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       color: "#9DB4FF !important",
       backgroundColor: "inherit",
-    }
+    },
   },
   logInButton: {
     borderRadius: "11px",
@@ -123,65 +123,82 @@ const Landing = () => {
   //Access currentUser info from anywhere in the app using context
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
+  let [isPatient, setIsPatient] = useState(null);
+  let [isPT, setIsPT] = useState(null);
+  const history = useHistory();
+
+  // Check if user is patient
+  useEffect(() => {
+    const patientRef = db.collection("patients");
+    if (Object.entries(currUser).length >= 1) {
+      console.log("currUser:", currUser);
+      // Look up patient
+      patientRef
+        .doc(currUser.uid)
+        .get()
+        .then(function (doc) {
+          // If the user is already registered as patient
+          doc.exists ? setIsPatient(true) : setIsPatient(false);
+        })
+        .catch(function (error) {
+          console.log("Error getting document:", error);
+        });
+    }
+  });
+
+  // Check if user is PT
+  useEffect(() => {
+    const PTRef = db.collection("therapists");
+
+    if (Object.entries(currUser).length >= 1) {
+      // Look up PT
+      PTRef.doc(currUser.uid)
+        .get()
+        .then(function (doc) {
+          //If the user is already registered as PT
+          doc.exists ? setIsPT(true) : setIsPT(false);
+        })
+        .catch(function (error) {
+          console.log("Error getting document:", error);
+        });
+    }
+  });
+
+  // Check if user is new user. If so, send them to newUser page.
+  useEffect(() => {
+    if (Object.entries(currUser).length >= 1) {
+      console.log("is PT: ", isPT, "is Patient: ", isPatient);
+      if (isPT != null && isPatient != null) {
+        if (isPT === true) localStorage.setItem("type", "therapists");
+        if (isPatient === true) localStorage.setItem("type", "patients");
+        const isNewUser = !isPT && !isPatient;
+        console.log("is New User?: ", isNewUser);
+        // If the new user was set
+        // Initial login
+        if (isNewUser === true) {
+          history.push("/newUser");
+        }
+      }
+    }
+  }, [isPT, isPatient]);
 
   return (
-    <div className={classes.background}>
-      {/* <h1>hi</h1> */}
-      <nav>
-        <AppBar position="static" className={classes.appBar}>
-          <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
-          <Toolbar className={classes.navBar}>
-            <Link to="/">
-              <Button variant="light" className={classes.navButton}>
-                Landing Page
-              </Button>
-            </Link>
-            <Link to="/PT">
-              <Button variant="light" className={classes.navButton}>
-                PT View
-              </Button>
-            </Link>
-            <Link to={{pathname: "/workout",
-                       state: {userId: currUser.uid}}}>
-              <Button variant="light" className={classes.navButton}>
-                Patient View
-              </Button>
-            </Link>
-            <div className={classes.space}></div>
-            <div className={classes.rightButtons}>
-              {Object.entries(currUser) < 1 ? (
-                <SignIn />
-              ) : (
-                <Button
-                  variant="light"
-                  className={classes.registerButton}
-                  onClick={() => {
-                    LogOut();
-                    setCurrUser({});
-                  }}
-                >
-                  Log Out
-                </Button>
-              )}
-            </div>
-          </Toolbar>
-        </AppBar>
-      </nav>
-      <div className={classes.landingLeftText}>
-        <p>
-          PT <FontAwesomeIcon icon={faArrowsAltH} color="#9DB4FF" />{" "}
-          &nbsp;patient relationships first.
-        </p>
-        <p className={classes.subtitle}>
-          We believe that quality care begins with a strong relationship between
-          physical therapist and patient.
-        </p>
-        <button className={classes.joinButton}>
-          Join us &nbsp;&nbsp;
-          <FontAwesomeIcon icon={faLongArrowAltRight} color="white" />{" "}
-        </button>
+      <div className={classes.background}>
+        <div className={classes.landingLeftText}>
+          <p>
+            PT <FontAwesomeIcon icon={faArrowsAltH} color="#9DB4FF" />{" "}
+            &nbsp;patient relationships first.
+          </p>
+          <p className={classes.subtitle}>
+            We believe that quality care begins with a strong relationship
+            between physical therapist and patient.
+          </p>
+          <button className={classes.joinButton}>
+            Join us &nbsp;&nbsp;
+            <FontAwesomeIcon icon={faLongArrowAltRight} color="white" />{" "}
+          </button>
+        </div>
       </div>
-    </div>
   );
 };
 

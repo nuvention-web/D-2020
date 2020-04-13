@@ -1,28 +1,14 @@
-import React, { useState, useEffect } from "react";
-import Patient from "./Patient";
-import PatientExerciseData from "../ModelJSON/PatientExercises.json";
-import Container from "@material-ui/core/Container";
-import { render } from "@testing-library/react";
+import React, { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-// import { Button } from '@material-ui/core';
-import Checkbox from "@material-ui/core/Checkbox";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import YouTube from "react-youtube";
-import { withStyles } from "@material-ui/core";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import ExerciseTracking from "./PatientExerciseTracking";
-import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { Divider, Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import { Row, Col, Button } from "react-bootstrap";
 import { db } from "../Firebase.js";
+import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
+    marginTop: '6%',
     height: "55%",
   },
   header: {
@@ -116,74 +102,64 @@ const formatExerciseName = (n) => {
   return splitStr.join(" ");
 };
 
-const findPatient = (userId, patients) => {
-  for (var i = 0; i < patients.length; i++) {
-    if (patients[i].uid == userId) {
-      return patients[i]
-    }
-  }
-}
-
 const PatientExerciseMain = (props) => {
   const [exerciseSets, setExerciseSets] = useState([]);
   const [percentFinished, setPercentFinished] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
   //user id used to load correct user exercises (taken from landing page)
-  console.log('stored user', localStorage.getItem('currUser'))
-  const [user, setUser] = useState('');
+  const [user, setUser] = useState(useContext(UserContext).user.uid);
   const classes = useStyles();
 
   // note: need to load data asynchronously first
   useEffect(() => {
-    
     const fetchPatients = async () => {
       //load firestore data
-      var p = [];
-      db.collection("patients").get().then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-              var d = doc.data();
-              d.uid = doc.id;
-              p.push(d);
-          });
-
-          setExerciseSets(p);
-      });
+      // console.log(db.collection("patients").get(user))
+      db.collection("patients").doc(user)
+        .get()
+        .then(doc => {
+          if (!doc.exists) {
+            console.log('No such document!');
+          } else {
+            setExerciseSets(doc.data().sets);
+          }
+        })
+        .catch(err => {
+          console.log('Error getting document', err);
+        });
     };
 
-    fetchPatients();
-  }, []);
-
+    if (typeof(user) !== 'undefined') {
+      fetchPatients();
+    }
+  }, [user]);
 
   useEffect(() => {
-
     //handles when user hits back button on PatientExerciseTracking
-    if (user === '') {
-      var retrievedUser = localStorage.getItem('currUser');
+    if (typeof(user) === 'undefined') {
+      var retrievedUser = localStorage.getItem("currUser");
       setUser(retrievedUser);
     }
-
     //stores userId in local storage to be retrieved for case above ^^
     else {
-      setUser(props.location.state.userId)
-      localStorage.setItem('currUser', props.location.state.userId)
+      localStorage.setItem("currUser", user);
     }
   }, []);
 
 
   useEffect(() => {
-    if (exerciseSets.length != 0) {
+    if (exerciseSets.length !== 0) {
       setLoaded(true);
     }
   }, [exerciseSets]);
 
   const renderItems = () => {
-    const person = findPatient(user, exerciseSets);
 
     return (
       <div className={classes.window}>
         <div className={classes.exercises}>
-          {person.sets.map((s, i) => {
+          {exerciseSets.map((s, i) => {
             return (
               <div className={classes.exerciseContainer} key={i}>
                 <Typography variant="h4" className={classes.header}>
@@ -225,10 +201,12 @@ const PatientExerciseMain = (props) => {
           <img
             src={"/img/StretchGraphic2.png"}
             className={classes.stretchGraphic2}
+            alt=""
           />
           <img
             src={"/img/StretchGraphic1.png"}
             className={classes.stretchGraphic1}
+            alt=""
           />
           <Typography className={classes.quote}>
             "Movement is a medicine for creating change <br />
