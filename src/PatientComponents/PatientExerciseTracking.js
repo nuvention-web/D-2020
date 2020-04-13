@@ -21,7 +21,7 @@ import {
 import Timer from "react-compound-timer";
 import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
-
+import '../PatientExerciseTracking.css'
 import Sidebar from "react-sidebar";
 
 const useStyles = makeStyles((theme) => ({
@@ -49,13 +49,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     textAlign: "center",
     height: "100%",
-    marginTop: "30px",
+    marginTop: '3%'
   },
   carousel: {
     display: "flex",
     marginTop: 45,
-    height: "100%",
-    width: "100%",
+    // height: "100%",
+    // width: "100%",
   },
   arrows: {
     display: "inline-block",
@@ -107,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "9%",
     marginLeft: 15,
     marginBottom: 10,
-  },
+  }
 }));
 
 const ExerciseCarousel = ({ set }) => {
@@ -264,7 +264,10 @@ const ExerciseTracking = (props) => {
         sidebar={<SideBar />}
         pullRight={true}
         onSetOpen={() => setSidebar(false)}
-        styles={{ sidebar: { background: "white" } }}
+        styles={{ sidebar: { background: "white" }, 
+        content: {position: "relative"}, 
+        root: {marginTop: '8%'},
+        overlay: {marginTop: '8%'}}}
       >
         <div className={classes.exerciseContainer}>
           <Typography variant="h4" className={classes.header}>

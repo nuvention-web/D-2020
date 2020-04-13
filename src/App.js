@@ -22,6 +22,7 @@ import NavBar from "./NavBar";
 
 const useStyles = makeStyles((theme) => ({
   window: {
+    marginTop: '5%',
     height: "100%",
   },
 }));

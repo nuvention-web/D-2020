@@ -17,7 +17,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundImage: `url(${landing_background})`,
     height: "100vh",
     backgroundRepeat: "no-repeat",
-    marginTop: "-17vh",
+    marginTop: "-8vh",
+    paddingTop: "2vh"
   },
   appBar: {
     backgroundColor: "transparent",
@@ -182,7 +183,6 @@ const Landing = () => {
   }, [isPT, isPatient]);
 
   return (
-    <div>
       <div className={classes.background}>
         <div className={classes.landingLeftText}>
           <p>
@@ -199,7 +199,6 @@ const Landing = () => {
           </button>
         </div>
       </div>
-    </div>
   );
 };
 
