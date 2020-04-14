@@ -126,7 +126,6 @@ const IndividualPatientView = (props) => {
       console.log("fet patient", foundDID);
       if (foundDID) {
         // Newly added to load Firestore data
-<<<<<<< HEAD
         var patientRef = db.collection("patients").doc(patientIndex).collection("exerciseset");
 
         // Newly added to load Firestore data
@@ -135,23 +134,22 @@ const IndividualPatientView = (props) => {
         patientRef.get().then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             console.log(doc.id, " => ", doc.data());
-            var oneset = {};
+            // var oneset = {};
 
             // Nested inner
+            var ex = [];
             patientRef.doc(doc.id).collection("exercise").get().then((querySnapshot) => {
-              var ex = [];
               querySnapshot.forEach((doc) => {
                 console.log("each exercise:", doc.id, " => ", doc.data());
                 ex.push(doc.data());
               });
-              oneset.exercises = ex;
-              oneset.day = doc.data().day;
+              // oneset.exercises = ex;
+              // oneset.day = doc.data().day;
             });
             // End inner
             setcount += 1;
-            fullset.push(oneset);
-
-
+            // fullset.push(oneset);
+            fullset.push([doc.data().day, ex]);
 
 
           });
@@ -170,24 +168,6 @@ const IndividualPatientView = (props) => {
         // }).catch(function (error) {
         //   console.log("Error getting document:", error);
         // });
-=======
-        var patientRef = db.collection("patients").doc(patientIndex);
-        console.log(patientRef);
-
-        patientRef
-          .get()
-          .then(function (doc) {
-            if (doc.exists) {
-              setPatientData(doc.data());
-            } else {
-              // doc.data() will be undefined in this case
-              console.log("No such document!");
-            }
-          })
-          .catch(function (error) {
-            console.log("Error getting document:", error);
-          });
->>>>>>> 82c2a243dd38f8e3385fd2ade60af7eeb27dd5db
       }
     };
     fetchPatient();
@@ -297,9 +277,10 @@ const IndividualPatientView = (props) => {
                 {console.log("???", s)}
                 <Container className={classes.exerciseContainer} key={i}>
                   <Typography variant="h4" className={classes.header}>
-                    {s.day} Exercises 
-                    {console.log("day", s.day)}
-                    {console.log("exercises", s.exercises)}
+                    {s[0]} Exercises 
+                    {console.log("set", s)}
+                    {console.log("day", s[0])}
+                    {console.log("exercises", s[1])}
 
                     {/* ({calculateTotalTime(s)} minutes) */}
                   </Typography>
@@ -310,7 +291,8 @@ const IndividualPatientView = (props) => {
                     <Col></Col>
                   </Row>
                   <Divider />
-                  {/* {Object.values(s.exercises).map((ex, k) => {
+                  {console.log("length of exercises", s[1].length)}
+                  {s[1].map((ex, k) => {
                     return (
                       <div>
                         <Row key={k}>
@@ -321,7 +303,7 @@ const IndividualPatientView = (props) => {
                         </Row>
                       </div>
                     );
-                  })} */}
+                  })}
                   <Form>
                     <br />
                     <Row>
