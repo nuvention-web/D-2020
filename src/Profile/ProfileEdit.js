@@ -63,7 +63,7 @@ const ProfileEdit = () => {
       const previmgRef = storageRef.child(
         `images/${location.userProfile.img_name}`
       );
-      await previmgRef.delete();
+      if (previmgRef) await previmgRef.delete();
       const imageRef = storageRef.child(`images/${photo.name}`);
       const snapshot = await imageRef.put(photo);
       const downloadUrl = await snapshot.ref.getDownloadURL();
