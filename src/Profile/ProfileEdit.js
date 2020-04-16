@@ -40,6 +40,7 @@ const ProfileEdit = () => {
   const location = useLocation();
   const classes = useStyles();
   const preType = localStorage.getItem("type");
+  console.log(preType);
 
   const setUserField = (field, data) => {
     setUserInfo({ ...userInfo, [field]: data });
@@ -49,21 +50,34 @@ const ProfileEdit = () => {
     setPhoto(e.target.files[0]);
   };
 
+  function onResolve(foundURL) {
+    return true;
+  }
+
+  function onReject(error) {
+    console.log(error.code);
+    return false;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     let { type, name, bio } = userInfo;
-    if (type === "") type = location.userProfile.type;
+    if (type === "") type = preType;
     if (name === "") name = location.userProfile.name;
-    if (bio == "") bio = location.userProfile.bio;
+    if (bio === "") bio = location.userProfile.bio;
     console.log("type: ", type, "name: ", name, "bio", bio);
     const Ref = db.collection(type);
     // If photo was selected
     if (photo) {
-      const previmgRef = storageRef.child(
+      const prevImgRef = storageRef.child(
         `images/${location.userProfile.img_name}`
       );
-      await previmgRef.delete();
+      const hasPrevImg = storageRef
+        .child(`images/${location.userProfile.img_name}`)
+        .getDownloadURL()
+        .then(onResolve, onReject);
+      if (hasPrevImg === true) await prevImgRef.delete();
       const imageRef = storageRef.child(`images/${photo.name}`);
       const snapshot = await imageRef.put(photo);
       const downloadUrl = await snapshot.ref.getDownloadURL();
@@ -90,8 +104,12 @@ const ProfileEdit = () => {
           ...userInfo,
           name: name,
           bio: bio,
-          img: location.userProfile.img,
-          img_name: location.userProfile.img_name,
+          ...(location.userProfile.img
+            ? { img: location.userProfile.img }
+            : { img: "" }),
+          ...(location.userProfile.img_name
+            ? { img_name: location.userProfile.img_name }
+            : { img_name: "" }),
         })
         .then(function () {
           console.log("Document successfully written!");

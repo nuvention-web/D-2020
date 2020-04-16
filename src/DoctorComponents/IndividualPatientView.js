@@ -122,34 +122,61 @@ const IndividualPatientView = (props) => {
 
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
-    const fetchPatient = async () => {
-      console.log("fet patient", foundDID);
+    const fetchPatient = () => {
       if (foundDID) {
         // Newly added to load Firestore data
-        var patientRef = db.collection("patients").doc(patientIndex);
-        console.log(patientRef);
+        var patientRef = db
+          .collection("patients")
+          .doc(patientIndex)
+          .collection("exerciseset");
 
-        patientRef
-          .get()
-          .then(function (doc) {
-            if (doc.exists) {
-              setPatientData(doc.data());
-            } else {
-              // doc.data() will be undefined in this case
-              console.log("No such document!");
-            }
-          })
-          .catch(function (error) {
-            console.log("Error getting document:", error);
+        // Newly added to load Firestore data
+        var fullset = [];
+        patientRef.get().then((querySnapshot) => {
+          var ex = [];
+          querySnapshot.forEach((doc) => {
+            const day = doc.data().day;
+            // var oneset = {};
+            // Nested inner
+            patientRef
+              .doc(doc.id)
+              .collection("exercise")
+              .get()
+              .then((querySnapshot) => {
+                querySnapshot.forEach((doc1) => {
+                  const exercise = doc1.data();
+                  ex.push(exercise);
+                });
+                // oneset.exercises = ex;
+                // oneset.day = doc.data().day;
+              })
+              .then(() => {
+                fullset.push({ day: day, exercise: ex });
+                setPatientData(fullset);
+              });
+            // End inner
+            // fullset.push(oneset);
           });
+        });
+
+        // Old
+        // patientRef.get().then(function (doc) {
+        //   if (doc.exists) {
+        //     setPatientData(doc.data());
+        //   } else {
+        //     // doc.data() will be undefined in this case
+        //     console.log("No such document!");
+        //   }
+        // }).catch(function (error) {
+        //   console.log("Error getting document:", error);
+        // });
       }
     };
     fetchPatient();
   }, [foundDID]);
-  // last line refers to how this useEffect will rerun if value of foundDID changes
 
+  // last line refers to how this useEffect will rerun if value of foundDID changes
   useEffect(() => {
-    console.log("patientData", patientData);
     if (patientData.length !== 0) {
       setLoaded(true);
     }
@@ -216,6 +243,7 @@ const IndividualPatientView = (props) => {
   // Repeat function from PatientExerciseMain
   const calculateTotalTime = (s) => {
     var t = 0;
+    console.log("len", s.exercise);
     for (const [i, entry] of Object.entries(s.exercise)) {
       t += entry.duration;
     }
@@ -234,7 +262,6 @@ const IndividualPatientView = (props) => {
 
   const renderItems = () => {
     const person = patientData;
-
     return (
       <div>
         <div>
@@ -244,13 +271,12 @@ const IndividualPatientView = (props) => {
             </Typography>
             <div className={classes.accentDivider}></div>
           </Container>
-          {person.sets.map((s, i) => {
+          {patientData.map((s, i) => {
             return (
               <div>
-                {/* {console.log("???", mySet)} */}
                 <Container className={classes.exerciseContainer} key={i}>
                   <Typography variant="h4" className={classes.header}>
-                    {s.day} Exercises ({calculateTotalTime(s)} minutes)
+                    {s["day"]} Exercises
                   </Typography>
                   <Row>
                     <Col>Exercise</Col>
@@ -259,7 +285,7 @@ const IndividualPatientView = (props) => {
                     <Col></Col>
                   </Row>
                   <Divider />
-                  {Object.values(s.exercise).map((ex, k) => {
+                  {s["exercise"].map((ex, k) => {
                     return (
                       <div>
                         <Row key={k}>
@@ -346,7 +372,6 @@ const IndividualPatientView = (props) => {
               Back
             </Button>
           </Link>
-          {console.log("exercise sets", exerciseSets)}
         </Container>
 
         {renderItems()}
