@@ -122,39 +122,41 @@ const IndividualPatientView = (props) => {
 
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
-    const fetchPatient = async () => {
-      console.log("fet patient", foundDID);
+    const fetchPatient = () => {
       if (foundDID) {
         // Newly added to load Firestore data
-        var patientRef = db.collection("patients").doc(patientIndex).collection("exerciseset");
+        var patientRef = db
+          .collection("patients")
+          .doc(patientIndex)
+          .collection("exerciseset");
 
         // Newly added to load Firestore data
         var fullset = [];
-        var setcount = 0;
         patientRef.get().then((querySnapshot) => {
+          var ex = [];
           querySnapshot.forEach((doc) => {
-            console.log(doc.id, " => ", doc.data());
+            const day = doc.data().day;
             // var oneset = {};
-
             // Nested inner
-            var ex = [];
-            patientRef.doc(doc.id).collection("exercise").get().then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                console.log("each exercise:", doc.id, " => ", doc.data());
-                ex.push(doc.data());
+            patientRef
+              .doc(doc.id)
+              .collection("exercise")
+              .get()
+              .then((querySnapshot) => {
+                querySnapshot.forEach((doc1) => {
+                  const exercise = doc1.data();
+                  ex.push(exercise);
+                });
+                // oneset.exercises = ex;
+                // oneset.day = doc.data().day;
+              })
+              .then(() => {
+                fullset.push({ day: day, exercise: ex });
+                setPatientData(fullset);
               });
-              // oneset.exercises = ex;
-              // oneset.day = doc.data().day;
-            });
             // End inner
-            setcount += 1;
             // fullset.push(oneset);
-            fullset.push([doc.data().day, ex]);
-
-
           });
-          console.log("fullset!", fullset);
-          setPatientData(fullset);
         });
 
         // Old
@@ -172,10 +174,9 @@ const IndividualPatientView = (props) => {
     };
     fetchPatient();
   }, [foundDID]);
-  // last line refers to how this useEffect will rerun if value of foundDID changes
 
+  // last line refers to how this useEffect will rerun if value of foundDID changes
   useEffect(() => {
-    console.log("patientData", patientData);
     if (patientData.length !== 0) {
       setLoaded(true);
     }
@@ -242,8 +243,8 @@ const IndividualPatientView = (props) => {
   // Repeat function from PatientExerciseMain
   const calculateTotalTime = (s) => {
     var t = 0;
-    console.log('len', s.exercises);
-    for (const [i, entry] of Object.entries(s.exercises)) {
+    console.log("len", s.exercise);
+    for (const [i, entry] of Object.entries(s.exercise)) {
       t += entry.duration;
     }
     return t;
@@ -261,7 +262,6 @@ const IndividualPatientView = (props) => {
 
   const renderItems = () => {
     const person = patientData;
-
     return (
       <div>
         <div>
@@ -274,15 +274,9 @@ const IndividualPatientView = (props) => {
           {patientData.map((s, i) => {
             return (
               <div>
-                {console.log("???", s)}
                 <Container className={classes.exerciseContainer} key={i}>
                   <Typography variant="h4" className={classes.header}>
-                    {s[0]} Exercises 
-                    {console.log("set", s)}
-                    {console.log("day", s[0])}
-                    {console.log("exercises", s[1])}
-
-                    {/* ({calculateTotalTime(s)} minutes) */}
+                    {s["day"]} Exercises
                   </Typography>
                   <Row>
                     <Col>Exercise</Col>
@@ -291,8 +285,7 @@ const IndividualPatientView = (props) => {
                     <Col></Col>
                   </Row>
                   <Divider />
-                  {console.log("length of exercises", s[1].length)}
-                  {s[1].map((ex, k) => {
+                  {s["exercise"].map((ex, k) => {
                     return (
                       <div>
                         <Row key={k}>
@@ -379,7 +372,6 @@ const IndividualPatientView = (props) => {
               Back
             </Button>
           </Link>
-          {console.log("exercise sets", exerciseSets)}
         </Container>
 
         {renderItems()}
