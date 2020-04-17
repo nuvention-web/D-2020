@@ -39,4 +39,4 @@ const SignIn = () => (
 );
 const LogOut = () => firebase.auth().signOut();
 
-export { db, SignIn, LogOut, storageRef };
+export { db, SignIn, LogOut, storageRef, firebase };

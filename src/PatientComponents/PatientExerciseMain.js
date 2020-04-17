@@ -8,7 +8,7 @@ import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
-    marginTop: '6%',
+    marginTop: "6%",
     height: "55%",
   },
   header: {
@@ -116,28 +116,29 @@ const PatientExerciseMain = (props) => {
     const fetchPatients = async () => {
       //load firestore data
       // console.log(db.collection("patients").get(user))
-      db.collection("patients").doc(user)
+      db.collection("patients")
+        .doc(user)
         .get()
-        .then(doc => {
+        .then((doc) => {
           if (!doc.exists) {
-            console.log('No such document!');
+            console.log("No such document!");
           } else {
             setExerciseSets(doc.data().sets);
           }
         })
-        .catch(err => {
-          console.log('Error getting document', err);
+        .catch((err) => {
+          console.log("Error getting document", err);
         });
     };
 
-    if (typeof(user) !== 'undefined') {
+    if (typeof user !== "undefined") {
       fetchPatients();
     }
   }, [user]);
 
   useEffect(() => {
     //handles when user hits back button on PatientExerciseTracking
-    if (typeof(user) === 'undefined') {
+    if (typeof user === "undefined") {
       var retrievedUser = localStorage.getItem("currUser");
       setUser(retrievedUser);
     }
@@ -147,7 +148,6 @@ const PatientExerciseMain = (props) => {
     }
   }, []);
 
-
   useEffect(() => {
     if (exerciseSets.length !== 0) {
       setLoaded(true);
@@ -155,7 +155,6 @@ const PatientExerciseMain = (props) => {
   }, [exerciseSets]);
 
   const renderItems = () => {
-
     return (
       <div className={classes.window}>
         <div className={classes.exercises}>
