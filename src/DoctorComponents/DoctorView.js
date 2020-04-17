@@ -106,7 +106,7 @@ const DoctorView = () => {
             </Button>
           </Link>
           <Typography variant="h4" className={classes.header}>
-            Patient Dashboard
+            Your Patients
           </Typography>
           <div className={classes.accentDivider}></div>
 
@@ -128,7 +128,7 @@ const DoctorView = () => {
                 >
                   <div>
                     <Grid item className={classes.patientInfoCard} key={i}>
-                      <Patient name={p.name} photo={p.photo} bio={p.bio} />
+                      <Patient name={p.name} photo={p.img} bio={p.bio} />
                     </Grid>
                   </div>
                 </Link>
