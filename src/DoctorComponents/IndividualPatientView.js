@@ -92,6 +92,7 @@ const IndividualPatientView = (props) => {
   const [exerciseSets] = useState([]); //delete later
   const [loaded, setLoaded] = useState(false);
   const [foundDID, setfoundDID] = useState(false);
+  const dotw = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
   // Retrieve the docID from either prop or local storage if prop is unavailable (refresh)
   useEffect(() => {
@@ -128,48 +129,33 @@ const IndividualPatientView = (props) => {
         var patientRef = db
           .collection("patients")
           .doc(patientIndex)
-          .collection("exerciseset");
+          .collection("exercisesets");
 
         // Newly added to load Firestore data
         var fullset = [];
         patientRef.get().then((querySnapshot) => {
-          var ex = [];
+          // For each set
           querySnapshot.forEach((doc) => {
             const day = doc.data().day;
-            // var oneset = {};
+            var ex = [];
             // Nested inner
             patientRef
               .doc(doc.id)
-              .collection("exercise")
+              .collection("exercises")
               .get()
               .then((querySnapshot) => {
                 querySnapshot.forEach((doc1) => {
                   const exercise = doc1.data();
                   ex.push(exercise);
                 });
-                // oneset.exercises = ex;
-                // oneset.day = doc.data().day;
               })
               .then(() => {
                 fullset.push({ day: day, exercise: ex });
+                console.log("fullset", fullset);
                 setPatientData(fullset);
               });
-            // End inner
-            // fullset.push(oneset);
           });
         });
-
-        // Old
-        // patientRef.get().then(function (doc) {
-        //   if (doc.exists) {
-        //     setPatientData(doc.data());
-        //   } else {
-        //     // doc.data() will be undefined in this case
-        //     console.log("No such document!");
-        //   }
-        // }).catch(function (error) {
-        //   console.log("Error getting document:", error);
-        // });
       }
     };
     fetchPatient();
@@ -199,45 +185,52 @@ const IndividualPatientView = (props) => {
       name: newExercise,
       reps: parseInt(newReps),
       duration: parseInt(newDuration),
-      videoId: "MW2WG5l-fYE",
+      videoId: "MW2WG5l-fYE"
     };
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
 
-    let currSet = patientData.sets;
-    currSet = [...currSet[setIndex].exercise, exerciseObjectData];
-    currSet[setIndex].exercise.push(exerciseObjectData);
-    console.log("new currSet:", currSet);
-    return currSet;
+    return exerciseObjectData;
   };
 
   // Submit new exercise to firebase
   const addExercise = async (e, setIndex) => {
     // For debugging purposes - pauses refresh on submit
-    // e.preventDefault();
+    e.preventDefault();
 
-    const currSet = await getUpdatedSet(setIndex);
-    console.log("currSet:", currSet);
+    const newExercise = await getUpdatedSet(setIndex);
+    console.log("newExercise", newExercise);
 
     // Firestore reference
-    var patientRef = db.collection("patients").doc(patientIndex);
+    var patientRef = db
+      .collection("patients")
+      .doc(patientIndex)
+      .collection("exercisesets")
+      .doc(dotw[setIndex])
+      .collection("exercises");
 
-    return patientRef
-      .update({
-        sets: currSet,
-      })
-      .then(function () {
-        console.log("Document successfully updated!");
-      })
-      .catch(function (error) {
-        // The document probably doesn't exist.
-        console.error("Error updating document: ", error);
-      });
+    patientRef.add(newExercise)
+  .then(function(docRef) {
+      console.log("Document written with ID: ", docRef.id);
+      window.location.reload(false);
+  })
+  .catch(function(error) {
+      console.error("Error writing document: ", error);
+  });
 
-    // Old RTD update
-    // var exerciseListRef = db
-    //   .child("Vanessa Jones/sets/" + setIndex.toString() + "/exercise")
-    //   .push(exerciseObjectData);
+
+    // Old update
+    // return patientRef
+    //   .update({
+    //     sets: currSet,
+    //   })
+    //   .then(function () {
+    //     console.log("Document successfully updated!");
+    //   })
+    //   .catch(function (error) {
+    //     // The document probably doesn't exist.
+    //     console.error("Error updating document: ", error);
+    //   });
   };
 
   // Repeat function from PatientExerciseMain
