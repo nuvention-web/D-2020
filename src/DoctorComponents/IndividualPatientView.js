@@ -6,6 +6,8 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 import { Button, Form, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import PresetExercisesData from "../ModelJSON/PresetExercises.json";
@@ -75,12 +77,22 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     border: "1px solid #ccc",
   },
+  // For Grid
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  }
+  // End for grid
 }));
 
 const IndividualPatientView = (props) => {
   const classes = useStyles();
-  // patientData stores the specific patient we are looking at
-  const [patientData, setPatientData] = useState([]);
+  // exerciseSets stores the "exercisesets" of the patient we are looking at
+  const [exerciseSets, setExerciseSets] = useState([]);
   const [newExercise, setNewExercise] = useState("Calf Wall Stretch");
   const [newReps, setNewReps] = useState(1);
   const [newDuration, setNewDuration] = useState(5);
@@ -88,10 +100,10 @@ const IndividualPatientView = (props) => {
   const [patientIndex, setPatientIndex] = useState("");
 
   // For loading data, taken from PatientExerciseMain
-  // exerciseSets actually contains our entire json (all patients)
-  const [exerciseSets] = useState([]); //delete later
   const [loaded, setLoaded] = useState(false);
   const [foundDID, setfoundDID] = useState(false);
+  const dotw = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+  const [exerciseList, setExerciseList] = useState([]);
 
   // Retrieve the docID from either prop or local storage if prop is unavailable (refresh)
   useEffect(() => {
@@ -128,48 +140,40 @@ const IndividualPatientView = (props) => {
         var patientRef = db
           .collection("patients")
           .doc(patientIndex)
-          .collection("exerciseset");
+          .collection("exercisesets");
 
         // Newly added to load Firestore data
         var fullset = [];
+        var l = [];
         patientRef.get().then((querySnapshot) => {
-          var ex = [];
+          // For each set
           querySnapshot.forEach((doc) => {
             const day = doc.data().day;
-            // var oneset = {};
+            var ex = [];
             // Nested inner
             patientRef
               .doc(doc.id)
-              .collection("exercise")
+              .collection("exercises")
               .get()
               .then((querySnapshot) => {
                 querySnapshot.forEach((doc1) => {
                   const exercise = doc1.data();
+                  console.log("exercise.name", exercise.name);
                   ex.push(exercise);
+                  if (!l.includes(exercise.name)) {
+                    l.push(exercise.name);
+                    console.log("l now", l);
+                    // setExerciseList(l); // this causes ExerciseSets to be incorrect
+                  }
                 });
-                // oneset.exercises = ex;
-                // oneset.day = doc.data().day;
               })
               .then(() => {
                 fullset.push({ day: day, exercise: ex });
-                setPatientData(fullset);
+                console.log("fullset", fullset);
+                setExerciseSets(fullset);
               });
-            // End inner
-            // fullset.push(oneset);
           });
         });
-
-        // Old
-        // patientRef.get().then(function (doc) {
-        //   if (doc.exists) {
-        //     setPatientData(doc.data());
-        //   } else {
-        //     // doc.data() will be undefined in this case
-        //     console.log("No such document!");
-        //   }
-        // }).catch(function (error) {
-        //   console.log("Error getting document:", error);
-        // });
       }
     };
     fetchPatient();
@@ -177,10 +181,10 @@ const IndividualPatientView = (props) => {
 
   // last line refers to how this useEffect will rerun if value of foundDID changes
   useEffect(() => {
-    if (patientData.length !== 0) {
+    if (exerciseSets.length !== 0) {
       setLoaded(true);
     }
-  }, [patientData]);
+  }, [exerciseSets]);
   // End loading data
 
   // const findExercise = (exercise) => {
@@ -200,44 +204,38 @@ const IndividualPatientView = (props) => {
       reps: parseInt(newReps),
       duration: parseInt(newDuration),
       videoId: "MW2WG5l-fYE",
+      complete: false
     };
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
 
-    let currSet = patientData.sets;
-    currSet = [...currSet[setIndex].exercise, exerciseObjectData];
-    currSet[setIndex].exercise.push(exerciseObjectData);
-    console.log("new currSet:", currSet);
-    return currSet;
+    return exerciseObjectData;
   };
 
   // Submit new exercise to firebase
   const addExercise = async (e, setIndex) => {
     // For debugging purposes - pauses refresh on submit
-    // e.preventDefault();
+    e.preventDefault();
 
-    const currSet = await getUpdatedSet(setIndex);
-    console.log("currSet:", currSet);
+    const newExercise = await getUpdatedSet(setIndex);
+    console.log("newExercise", newExercise);
 
     // Firestore reference
-    var patientRef = db.collection("patients").doc(patientIndex);
+    var patientRef = db
+      .collection("patients")
+      .doc(patientIndex)
+      .collection("exercisesets")
+      .doc(dotw[setIndex])
+      .collection("exercises");
 
-    return patientRef
-      .update({
-        sets: currSet,
-      })
-      .then(function () {
-        console.log("Document successfully updated!");
+    patientRef.add(newExercise)
+      .then(function (docRef) {
+        console.log("Document written with ID: ", docRef.id);
+        window.location.reload(false);
       })
       .catch(function (error) {
-        // The document probably doesn't exist.
-        console.error("Error updating document: ", error);
+        console.error("Error writing document: ", error);
       });
-
-    // Old RTD update
-    // var exerciseListRef = db
-    //   .child("Vanessa Jones/sets/" + setIndex.toString() + "/exercise")
-    //   .push(exerciseObjectData);
   };
 
   // Repeat function from PatientExerciseMain
@@ -261,17 +259,73 @@ const IndividualPatientView = (props) => {
   };
 
   const renderItems = () => {
-    const person = patientData;
     return (
       <div>
         <div>
           <Container>
             <Typography variant="h4" className={classes.header}>
-              {person.name}
+              Name - Week of 3/2 - Progress
             </Typography>
-            <div className={classes.accentDivider}></div>
+            {/* <div className={classes.accentDivider}></div> */}
+            {console.log("exerciseList", JSON.stringify(exerciseList))}
+            <Row>
+              <Col>Exercise Name</Col>
+              {exerciseList.map((n, i) => {
+                return (
+                  <Col>{n}</Col>
+                );
+              })}
+            </Row>
+
+            <Divider />
           </Container>
-          {patientData.map((s, i) => {
+
+          {/* Progress Chart */}
+          {exerciseSets.map((s, i) => {
+            return (
+              <Container>
+                <Row key={i}>
+                  <Col>{s["day"]}</Col>
+                  {s["exercise"].map((ex, k) => {
+                    return (
+                      <Col>{ex["name"]}:{ex["complete"].toString()}</Col>
+                    );
+                  })}
+                </Row>
+
+                {/* {s["exercise"].map((ex, k) => {
+                  { console.log("s", s) }
+                  return (
+                  <div>nothing</div>
+                  );
+                })} */}
+
+                {/* <div className={classes.root}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={2}>
+                      <Paper className={classes.paper}>xs=3</Paper>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Paper className={classes.paper}>xs=3</Paper>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Paper className={classes.paper}>xs=3</Paper>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Paper className={classes.paper}>xs=2</Paper>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Paper className={classes.paper}>xs=end</Paper>
+                    </Grid>
+                  </Grid>
+                </div> */}
+                {/* End Progress Chart */}
+              </Container>
+            );
+          })}
+
+
+          {exerciseSets.map((s, i) => {
             return (
               <div>
                 <Container className={classes.exerciseContainer} key={i}>
