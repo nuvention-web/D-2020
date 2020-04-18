@@ -106,109 +106,64 @@ const PatientExerciseMain = (props) => {
   const [exerciseSets, setExerciseSets] = useState([]);
   const [percentFinished, setPercentFinished] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  const [foundUser, setFoundUser] = useState(false);
 
   //user id used to load correct user exercises (taken from landing page)
-  const [user, setUser] = useState(useContext(UserContext).user.uid);
+  const currUser = useContext(UserContext).user;
   const classes = useStyles();
 
   // note: need to load data asynchronously first
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
-    const fetchPatient = () => {
-      if (foundUser) {
-        // Newly added to load Firestore data
-        var patientRef = db
-          .collection("patients")
-          .doc(user)
-          .collection("exercisesets");
+    if (Object.entries(currUser).length > 0) {
+      console.log("going");
 
-        // Newly added to load Firestore data
-        var fullset = [];
-        var l = [];
-        patientRef.get().then((querySnapshot) => {
-          // For each set
-          querySnapshot.forEach((doc) => {
-            const day = doc.data().day;
-            var ex = [];
-            // Nested inner
-            patientRef
-              .doc(doc.id)
-              .collection("exercises")
-              .get()
-              .then((querySnapshot) => {
-                querySnapshot.forEach((doc1) => {
-                  const exercise = doc1.data();
-                  console.log("exercise.name", exercise.name);
-                  ex.push(exercise);
-                  if (!l.includes(exercise.name)) {
-                    l.push(exercise.name);
-                    console.log("l now", l);
-                    // setExerciseList(l); // this causes ExerciseSets to be incorrect
-                  }
-                });
-              })
-              .then(() => {
-                fullset.push({ day: day, exercise: ex });
-                console.log("fullset", fullset);
-                setExerciseSets(fullset);
+      // Newly added to load Firestore data
+      var patientRef = db
+        .collection("patients")
+        .doc(currUser.uid)
+        .collection("exercisesets");
+
+      // Newly added to load Firestore data
+      var fullset = [];
+      var l = [];
+      patientRef.get().then((querySnapshot) => {
+        // For each set
+        querySnapshot.forEach((doc) => {
+          const day = doc.data().day;
+          var ex = [];
+          // Nested inner
+          patientRef
+            .doc(doc.id)
+            .collection("exercises")
+            .get()
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc1) => {
+                const exercise = doc1.data();
+                console.log("exercise.name", exercise.name);
+                ex.push(exercise);
+                if (!l.includes(exercise.name)) {
+                  l.push(exercise.name);
+                  console.log("l now", l);
+                  // setExerciseList(l); // this causes ExerciseSets to be incorrect
+                }
               });
-          });
+            })
+            .then(() => {
+              console.log("THis is L: ", JSON.stringify(l));
+              fullset.push({ day: day, exercise: ex, exerciseList: l });
+              console.log("fullset", JSON.stringify(fullset));
+              setExerciseSets(fullset);
+            });
         });
-      }
-    };
-    fetchPatient();
-  }, [foundUser]);
-
-  // old data fetching
-  // useEffect(() => {
-  //   const fetchPatients = async () => {
-  //     //load firestore data
-  //     // console.log(db.collection("patients").get(user))
-  //     db.collection("patients").doc(user)
-  //       .get()
-  //       .then(doc => {
-  //         if (!doc.exists) {
-  //           console.log('No such document!');
-  //         } else {
-  //           setExerciseSets(doc.data().sets);
-  //         }
-  //       })
-  //       .catch(err => {
-  //         console.log('Error getting document', err);
-  //       });
-  //   };
-
-  //   if (typeof(user) !== 'undefined') {
-  //     fetchPatients();
-  //   }
-  // }, [user]);
-  
-
-  useEffect(() => {
-    //handles when user hits back button on PatientExerciseTracking
-    if (typeof user === "undefined") {
-      var retrievedUser = localStorage.getItem("currUser");
-      setUser(retrievedUser);
+      });
     }
-    //stores userId in local storage to be retrieved for case above ^^
-    else {
-      localStorage.setItem("currUser", user);
-    }
-  }, []);
+  }, [currUser]);
 
   useEffect(() => {
     if (exerciseSets.length !== 0) {
       setLoaded(true);
     }
   }, [exerciseSets]);
-
-  useEffect(() => {
-    console.log("user???", user);
-    if (user !== "") {
-      setFoundUser(true);
-    }
-  }, [user]);
 
   const renderItems = () => {
     return (
