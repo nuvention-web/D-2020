@@ -6,6 +6,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { UserContext } from "./contexts/UserContext";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -109,16 +110,15 @@ const NavBar = () => {
   const classes = useStyles();
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
+  const history = useHistory();
+
   return (
     <nav>
       <AppBar position="static" className={classes.appBar}>
-        <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>
+        <Link to="/">
+          <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>{" "}
+        </Link>
         <Toolbar className={classes.navBar}>
-          <Link to="/">
-            <Button variant="light" className={classes.navButton}>
-              Landing Page
-            </Button>
-          </Link>
           <Link to="/PT">
             <Button variant="light" className={classes.navButton}>
               PT View
@@ -146,6 +146,7 @@ const NavBar = () => {
                 className={classes.registerButton}
                 onClick={() => {
                   LogOut();
+                  history.push("/");
                   setCurrUser({});
                 }}
               >

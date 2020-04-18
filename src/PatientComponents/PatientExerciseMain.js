@@ -8,7 +8,7 @@ import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
-    marginTop: '6%',
+    marginTop: "6%",
     height: "55%",
   },
   header: {
@@ -183,10 +183,11 @@ const PatientExerciseMain = (props) => {
   //     fetchPatients();
   //   }
   // }, [user]);
+  
 
   useEffect(() => {
     //handles when user hits back button on PatientExerciseTracking
-    if (typeof(user) === 'undefined') {
+    if (typeof user === "undefined") {
       var retrievedUser = localStorage.getItem("currUser");
       setUser(retrievedUser);
     }
@@ -195,7 +196,6 @@ const PatientExerciseMain = (props) => {
       localStorage.setItem("currUser", user);
     }
   }, []);
-
 
   useEffect(() => {
     if (exerciseSets.length !== 0) {
@@ -211,7 +211,6 @@ const PatientExerciseMain = (props) => {
   }, [user]);
 
   const renderItems = () => {
-
     return (
       <div className={classes.window}>
         <div className={classes.exercises}>

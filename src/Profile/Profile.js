@@ -64,6 +64,21 @@ const Profile = (props) => {
                 <Typography gutterBottom variant="h5" component="h2">
                   Name: {userProfile.name}
                 </Typography>
+                {type && type === "therapists" ? (
+                  <div>
+                    <hr />
+                    <Typography
+                      variant="h7"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      Connect with your patient with this code:
+                      <strong>{currUser.uid}</strong>
+                    </Typography>
+                    <hr />
+                  </div>
+                ) : null}
+
                 <Typography variant="body2" color="textSecondary" component="p">
                   Bio: {userProfile.bio}
                 </Typography>

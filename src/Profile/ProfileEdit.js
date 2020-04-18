@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { UserContext } from "../contexts/UserContext";
-import { db, storageRef } from "../Firebase";
+import { db, storageRef, firebase } from "../Firebase";
 import {
   Button,
   FormControl,
@@ -35,6 +35,7 @@ const ProfileEdit = () => {
     type: "",
     name: "",
     bio: "",
+    code: "",
   });
   const history = useHistory();
   const location = useLocation();
@@ -63,11 +64,16 @@ const ProfileEdit = () => {
     e.preventDefault();
 
     let { type, name, bio } = userInfo;
+    if (userInfo.code) {
+      var code = userInfo.code;
+    }
     if (type === "") type = preType;
     if (name === "") name = location.userProfile.name;
     if (bio === "") bio = location.userProfile.bio;
-    console.log("type: ", type, "name: ", name, "bio", bio);
+    if (code)
+      console.log("type: ", type, "name: ", name, "bio: ", bio, "code: ", code);
     const Ref = db.collection(type);
+
     // If photo was selected
     if (photo) {
       const prevImgRef = storageRef.child(
@@ -83,26 +89,41 @@ const ProfileEdit = () => {
       const downloadUrl = await snapshot.ref.getDownloadURL();
 
       Ref.doc(currUser.uid)
-        .set({
+        .update({
           ...userInfo,
           type: type,
           name: name,
           bio: bio,
           img: downloadUrl,
           img_name: photo.name,
+          ...(code && code !== ""
+            ? { code: code }
+            : { code: location.userProfile.code }),
         })
         .then(function () {
           console.log("Document successfully written!");
+          if (code && code !== "") {
+            // Update the patient
+            const PTRef = db.collection("therapists").doc(code);
+
+            // Atomically add a new patient to the "patients" array field.
+            PTRef.update({
+              patients: firebase.firestore.FieldValue.arrayUnion(currUser.uid),
+            });
+            console.log("updated the patient");
+          }
           history.push("/profile");
         })
         .catch(function (error) {
           console.error("Error writing document: ", error);
         });
     } else {
+      // No photo selected
       Ref.doc(currUser.uid)
-        .set({
+        .update({
           ...userInfo,
           name: name,
+          type: type,
           bio: bio,
           ...(location.userProfile.img
             ? { img: location.userProfile.img }
@@ -110,9 +131,22 @@ const ProfileEdit = () => {
           ...(location.userProfile.img_name
             ? { img_name: location.userProfile.img_name }
             : { img_name: "" }),
+          ...(code && code !== ""
+            ? { code: code }
+            : { code: location.userProfile.code }),
         })
         .then(function () {
           console.log("Document successfully written!");
+          if (code && code !== "") {
+            // Update the patient
+            const PTRef = db.collection("therapists").doc(code);
+
+            // Atomically add a new patient to the "patients" array field.
+            PTRef.update({
+              patients: firebase.firestore.FieldValue.arrayUnion(currUser.uid),
+            });
+            console.log("updated the patient");
+          }
           history.push("/profile");
         })
         .catch(function (error) {
@@ -173,6 +207,19 @@ const ProfileEdit = () => {
             variant="outlined"
           />
         </div>
+        {preType && preType == "patients" ? (
+          <div>
+            <TextField
+              id="standard-basic"
+              label="Your Therapist Code"
+              value={
+                userInfo.code !== "" ? userInfo.code : location.userProfile.code
+              }
+              onChange={(e) => setUserField("code", e.target.value)}
+            />
+          </div>
+        ) : null}
+
         <p>Add a photo of you:</p>
         <input
           fullWidth
