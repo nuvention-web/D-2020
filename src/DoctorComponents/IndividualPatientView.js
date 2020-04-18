@@ -6,8 +6,8 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
+import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
 import { Button, Form, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import PresetExercisesData from "../ModelJSON/PresetExercises.json";
@@ -83,9 +83,9 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2),
-    textAlign: 'center',
+    textAlign: "center",
     color: theme.palette.text.secondary,
-  }
+  },
   // End for grid
 }));
 
@@ -102,8 +102,16 @@ const IndividualPatientView = (props) => {
   // For loading data, taken from PatientExerciseMain
   const [loaded, setLoaded] = useState(false);
   const [foundDID, setfoundDID] = useState(false);
-  const dotw = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-  const [exerciseList, setExerciseList] = useState([]);
+  const dotw = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  // const [exerciseList, setExerciseList] = useState([]);
 
   // Retrieve the docID from either prop or local storage if prop is unavailable (refresh)
   useEffect(() => {
@@ -168,8 +176,9 @@ const IndividualPatientView = (props) => {
                 });
               })
               .then(() => {
-                fullset.push({ day: day, exercise: ex });
-                console.log("fullset", fullset);
+                console.log("THis is L: ", JSON.stringify(l));
+                fullset.push({ day: day, exercise: ex, exerciseList: l });
+                console.log("fullset", JSON.stringify(fullset));
                 setExerciseSets(fullset);
               });
           });
@@ -204,7 +213,7 @@ const IndividualPatientView = (props) => {
       reps: parseInt(newReps),
       duration: parseInt(newDuration),
       videoId: "MW2WG5l-fYE",
-      complete: false
+      complete: false,
     };
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
@@ -228,7 +237,8 @@ const IndividualPatientView = (props) => {
       .doc(dotw[setIndex])
       .collection("exercises");
 
-    patientRef.add(newExercise)
+    patientRef
+      .add(newExercise)
       .then(function (docRef) {
         console.log("Document written with ID: ", docRef.id);
         window.location.reload(false);
@@ -267,14 +277,15 @@ const IndividualPatientView = (props) => {
               Name - Week of 3/2 - Progress
             </Typography>
             {/* <div className={classes.accentDivider}></div> */}
-            {console.log("exerciseList", JSON.stringify(exerciseList))}
+            {console.log(
+              "exerciseList",
+              JSON.stringify(exerciseSets[0].exercise)
+            )}
             <Row>
               <Col>Exercise Name</Col>
-              {exerciseList.map((n, i) => {
-                return (
-                  <Col>{n}</Col>
-                );
-              })}
+              {exerciseSets
+                ? exerciseSets[0].exerciseList.map((ex) => <Col>{ex}</Col>)
+                : null}
             </Row>
 
             <Divider />
@@ -287,8 +298,11 @@ const IndividualPatientView = (props) => {
                 <Row key={i}>
                   <Col>{s["day"]}</Col>
                   {s["exercise"].map((ex, k) => {
+                    console.log(ex);
                     return (
-                      <Col>{ex["name"]}:{ex["complete"].toString()}</Col>
+                      <Col>
+                        {ex["name"]}:{ex["complete"].toString()}
+                      </Col>
                     );
                   })}
                 </Row>
@@ -323,7 +337,6 @@ const IndividualPatientView = (props) => {
               </Container>
             );
           })}
-
 
           {exerciseSets.map((s, i) => {
             return (
