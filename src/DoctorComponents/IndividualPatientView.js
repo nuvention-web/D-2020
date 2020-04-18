@@ -269,6 +269,19 @@ const IndividualPatientView = (props) => {
   };
 
   const renderItems = () => {
+
+    // Return true, false, or - (not an exercise for this day)
+    const checkComplete = (exercises, exname) => {
+      // Iterate through set for the day
+      for (let i = 0; i < exercises.length; i++) {
+        if (exercises[i].name === exname) {
+          // Return bool
+          return exercises[i].complete.toString();
+        }
+      }
+      return "-";
+    }
+
     return (
       <div>
         <div>
@@ -297,11 +310,12 @@ const IndividualPatientView = (props) => {
               <Container>
                 <Row key={i}>
                   <Col>{s["day"]}</Col>
-                  {s["exercise"].map((ex, k) => {
-                    console.log(ex);
+                  {/* Map through each column */}
+                  {s.exerciseList.map((name, i) => {
+                    // if s
                     return (
                       <Col>
-                        {ex["name"]}:{ex["complete"].toString()}
+                        {checkComplete(s.exercise, name)}
                       </Col>
                     );
                   })}
