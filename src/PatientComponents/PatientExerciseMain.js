@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Divider, Typography } from "@material-ui/core";
+import { Divider, Typography, Container } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Row, Col, Button } from "react-bootstrap";
 import { db } from "../Firebase.js";
@@ -166,6 +166,18 @@ const PatientExerciseMain = (props) => {
   }, [exerciseSets]);
 
   const renderItems = () => {
+    // Return true, false, or - (not an exercise for this day)
+    const checkComplete = (exercises, exname) => {
+      // Iterate through set for the day
+      for (let i = 0; i < exercises.length; i++) {
+        if (exercises[i].name === exname) {
+          // Return bool
+          return exercises[i].complete.toString();
+        }
+      }
+      return "-";
+    }
+
     return (
       <div className={classes.window}>
         <div className={classes.exercises}>
@@ -207,6 +219,39 @@ const PatientExerciseMain = (props) => {
             );
           })}
         </div>
+
+        {/* Progress Chart */}
+        <div className={classes.exerciseContainer}>
+          <Typography variant="h4" className={classes.header}>
+            Your Progress
+          </Typography>
+          <Row>
+            <Col>Exercise Name</Col>
+            {exerciseSets
+              ? exerciseSets[0].exerciseList.map((ex) => <Col>{ex}</Col>)
+              : null}
+          </Row>
+          <Divider />
+
+          {exerciseSets.map((s, i) => {
+            return (
+              <Row key={i}>
+                <Col>{s["day"]}</Col>
+                {/* Map through each column */}
+                {s.exerciseList.map((name, i) => {
+                  // if s
+                  return (
+                    <Col>
+                      {checkComplete(s.exercise, name)}
+                    </Col>
+                  );
+                })}
+              </Row>
+            );
+          })}
+        </div>
+        {/* End Progress Chart */}
+
         <footer className={classes.footer}>
           <img
             src={"/img/StretchGraphic2.png"}

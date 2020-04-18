@@ -294,6 +294,8 @@ const IndividualPatientView = (props) => {
               "exerciseList",
               JSON.stringify(exerciseSets[0].exercise)
             )}
+
+            {/* Progress Chart */}
             <Row>
               <Col>Exercise Name</Col>
               {exerciseSets
@@ -304,7 +306,6 @@ const IndividualPatientView = (props) => {
             <Divider />
           </Container>
 
-          {/* Progress Chart */}
           {exerciseSets.map((s, i) => {
             return (
               <Container>
@@ -320,37 +321,11 @@ const IndividualPatientView = (props) => {
                     );
                   })}
                 </Row>
-
-                {/* {s["exercise"].map((ex, k) => {
-                  { console.log("s", s) }
-                  return (
-                  <div>nothing</div>
-                  );
-                })} */}
-
-                {/* <div className={classes.root}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={2}>
-                      <Paper className={classes.paper}>xs=3</Paper>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Paper className={classes.paper}>xs=3</Paper>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Paper className={classes.paper}>xs=3</Paper>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Paper className={classes.paper}>xs=2</Paper>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Paper className={classes.paper}>xs=end</Paper>
-                    </Grid>
-                  </Grid>
-                </div> */}
-                {/* End Progress Chart */}
               </Container>
             );
           })}
+          {/* End Progress Chart */}
+
 
           {exerciseSets.map((s, i) => {
             return (

@@ -6,7 +6,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  Checkbox,
+  Checkbox
 } from "@material-ui/core";
 import YouTube from "react-youtube";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -23,6 +23,7 @@ import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import '../PatientExerciseTracking.css'
 import Sidebar from "react-sidebar";
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -75,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     right: "15%",
     left: "15%",
-    bottom: -125,
+    bottom: -125
   },
   time: {
     fontSize: 20,
@@ -118,6 +119,19 @@ const ExerciseCarousel = ({ set }) => {
     setIndex(selectedIndex);
     setDirection(e.direction);
   };
+
+  // Will render alert if complete is true
+  const renderAlert = (status) => {
+    console.log("complete?", status);
+    if (status) {
+      return(
+      <Alert severity="success">
+        <AlertTitle>Success</AlertTitle>
+        Nice! You've completed this exercise<strong>Keep it up!</strong>
+      </Alert>
+      )
+    };
+  }
 
   return (
     <Carousel
@@ -176,7 +190,11 @@ const ExerciseCarousel = ({ set }) => {
                 </React.Fragment>
               )}
             </Timer>
+            {/* Success Alert When Exercise is Completed*/}
+            {console.log("exercise:", exercise)}
+            {renderAlert(exercise.complete)}
           </div>
+
         </Carousel.Item>
       ))}
     </Carousel>
@@ -264,10 +282,12 @@ const ExerciseTracking = (props) => {
         sidebar={<SideBar />}
         pullRight={true}
         onSetOpen={() => setSidebar(false)}
-        styles={{ sidebar: { background: "white" }, 
-        content: {position: "relative"}, 
-        root: {marginTop: '8%'},
-        overlay: {marginTop: '8%'}}}
+        styles={{
+          sidebar: { background: "white" },
+          content: { position: "relative" },
+          root: { marginTop: '8%' },
+          overlay: { marginTop: '8%' }
+        }}
       >
         <div className={classes.exerciseContainer}>
           <Typography variant="h4" className={classes.header}>
