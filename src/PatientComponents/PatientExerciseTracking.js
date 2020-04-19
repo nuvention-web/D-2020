@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const ExerciseCarousel = ( {set} , currUID) => {
+const ExerciseCarousel = ( {set} ) => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(null);
   const classes = useStyles();
@@ -122,9 +122,11 @@ const ExerciseCarousel = ( {set} , currUID) => {
     setIndex(selectedIndex);
     setDirection(e.direction);
   };
+  const currUser = useContext(UserContext).user;
+
 
   console.log("set", set)
-  console.log('currUID in carousel', currUID);
+  console.log('currUser in carousel', currUser);
 
   // Will render alert if complete is true
   const renderAlert = (status) => {
@@ -143,6 +145,7 @@ const ExerciseCarousel = ( {set} , currUID) => {
   const updateCompleted = (exercisename) => {
     console.log('Checkpoint A');
     
+    console.log('currUser in function', currUser)
     // For debugging purposes - pauses refresh on submit
     // e.preventDefault();
 
@@ -278,10 +281,10 @@ const ExerciseTracking = (props) => {
 
   // Make sure set and user are both non-empty before loading page
   useEffect(() => {
-    if ((typeof currentSet !== "undefined") && (Object.entries(currUser).length > 0)) {
+    if (typeof currentSet !== "undefined") {
       setLoaded(true);
     }
-  }, [currentSet, currUser]);
+  }, [currentSet]);
 
   const SideBar = () => {
     const handleChecked = (i) => {
@@ -321,10 +324,7 @@ const ExerciseTracking = (props) => {
     );
   };
 
-  const renderExerciseTracking = (currUser) => {
-    console.log('currUser in renderExerciseTracking', currUser)
-    console.log('currUser.uid in renderExerciseTracking', currUser.uid)
-
+  const renderExerciseTracking = () => {
     return (
       <Sidebar
         open={sidebar}
@@ -355,7 +355,7 @@ const ExerciseTracking = (props) => {
             </Button>
           </Typography>
           <Divider />
-          <ExerciseCarousel set={currentSet} currUID={currUser.uid} />
+          <ExerciseCarousel set={currentSet}/>
         </div>
       </Sidebar>
     );
@@ -365,7 +365,7 @@ const ExerciseTracking = (props) => {
     return <h1>Loading...</h1>;
   };
 
-  return <div>{loaded ? renderExerciseTracking(currUser) : renderLoading()}</div>;
+  return <div>{loaded ? renderExerciseTracking() : renderLoading()}</div>;
 };
 
 export default ExerciseTracking;
