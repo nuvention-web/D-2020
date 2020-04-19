@@ -6,7 +6,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  Checkbox
+  Checkbox,
 } from "@material-ui/core";
 import YouTube from "react-youtube";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -21,12 +21,11 @@ import {
 import Timer from "react-compound-timer";
 import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
-import '../PatientExerciseTracking.css'
+import "../PatientExerciseTracking.css";
 import Sidebar from "react-sidebar";
-import { Alert, AlertTitle } from '@material-ui/lab';
+import { Alert, AlertTitle } from "@material-ui/lab";
 import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
-
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -53,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     textAlign: "center",
     height: "100%",
-    marginTop: '3%'
+    marginTop: "3%",
   },
   carousel: {
     display: "flex",
@@ -79,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     right: "15%",
     left: "15%",
-    bottom: -125
+    bottom: -125,
   },
   time: {
     fontSize: 20,
@@ -111,10 +110,10 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "9%",
     marginLeft: 15,
     marginBottom: 10,
-  }
+  },
 }));
 
-const ExerciseCarousel = ( {set} ) => {
+const ExerciseCarousel = ({ set }) => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(null);
   const classes = useStyles();
@@ -124,28 +123,27 @@ const ExerciseCarousel = ( {set} ) => {
   };
   const currUser = useContext(UserContext).user;
 
-
-  console.log("set", set)
-  console.log('currUser in carousel', currUser);
+  console.log("set", set);
+  console.log("currUser in carousel", currUser);
 
   // Will render alert if complete is true
   const renderAlert = (status) => {
     console.log("complete?", status);
-    if (status) {
+    if (status === true) {
       return (
         <Alert severity="success">
           <AlertTitle>Success</AlertTitle>
           Nice! You've completed this exercise<strong>Keep it up!</strong>
         </Alert>
-      )
-    };
-  }
+      );
+    }
+  };
 
   // Update 'complete' flag when timer hits 0
-  const updateCompleted = (exercisename) => {
-    console.log('Checkpoint A');
-    
-    console.log('currUser in function', currUser)
+  const updateCompleted = (exercisename, currUser) => {
+    console.log("Checkpoint A");
+
+    console.log("currUser in function", currUser);
     // For debugging purposes - pauses refresh on submit
     // e.preventDefault();
 
@@ -167,7 +165,7 @@ const ExerciseCarousel = ( {set} ) => {
     //   .catch(function (error) {
     //     console.error("Error writing document: ", error);
     //   });
-  }
+  };
 
   return (
     <Carousel
@@ -199,44 +197,47 @@ const ExerciseCarousel = ( {set} ) => {
             <Typography variant="h5">{exercise.name}</Typography>
           </Carousel.Caption>
           <div className={classes.timer}>
-            <Timer
-              initialTime={exercise.duration * 60000}
-              direction="backward"
-              startImmediately={false}
-              checkpoints={[
-                {
-                  time: 0,
-                  callback: () => updateCompleted(exercise.name),
-                }
-              ]}
-            >
-              {({ start, stop, reset, timerState }) => (
-                <React.Fragment>
-                  <div className={classes.time}>
-                    <Timer.Minutes />:
-                    <Timer.Seconds
-                      formatValue={(value) =>
-                        `${value < 10 ? `0${value}` : value}`
-                      }
-                    />
-                  </div>
-                  <Button onClick={start} className="timer-btn">
-                    Start
-                  </Button>
-                  <Button onClick={stop} className="timer-btn">
-                    Stop
-                  </Button>
-                  <Button onClick={reset} className="timer-btn">
-                    Reset
-                  </Button>
-                </React.Fragment>
-              )}
-            </Timer>
+            {console.log(currUser)}
+            {Object.entries(currUser).length > 0 ? (
+              <Timer
+                initialTime={exercise.duration * 60000}
+                direction="backward"
+                startImmediately={false}
+                checkpoints={[
+                  {
+                    time: 0,
+                    callback: () => updateCompleted(exercise.name, currUser),
+                  },
+                ]}
+              >
+                {({ start, stop, reset, timerState }) => (
+                  <React.Fragment>
+                    <div className={classes.time}>
+                      <Timer.Minutes />:
+                      <Timer.Seconds
+                        formatValue={(value) =>
+                          `${value < 10 ? `0${value}` : value}`
+                        }
+                      />
+                    </div>
+                    <Button onClick={start} className="timer-btn">
+                      Start
+                    </Button>
+                    <Button onClick={stop} className="timer-btn">
+                      Stop
+                    </Button>
+                    <Button onClick={reset} className="timer-btn">
+                      Reset
+                    </Button>
+                  </React.Fragment>
+                )}
+              </Timer>
+            ) : null}
+
             {/* Success Alert When Exercise is Completed*/}
             {console.log("exercise:", exercise)}
-            {renderAlert(exercise.complete)}
+            {/* {exercise.complete === true ? renderAlert(exercise.complete) : null} */}
           </div>
-
         </Carousel.Item>
       ))}
     </Carousel>
@@ -254,7 +255,7 @@ const ExerciseTracking = (props) => {
 
   // Added
   const currUser = useContext(UserContext).user;
-
+  console.log("Current User from Main", currUser);
   console.log("currentSet", currentSet);
 
   useEffect(() => {
@@ -334,8 +335,8 @@ const ExerciseTracking = (props) => {
         styles={{
           sidebar: { background: "white" },
           content: { position: "relative" },
-          root: { marginTop: '8%' },
-          overlay: { marginTop: '8%' }
+          root: { marginTop: "8%" },
+          overlay: { marginTop: "8%" },
         }}
       >
         <div className={classes.exerciseContainer}>
@@ -355,7 +356,7 @@ const ExerciseTracking = (props) => {
             </Button>
           </Typography>
           <Divider />
-          <ExerciseCarousel set={currentSet}/>
+          <ExerciseCarousel set={currentSet} />
         </div>
       </Sidebar>
     );
