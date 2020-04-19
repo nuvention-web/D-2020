@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Typography,
@@ -24,6 +24,9 @@ import Button from "react-bootstrap/Button";
 import '../PatientExerciseTracking.css'
 import Sidebar from "react-sidebar";
 import { Alert, AlertTitle } from '@material-ui/lab';
+import { db } from "../Firebase.js";
+import { UserContext } from "../contexts/UserContext";
+
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -111,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const ExerciseCarousel = ({ set }) => {
+const ExerciseCarousel = ( {set} , currUID) => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(null);
   const classes = useStyles();
@@ -120,17 +123,47 @@ const ExerciseCarousel = ({ set }) => {
     setDirection(e.direction);
   };
 
+  console.log("set", set)
+  console.log('currUID in carousel', currUID);
+
   // Will render alert if complete is true
   const renderAlert = (status) => {
     console.log("complete?", status);
     if (status) {
-      return(
-      <Alert severity="success">
-        <AlertTitle>Success</AlertTitle>
-        Nice! You've completed this exercise<strong>Keep it up!</strong>
-      </Alert>
+      return (
+        <Alert severity="success">
+          <AlertTitle>Success</AlertTitle>
+          Nice! You've completed this exercise<strong>Keep it up!</strong>
+        </Alert>
       )
     };
+  }
+
+  // Update 'complete' flag when timer hits 0
+  const updateCompleted = (exercisename) => {
+    console.log('Checkpoint A');
+    
+    // For debugging purposes - pauses refresh on submit
+    // e.preventDefault();
+
+    // // Firestore reference
+    // var exerciseRef = db
+    //   .collection("patients")
+    //   .doc(currUser.uid)
+    //   .collection("exercisesets")
+    //   .doc(set.name)
+    //   .collection("exercises")
+    //   .where("name", "==", exercisename);
+
+    // exerciseRef
+    //   .update({ complete: true })
+    //   .then(function (docRef) {
+    //     console.log("Document written with ID: ", docRef.id);
+    //     // window.location.reload(false);
+    //   })
+    //   .catch(function (error) {
+    //     console.error("Error writing document: ", error);
+    //   });
   }
 
   return (
@@ -167,8 +200,14 @@ const ExerciseCarousel = ({ set }) => {
               initialTime={exercise.duration * 60000}
               direction="backward"
               startImmediately={false}
+              checkpoints={[
+                {
+                  time: 0,
+                  callback: () => updateCompleted(exercise.name),
+                }
+              ]}
             >
-              {({ start, stop, reset }) => (
+              {({ start, stop, reset, timerState }) => (
                 <React.Fragment>
                   <div className={classes.time}>
                     <Timer.Minutes />:
@@ -201,6 +240,7 @@ const ExerciseCarousel = ({ set }) => {
   );
 };
 
+// Main function
 const ExerciseTracking = (props) => {
   const [currentSet, setCurrentSet] = useState(props.location.exerciseProps);
   const classes = useStyles();
@@ -208,6 +248,11 @@ const ExerciseTracking = (props) => {
   const [sidebar, setSidebar] = useState(false);
   const [checked, setChecked] = useState([]);
   const [progress, setProgress] = useState(0);
+
+  // Added
+  const currUser = useContext(UserContext).user;
+
+  console.log("currentSet", currentSet);
 
   useEffect(() => {
     //if page is refreshed, can retrieve and parse into JSON
@@ -231,11 +276,12 @@ const ExerciseTracking = (props) => {
     }
   }, []);
 
+  // Make sure set and user are both non-empty before loading page
   useEffect(() => {
-    if (typeof currentSet !== "undefined") {
+    if ((typeof currentSet !== "undefined") && (Object.entries(currUser).length > 0)) {
       setLoaded(true);
     }
-  }, [currentSet]);
+  }, [currentSet, currUser]);
 
   const SideBar = () => {
     const handleChecked = (i) => {
@@ -275,7 +321,10 @@ const ExerciseTracking = (props) => {
     );
   };
 
-  const renderExerciseTracking = () => {
+  const renderExerciseTracking = (currUser) => {
+    console.log('currUser in renderExerciseTracking', currUser)
+    console.log('currUser.uid in renderExerciseTracking', currUser.uid)
+
     return (
       <Sidebar
         open={sidebar}
@@ -306,7 +355,7 @@ const ExerciseTracking = (props) => {
             </Button>
           </Typography>
           <Divider />
-          <ExerciseCarousel set={currentSet} />
+          <ExerciseCarousel set={currentSet} currUID={currUser.uid} />
         </div>
       </Sidebar>
     );
@@ -316,7 +365,7 @@ const ExerciseTracking = (props) => {
     return <h1>Loading...</h1>;
   };
 
-  return <div>{loaded ? renderExerciseTracking() : renderLoading()}</div>;
+  return <div>{loaded ? renderExerciseTracking(currUser) : renderLoading()}</div>;
 };
 
 export default ExerciseTracking;
