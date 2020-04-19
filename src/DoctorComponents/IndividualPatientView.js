@@ -269,6 +269,19 @@ const IndividualPatientView = (props) => {
   };
 
   const renderItems = () => {
+
+    // Return true, false, or - (not an exercise for this day)
+    const checkComplete = (exercises, exname) => {
+      // Iterate through set for the day
+      for (let i = 0; i < exercises.length; i++) {
+        if (exercises[i].name === exname) {
+          // Return bool
+          return exercises[i].complete.toString();
+        }
+      }
+      return "-";
+    }
+
     return (
       <div>
         <div>
@@ -281,6 +294,8 @@ const IndividualPatientView = (props) => {
               "exerciseList",
               JSON.stringify(exerciseSets[0].exercise)
             )}
+
+            {/* Progress Chart */}
             <Row>
               <Col>Exercise Name</Col>
               {exerciseSets
@@ -291,52 +306,26 @@ const IndividualPatientView = (props) => {
             <Divider />
           </Container>
 
-          {/* Progress Chart */}
           {exerciseSets.map((s, i) => {
             return (
               <Container>
                 <Row key={i}>
                   <Col>{s["day"]}</Col>
-                  {s["exercise"].map((ex, k) => {
-                    console.log(ex);
+                  {/* Map through each column */}
+                  {s.exerciseList.map((name, i) => {
+                    // if s
                     return (
                       <Col>
-                        {ex["name"]}:{ex["complete"].toString()}
+                        {checkComplete(s.exercise, name)}
                       </Col>
                     );
                   })}
                 </Row>
-
-                {/* {s["exercise"].map((ex, k) => {
-                  { console.log("s", s) }
-                  return (
-                  <div>nothing</div>
-                  );
-                })} */}
-
-                {/* <div className={classes.root}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={2}>
-                      <Paper className={classes.paper}>xs=3</Paper>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Paper className={classes.paper}>xs=3</Paper>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Paper className={classes.paper}>xs=3</Paper>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Paper className={classes.paper}>xs=2</Paper>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Paper className={classes.paper}>xs=end</Paper>
-                    </Grid>
-                  </Grid>
-                </div> */}
-                {/* End Progress Chart */}
               </Container>
             );
           })}
+          {/* End Progress Chart */}
+
 
           {exerciseSets.map((s, i) => {
             return (
