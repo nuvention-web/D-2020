@@ -22,7 +22,7 @@ import NavBar from "./NavBar";
 
 const useStyles = makeStyles((theme) => ({
   window: {
-    marginTop: '5%',
+    marginTop: "5%",
     height: "100%",
   },
 }));
@@ -56,7 +56,7 @@ const App = () => {
             <Users />
           </Route> */}
             <Route
-              path="/PT/patient"
+              path="/PT/patient/:id"
               component={(props) => (
                 <IndividualPatientView {...props}></IndividualPatientView>
               )}

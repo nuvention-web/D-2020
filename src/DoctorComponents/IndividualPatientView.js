@@ -6,12 +6,11 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
 import { Button, Form, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import PresetExercisesData from "../ModelJSON/PresetExercises.json";
 import { db } from "../Firebase.js";
+import { useLocation, useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -96,12 +95,10 @@ const IndividualPatientView = (props) => {
   const [newExercise, setNewExercise] = useState("Calf Wall Stretch");
   const [newReps, setNewReps] = useState(1);
   const [newDuration, setNewDuration] = useState(5);
-
-  const [patientIndex, setPatientIndex] = useState("");
+  const { id } = useParams();
 
   // For loading data, taken from PatientExerciseMain
   const [loaded, setLoaded] = useState(false);
-  const [foundDID, setfoundDID] = useState(false);
   const dotw = [
     "Monday",
     "Tuesday",
@@ -111,82 +108,55 @@ const IndividualPatientView = (props) => {
     "Saturday",
     "Sunday",
   ];
-  // const [exerciseList, setExerciseList] = useState([]);
-
-  // Retrieve the docID from either prop or local storage if prop is unavailable (refresh)
-  useEffect(() => {
-    // If prop is undefined, retrieve id local storage, then access via Firebase
-    if (typeof props.location.patientProps === "undefined") {
-      var pi = localStorage.getItem("currPatient");
-      setPatientIndex(pi);
-    }
-    // Use prop if available. Also store in local storage for future use
-    else {
-      localStorage.setItem(
-        "currPatient",
-        props.location.patientProps.patientInfo.docId
-      );
-      console.log("props", props.location.patientProps.patientInfo);
-      const pi = props.location.patientProps.patientInfo.docId;
-      setPatientIndex(pi);
-    }
-  }, []);
-
-  // To check that we have retrieved the docID (from storage or prop) so that Firestore retrieval works
-  useEffect(() => {
-    console.log("patientIndex", patientIndex);
-    if (patientIndex !== "") {
-      setfoundDID(true);
-    }
-  }, [patientIndex]);
+  const location = useLocation();
 
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
     const fetchPatient = () => {
-      if (foundDID) {
-        // Newly added to load Firestore data
-        var patientRef = db
-          .collection("patients")
-          .doc(patientIndex)
-          .collection("exercisesets");
+      // Newly added to load Firestore data
+      console.log(location.patientInfo);
+      var patientRef = db
+        .collection("patients")
+        .doc(id)
+        .collection("exercisesets");
 
-        // Newly added to load Firestore data
-        var fullset = [];
-        var l = [];
-        patientRef.get().then((querySnapshot) => {
-          // For each set
-          querySnapshot.forEach((doc) => {
-            const day = doc.data().day;
-            var ex = [];
-            // Nested inner
-            patientRef
-              .doc(doc.id)
-              .collection("exercises")
-              .get()
-              .then((querySnapshot) => {
-                querySnapshot.forEach((doc1) => {
-                  const exercise = doc1.data();
-                  console.log("exercise.name", exercise.name);
-                  ex.push(exercise);
-                  if (!l.includes(exercise.name)) {
-                    l.push(exercise.name);
-                    console.log("l now", l);
-                    // setExerciseList(l); // this causes ExerciseSets to be incorrect
-                  }
-                });
-              })
-              .then(() => {
-                console.log("THis is L: ", JSON.stringify(l));
-                fullset.push({ day: day, exercise: ex, exerciseList: l });
-                console.log("fullset", JSON.stringify(fullset));
-                setExerciseSets(fullset);
+      // Newly added to load Firestore data
+      var fullset = [];
+      var l = [];
+      patientRef.get().then((querySnapshot) => {
+        // For each set
+        querySnapshot.forEach((doc) => {
+          const day = doc.data().day;
+          var ex = [];
+          // Nested inner
+          patientRef
+            .doc(doc.id)
+            .collection("exercises")
+            .get()
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc1) => {
+                const exercise = doc1.data();
+                console.log("exercise.name", exercise.name);
+                ex.push(exercise);
+                if (!l.includes(exercise.name)) {
+                  l.push(exercise.name);
+                  console.log("l now", l);
+                  // setExerciseList(l); // this causes ExerciseSets to be incorrect
+                }
               });
-          });
+            })
+            .then(() => {
+              console.log("THis is L: ", JSON.stringify(l));
+              fullset.push({ day: day, exercise: ex, exerciseList: l });
+              console.log("fullset", JSON.stringify(fullset));
+              setExerciseSets(fullset);
+            });
         });
-      }
+      });
     };
+
     fetchPatient();
-  }, [foundDID]);
+  }, []);
 
   // last line refers to how this useEffect will rerun if value of foundDID changes
   useEffect(() => {
@@ -232,7 +202,7 @@ const IndividualPatientView = (props) => {
     // Firestore reference
     var patientRef = db
       .collection("patients")
-      .doc(patientIndex)
+      .doc(id)
       .collection("exercisesets")
       .doc(dotw[setIndex])
       .collection("exercises");
@@ -269,7 +239,6 @@ const IndividualPatientView = (props) => {
   };
 
   const renderItems = () => {
-
     // Return true, false, or - (not an exercise for this day)
     const checkComplete = (exercises, exname) => {
       // Iterate through set for the day
@@ -280,7 +249,7 @@ const IndividualPatientView = (props) => {
         }
       }
       return "-";
-    }
+    };
 
     return (
       <div>
@@ -314,18 +283,13 @@ const IndividualPatientView = (props) => {
                   {/* Map through each column */}
                   {s.exerciseList.map((name, i) => {
                     // if s
-                    return (
-                      <Col>
-                        {checkComplete(s.exercise, name)}
-                      </Col>
-                    );
+                    return <Col>{checkComplete(s.exercise, name)}</Col>;
                   })}
                 </Row>
               </Container>
             );
           })}
           {/* End Progress Chart */}
-
 
           {exerciseSets.map((s, i) => {
             return (

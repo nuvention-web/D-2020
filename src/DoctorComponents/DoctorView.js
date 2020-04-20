@@ -94,16 +94,19 @@ const DoctorView = () => {
   useEffect(() => {
     // Get actual connected patients
     let returnPat = [];
-    patientId.forEach((patient) => {
+    patientId.forEach((pId) => {
       db.collection("patients")
-        .doc(patient)
+        .doc(pId)
         .get()
         .then((doc) => {
           let individual = doc.data();
-          console.log(individual);
+          console.log("Individual", individual);
+          individual.uid = pId;
           returnPat.push(individual);
         })
-        .then(() => setPatients(returnPat));
+        .then(() => {
+          setPatients(returnPat);
+        });
     });
   }, [patientId]);
 
@@ -138,8 +141,8 @@ const DoctorView = () => {
               return (
                 <Link
                   to={{
-                    pathname: "/PT/patient",
-                    patientProps: { patientInfo: p },
+                    pathname: `/PT/patient/${p.uid}`,
+                    patientInfo: p,
                   }}
                   className={classes.link}
                 >
