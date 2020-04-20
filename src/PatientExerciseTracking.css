@@ -3,6 +3,10 @@ html, body {
   height: 100%;
 }
 
+.carousel-inner {
+  height: 100%
+}
+
 .carousel-indicators li {
     background-color: #80858a !important;
   }
