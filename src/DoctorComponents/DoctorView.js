@@ -68,14 +68,15 @@ const useStyles = makeStyles((theme) => ({
 const DoctorView = () => {
   const classes = useStyles();
   const [patients, setPatients] = useState([]);
+  const [patientId, setPatientId] = useState([]);
   const patientData = PatientExerciseData;
   const [loaded, setLoaded] = useState(false);
   const currUser = useContext(UserContext).user;
 
   useEffect(() => {
-    const fetchPatients = async () => {
-      var p = [];
-      let returnPat = [];
+    // Figure out the
+    if (Object.entries(currUser).length > 0) {
+      let p = [];
       // get patient of the therapist
       db.collection("therapists")
         .doc(currUser.uid)
@@ -85,25 +86,26 @@ const DoctorView = () => {
           console.log(therapist);
           therapist.patients.forEach((patient) => p.push(patient));
           console.log(p);
-          await p.map((patient) =>
-            db
-              .collection("patients")
-              .doc(patient)
-              .get()
-              .then((pat) => {
-                let v = pat.data();
-                returnPat.push(v);
-                console.log(JSON.stringify(returnPat));
-              })
-          );
-        })
-        .then(() => {
-          console.log("THis is return Pat", JSON.stringify(returnPat));
-          setPatients(returnPat);
+          setPatientId(p);
         });
-    };
-    if (Object.entries(currUser).length > 0) fetchPatients();
+    }
   }, [currUser]);
+
+  useEffect(() => {
+    // Get actual connected patients
+    let returnPat = [];
+    patientId.forEach((patient) => {
+      db.collection("patients")
+        .doc(patient)
+        .get()
+        .then((doc) => {
+          let individual = doc.data();
+          console.log(individual);
+          returnPat.push(individual);
+        })
+        .then(() => setPatients(returnPat));
+    });
+  }, [patientId]);
 
   useEffect(() => {
     if (patients.length != 0) {
