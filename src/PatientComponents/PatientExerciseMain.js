@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 25,
   },
   video: {
-    marginTop: 30,
+    marginTop: 60,
     marginLeft: 120,
     height: 250,
     width: 460,

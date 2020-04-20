@@ -40,8 +40,9 @@ const useStyles = makeStyles((theme) => ({
   },
   video: {
     flexGrow: 1,
-    minHeight: 500,
+    minHeight: "65vh",
     width: "70%",
+    marginTop: "2%"
   },
   appBar: {
     backgroundColor: "#bfd9ff",
@@ -52,17 +53,16 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     textAlign: "center",
     height: "100%",
-    marginTop: "3%",
+    marginTop: -20,
   },
   carousel: {
-    display: "flex",
-    marginTop: 45,
+    // display: "flex",
     // height: "100%",
     // width: "100%",
   },
   arrows: {
     display: "inline-block",
-    marginBottom: "70%",
+    marginBottom: "50%",
     fontSize: 70,
     background: "no-repeat 50%/100% 100%",
   },
@@ -111,6 +111,16 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 15,
     marginBottom: 10,
   },
+  completionAlert: {
+    width: "70%",
+    height: "30%",
+    display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
+    margin: "0 auto"
+  },
+  alertText: {
+  }
 }));
 
 const ExerciseCarousel = ({ set }) => {
@@ -123,48 +133,31 @@ const ExerciseCarousel = ({ set }) => {
   };
   const currUser = useContext(UserContext).user;
 
-  console.log("set", set);
-  console.log("currUser in carousel", currUser);
-
-  // Will render alert if complete is true
-  const renderAlert = (status) => {
-    console.log("complete?", status);
-    if (status === true) {
-      return (
-        <Alert severity="success">
-          <AlertTitle>Success</AlertTitle>
-          Nice! You've completed this exercise<strong>Keep it up!</strong>
-        </Alert>
-      );
-    }
-  };
-
   // Update 'complete' flag when timer hits 0
-  const updateCompleted = (exercisename, currUser) => {
+  const updateCompleted = (exercisename, day, currUser) => {
     console.log("Checkpoint A");
 
-    console.log("currUser in function", currUser);
-    // For debugging purposes - pauses refresh on submit
-    // e.preventDefault();
+    // Firestore reference
+    var exerciseRef = db
+      .collection("patients")
+      .doc(currUser.uid)
+      .collection("exercisesets")
+      .doc(day)
+      .collection("exercises")
 
-    // // Firestore reference
-    // var exerciseRef = db
-    //   .collection("patients")
-    //   .doc(currUser.uid)
-    //   .collection("exercisesets")
-    //   .doc(set.name)
-    //   .collection("exercises")
-    //   .where("name", "==", exercisename);
-
-    // exerciseRef
-    //   .update({ complete: true })
-    //   .then(function (docRef) {
-    //     console.log("Document written with ID: ", docRef.id);
-    //     // window.location.reload(false);
-    //   })
-    //   .catch(function (error) {
-    //     console.error("Error writing document: ", error);
-    //   });
+    exerciseRef
+      .where("name", "==", exercisename)
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          console.log(doc.id, " => ", doc.data());
+          exerciseRef.doc(doc.id).update({ complete: true })
+        });
+      })
+      .catch(function (error) {
+        console.error("Error writing document: ", error);
+      });
   };
 
   return (
@@ -192,6 +185,17 @@ const ExerciseCarousel = ({ set }) => {
     >
       {Object.values(set.exercise).map((exercise) => (
         <Carousel.Item key={exercise.id}>
+          {/* Success Alert When Exercise is Completed*/}
+            <br />
+            {/* Status (for debugging): {exercise.complete.toString()} */}
+            <br />
+            {exercise.complete ?
+              <Alert severity="success" className={classes.completionAlert}>
+                <AlertTitle>Success</AlertTitle>
+                Nice! You've completed this exercise. <strong>Keep it up!</strong>
+              </Alert> : null}
+          {/* End Alert */}
+
           <YouTube videoId={exercise.videoId} className={classes.video} />
           <Carousel.Caption>
             <Typography variant="h5">{exercise.name}</Typography>
@@ -206,7 +210,7 @@ const ExerciseCarousel = ({ set }) => {
                 checkpoints={[
                   {
                     time: 0,
-                    callback: () => updateCompleted(exercise.name, currUser),
+                    callback: () => updateCompleted(exercise.name, set.day, currUser),
                   },
                 ]}
               >
@@ -234,9 +238,6 @@ const ExerciseCarousel = ({ set }) => {
               </Timer>
             ) : null}
 
-            {/* Success Alert When Exercise is Completed*/}
-            {console.log("exercise:", exercise)}
-            {/* {exercise.complete === true ? renderAlert(exercise.complete) : null} */}
           </div>
         </Carousel.Item>
       ))}
@@ -327,18 +328,18 @@ const ExerciseTracking = (props) => {
 
   const renderExerciseTracking = () => {
     return (
-      <Sidebar
-        open={sidebar}
-        sidebar={<SideBar />}
-        pullRight={true}
-        onSetOpen={() => setSidebar(false)}
-        styles={{
-          sidebar: { background: "white" },
-          content: { position: "relative" },
-          root: { marginTop: "8%" },
-          overlay: { marginTop: "8%" },
-        }}
-      >
+      // <Sidebar
+      //   open={sidebar}
+      //   sidebar={<SideBar />}
+      //   pullRight={true}
+      //   onSetOpen={() => setSidebar(false)}
+      //   styles={{
+      //     sidebar: { background: "white" },
+      //     content: { position: "relative"},
+      //     root: { marginTop: "8%" },
+      //     overlay: { marginTop: "8%", height: "100%"},
+      //   }}
+      // >
         <div className={classes.exerciseContainer}>
           <Typography variant="h4" className={classes.header}>
             <Link to="/workout" className={classes.link}>
@@ -358,7 +359,7 @@ const ExerciseTracking = (props) => {
           <Divider />
           <ExerciseCarousel set={currentSet} />
         </div>
-      </Sidebar>
+      // </Sidebar>
     );
   };
 
