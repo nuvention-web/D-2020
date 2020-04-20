@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import { SignIn, LogOut } from "./Firebase";
 import { Link } from "react-router-dom";
@@ -111,6 +111,15 @@ const NavBar = () => {
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
   const history = useHistory();
+  const [type, setType] = useState();
+  const [haveLoggedIn, setHaveLoggedIn] = useState(null);
+
+  useEffect(() => {
+    console.log("have changed");
+    if (localStorage.getItem("type") !== undefined) {
+      setType(localStorage.getItem("type"));
+    }
+  }, [currUser]);
 
   return (
     <nav>
@@ -119,16 +128,23 @@ const NavBar = () => {
           <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>{" "}
         </Link>
         <Toolbar className={classes.navBar}>
-          <Link to="/PT">
-            <Button variant="light" className={classes.navButton}>
-              PT View
-            </Button>
-          </Link>
-          <Link to={{ pathname: "/workout", state: { userId: currUser.uid } }}>
-            <Button variant="light" className={classes.navButton}>
-              Patient View
-            </Button>
-          </Link>
+          {console.log(type)}
+          {Object.entries(currUser).length >= 1 && type == "therapists" ? (
+            <Link to="/PT">
+              <Button variant="light" className={classes.navButton}>
+                PT View
+              </Button>
+            </Link>
+          ) : null}
+          {Object.entries(currUser).length >= 1 && type == "patients" ? (
+            <Link
+              to={{ pathname: "/workout", state: { userId: currUser.uid } }}
+            >
+              <Button variant="light" className={classes.navButton}>
+                Patient View
+              </Button>
+            </Link>
+          ) : null}
           {Object.entries(currUser).length >= 1 ? (
             <Link to={{ pathname: "/profile" }}>
               <Button variant="light" className={classes.navButton}>

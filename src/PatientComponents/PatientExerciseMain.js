@@ -176,7 +176,7 @@ const PatientExerciseMain = (props) => {
         }
       }
       return "-";
-    }
+    };
 
     return (
       <div className={classes.window}>
@@ -240,11 +240,7 @@ const PatientExerciseMain = (props) => {
                 {/* Map through each column */}
                 {s.exerciseList.map((name, i) => {
                   // if s
-                  return (
-                    <Col>
-                      {checkComplete(s.exercise, name)}
-                    </Col>
-                  );
+                  return <Col>{checkComplete(s.exercise, name)}</Col>;
                 })}
               </Row>
             );

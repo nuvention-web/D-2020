@@ -37,6 +37,9 @@ const storageRef = firebase.storage().ref();
 const SignIn = () => (
   <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
 );
-const LogOut = () => firebase.auth().signOut();
+const LogOut = () => {
+  localStorage.setItem("type", "");
+  firebase.auth().signOut();
+};
 
 export { db, SignIn, LogOut, storageRef, firebase };

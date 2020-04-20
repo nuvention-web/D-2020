@@ -11,6 +11,7 @@ import { UserContext } from "./contexts/UserContext";
 import { db } from "./Firebase";
 import { useHistory } from "react-router-dom";
 import NavBar from "./NavBar";
+import { scryRenderedComponentsWithType } from "react-dom/test-utils";
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100vh",
     backgroundRepeat: "no-repeat",
     marginTop: "-8vh",
-    paddingTop: "2vh"
+    paddingTop: "2vh",
   },
   appBar: {
     backgroundColor: "transparent",
@@ -123,8 +124,8 @@ const Landing = () => {
   //Access currentUser info from anywhere in the app using context
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
-  let [isPatient, setIsPatient] = useState(null);
-  let [isPT, setIsPT] = useState(null);
+  const [isPatient, setIsPatient] = useState(null);
+  const [isPT, setIsPT] = useState(null);
   const history = useHistory();
 
   // Check if user is patient
@@ -144,7 +145,7 @@ const Landing = () => {
           console.log("Error getting document:", error);
         });
     }
-  });
+  }, [currUser]);
 
   // Check if user is PT
   useEffect(() => {
@@ -162,7 +163,7 @@ const Landing = () => {
           console.log("Error getting document:", error);
         });
     }
-  });
+  }, [currUser]);
 
   // Check if user is new user. If so, send them to newUser page.
   useEffect(() => {
@@ -171,6 +172,7 @@ const Landing = () => {
       if (isPT != null && isPatient != null) {
         if (isPT === true) localStorage.setItem("type", "therapists");
         if (isPatient === true) localStorage.setItem("type", "patients");
+
         const isNewUser = !isPT && !isPatient;
         console.log("is New User?: ", isNewUser);
         // If the new user was set
@@ -183,22 +185,22 @@ const Landing = () => {
   }, [isPT, isPatient]);
 
   return (
-      <div className={classes.background}>
-        <div className={classes.landingLeftText}>
-          <p>
-            PT <FontAwesomeIcon icon={faArrowsAltH} color="#9DB4FF" />{" "}
-            &nbsp;patient relationships first.
-          </p>
-          <p className={classes.subtitle}>
-            We believe that quality care begins with a strong relationship
-            between physical therapist and patient.
-          </p>
-          <button className={classes.joinButton}>
-            Join us &nbsp;&nbsp;
-            <FontAwesomeIcon icon={faLongArrowAltRight} color="white" />{" "}
-          </button>
-        </div>
+    <div className={classes.background}>
+      <div className={classes.landingLeftText}>
+        <p>
+          PT <FontAwesomeIcon icon={faArrowsAltH} color="#9DB4FF" />{" "}
+          &nbsp;patient relationships first.
+        </p>
+        <p className={classes.subtitle}>
+          We believe that quality care begins with a strong relationship between
+          physical therapist and patient.
+        </p>
+        <button className={classes.joinButton}>
+          Join us &nbsp;&nbsp;
+          <FontAwesomeIcon icon={faLongArrowAltRight} color="white" />{" "}
+        </button>
       </div>
+    </div>
   );
 };
 
