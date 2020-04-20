@@ -123,48 +123,31 @@ const ExerciseCarousel = ({ set }) => {
   };
   const currUser = useContext(UserContext).user;
 
-  console.log("set", set);
-  console.log("currUser in carousel", currUser);
-
-  // Will render alert if complete is true
-  const renderAlert = (status) => {
-    console.log("complete?", status);
-    if (status === true) {
-      return (
-        <Alert severity="success">
-          <AlertTitle>Success</AlertTitle>
-          Nice! You've completed this exercise<strong>Keep it up!</strong>
-        </Alert>
-      );
-    }
-  };
-
   // Update 'complete' flag when timer hits 0
-  const updateCompleted = (exercisename, currUser) => {
+  const updateCompleted = (exercisename, day, currUser) => {
     console.log("Checkpoint A");
 
-    console.log("currUser in function", currUser);
-    // For debugging purposes - pauses refresh on submit
-    // e.preventDefault();
+    // Firestore reference
+    var exerciseRef = db
+      .collection("patients")
+      .doc(currUser.uid)
+      .collection("exercisesets")
+      .doc(day)
+      .collection("exercises")
 
-    // // Firestore reference
-    // var exerciseRef = db
-    //   .collection("patients")
-    //   .doc(currUser.uid)
-    //   .collection("exercisesets")
-    //   .doc(set.name)
-    //   .collection("exercises")
-    //   .where("name", "==", exercisename);
-
-    // exerciseRef
-    //   .update({ complete: true })
-    //   .then(function (docRef) {
-    //     console.log("Document written with ID: ", docRef.id);
-    //     // window.location.reload(false);
-    //   })
-    //   .catch(function (error) {
-    //     console.error("Error writing document: ", error);
-    //   });
+    exerciseRef
+      .where("name", "==", exercisename)
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // doc.data() is never undefined for query doc snapshots
+          console.log(doc.id, " => ", doc.data());
+          exerciseRef.doc(doc.id).update({ complete: true })
+        });
+      })
+      .catch(function (error) {
+        console.error("Error writing document: ", error);
+      });
   };
 
   return (
@@ -206,7 +189,7 @@ const ExerciseCarousel = ({ set }) => {
                 checkpoints={[
                   {
                     time: 0,
-                    callback: () => updateCompleted(exercise.name, currUser),
+                    callback: () => updateCompleted(exercise.name, set.day, currUser),
                   },
                 ]}
               >
@@ -235,8 +218,16 @@ const ExerciseCarousel = ({ set }) => {
             ) : null}
 
             {/* Success Alert When Exercise is Completed*/}
-            {console.log("exercise:", exercise)}
-            {/* {exercise.complete === true ? renderAlert(exercise.complete) : null} */}
+            <br />
+            Status (for debugging): {exercise.complete.toString()}
+            <br />
+            {exercise.complete ?
+              <Alert severity="success">
+                <AlertTitle>Success</AlertTitle>
+                Nice! You've completed this exercise. <strong>Keep it up!</strong>
+              </Alert> : null}
+            {/* End Alert */}
+
           </div>
         </Carousel.Item>
       ))}
