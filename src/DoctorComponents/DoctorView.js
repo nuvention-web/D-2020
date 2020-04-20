@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Container, Grid, AppBar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import PatientExerciseData from "../ModelJSON/PatientExercises.json";
 import { db } from "../Firebase.js";
 import Patient from "../PatientComponents/Patient";
+import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -69,26 +70,40 @@ const DoctorView = () => {
   const [patients, setPatients] = useState([]);
   const patientData = PatientExerciseData;
   const [loaded, setLoaded] = useState(false);
+  const currUser = useContext(UserContext).user;
 
   useEffect(() => {
     const fetchPatients = async () => {
-      // Newly added to load Firestore data
       var p = [];
-      db.collection("patients")
+      let returnPat = [];
+      // get patient of the therapist
+      db.collection("therapists")
+        .doc(currUser.uid)
         .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            var d = doc.data();
-            d.docId = doc.id;
-            p.push(d);
-          });
-          console.log("p!", p);
-          setPatients(p);
+        .then(async (doc) => {
+          let therapist = doc.data();
+          console.log(therapist);
+          therapist.patients.forEach((patient) => p.push(patient));
+          console.log(p);
+          await p.map((patient) =>
+            db
+              .collection("patients")
+              .doc(patient)
+              .get()
+              .then((pat) => {
+                let v = pat.data();
+                returnPat.push(v);
+                console.log(JSON.stringify(returnPat));
+              })
+          );
+        })
+        .then(() => {
+          console.log("THis is return Pat", JSON.stringify(returnPat));
+          setPatients(returnPat);
         });
     };
-
-    fetchPatients();
-  }, []);
+    if (Object.entries(currUser).length > 0) fetchPatients();
+  }, [currUser]);
 
   useEffect(() => {
     if (patients.length != 0) {
