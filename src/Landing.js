@@ -123,11 +123,10 @@ const Landing = () => {
 
   //Access currentUser info from anywhere in the app using context
   const currUser = useContext(UserContext).user;
-  const setCurrUser = useContext(UserContext).setUser;
   const [isPatient, setIsPatient] = useState(null);
   const [isPT, setIsPT] = useState(null);
   const history = useHistory();
-
+  const [isNewUser, setIsNewUser] = useState();
   // Check if user is patient
   useEffect(() => {
     const patientRef = db.collection("patients");
@@ -173,12 +172,17 @@ const Landing = () => {
         if (isPT === true) localStorage.setItem("type", "therapists");
         if (isPatient === true) localStorage.setItem("type", "patients");
 
-        const isNewUser = !isPT && !isPatient;
-        console.log("is New User?: ", isNewUser);
+        const temp = !isPT && !isPatient;
+        console.log("is New User?: ", temp);
         // If the new user was set
         // Initial login
         if (isNewUser === true) {
           history.push("/newUser");
+        } else {
+          if (localStorage.getItem("type") !== null) {
+            console.log("happening");
+            setIsNewUser(temp);
+          }
         }
       }
     }
