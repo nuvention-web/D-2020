@@ -7,25 +7,34 @@ import {
   Card,
   CardContent,
   CardMedia,
-  Button,
   Typography,
   Container,
 } from "@material-ui/core";
+import { Button } from "react-bootstrap";
 
 const Profile = (props) => {
   const useStyles = makeStyles((theme) => ({
     root: {
       textAlign: "center",
+      color: "#80858a"
     },
     card: {
+      marginTop: "3%",
       margin: "0 auto",
-      maxWidth: 345,
-      minHeight: 430,
+      width: "45vh",
+      minHeight: "60vh",
     },
     image: {
       width: "100%",
       height: "100%",
     },
+    editButton: {
+      marginBottom: "2%"
+    },
+    bio: {
+      textAlign: "justify",
+      textJustify: "inter-word"
+    }
   }));
   const currUser = useContext(UserContext).user;
   const type = localStorage.getItem("type");
@@ -46,9 +55,9 @@ const Profile = (props) => {
 
   return (
     <div>
-      <Container>
-        <Typography gutterBottom variant="h5" component="h2">
-          Profile Page
+      <Container className={classes.root}>
+        <Typography gutterBottom variant="h4" component="h2">
+          Your Profile
         </Typography>{" "}
         {userProfile ? (
           <div className={classes.root}>
@@ -79,20 +88,20 @@ const Profile = (props) => {
                   </div>
                 ) : null}
 
-                <Typography variant="body2" color="textSecondary" component="p">
+                <Typography variant="body2" color="textSecondary" component="p" className={classes.bio}>
                   Bio: {userProfile.bio}
                 </Typography>
               </CardContent>
               <div>
                 <Button
-                  variant="contained"
-                  color="primary"
+                  variant="light"
                   onClick={() =>
                     history.push({
                       pathname: "/profile/edit",
                       userProfile: userProfile,
                     })
                   }
+                  className={classes.editButton}
                 >
                   Edit
                 </Button>

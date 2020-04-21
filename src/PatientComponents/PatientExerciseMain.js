@@ -9,7 +9,8 @@ import { UserContext } from "../contexts/UserContext";
 const useStyles = makeStyles((theme) => ({
   exercises: {
     marginTop: "6%",
-    height: "55%",
+    height: "45vh",
+    overflowY: "scroll"
   },
   header: {
     marginTop: 10,
@@ -133,7 +134,8 @@ const PatientExerciseMain = (props) => {
       var fullset = [];
       var l = [];
       patientRef.get().then((querySnapshot) => {
-        // For each set
+        //used to check whether ExerciseSets should be set
+        const exercisesLen = querySnapshot.size;
         querySnapshot.forEach((doc) => {
           const day = doc.data().day;
           var ex = [];
@@ -145,22 +147,21 @@ const PatientExerciseMain = (props) => {
             .then((querySnapshot) => {
               querySnapshot.forEach((doc1) => {
                 const exercise = doc1.data();
-                console.log("exercise.name", exercise.name);
                 ex.push(exercise);
                 if (!l.includes(exercise.name)) {
                   l.push(exercise.name);
-                  console.log("l now", l);
-                  // setExerciseList(l); // this causes ExerciseSets to be incorrect
                 }
               });
             })
             .then(() => {
-              console.log("THis is L: ", JSON.stringify(l));
               fullset.push({ day: day, exercise: ex, exerciseList: l });
-              console.log("fullset", fullset);
-              setExerciseSets(fullset);
-            });
-        });
+
+              //when all the days are loaded in, you can set ExerciseSets
+              if (fullset.length === exercisesLen) {
+                setExerciseSets(fullset);
+              }
+            })
+        })
       });
     }
   }, [currUser]);
@@ -213,7 +214,6 @@ const PatientExerciseMain = (props) => {
           <Divider />
 
           {exerciseSets.map((s, i) => {
-            console.log("This is s: ", s);
             return (
               <Row key={i}>
                 <Col>{s["day"]}</Col>

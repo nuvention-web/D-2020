@@ -27,6 +27,9 @@ const ProfileEdit = () => {
       width: "25%",
       height: "25%",
     },
+    container: {
+      textAlign: "center"
+    }
   }));
 
   const currUser = useContext(UserContext).user;
