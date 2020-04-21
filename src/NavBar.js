@@ -141,14 +141,14 @@ const NavBar = () => {
               to={{ pathname: "/workout", state: { userId: currUser.uid } }}
             >
               <Button variant="light" className={classes.navButton}>
-                Patient View
+                Exercise Tracking
               </Button>
             </Link>
           ) : null}
           {Object.entries(currUser).length >= 1 ? (
             <Link to={{ pathname: "/profile" }}>
               <Button variant="light" className={classes.navButton}>
-                User Profile
+                Profile
               </Button>
             </Link>
           ) : null}
