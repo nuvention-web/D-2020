@@ -67,8 +67,8 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "1.5rem",
     background: "#9DB4FF",
   },
-  arrowIcon: {
-    maxWidth: 20,
+  checkIcon: {
+    maxWidth: 25,
   },
   inputBox: {
     width: 50,
@@ -76,16 +76,19 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     border: "1px solid #ccc",
   },
-  // For Grid
-  root: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  },
-  // End for grid
+  centeredCol: {
+    textAlign: "center"
+  }
+  // // For Grid
+  // root: {
+  //   flexGrow: 1,
+  // },
+  // paper: {
+  //   padding: theme.spacing(2),
+  //   textAlign: "center",
+  //   color: theme.palette.text.secondary,
+  // },
+  // // End for grid
 }));
 
 const IndividualPatientView = (props) => {
@@ -239,13 +242,19 @@ const IndividualPatientView = (props) => {
   };
 
   const renderItems = () => {
+
     // Return true, false, or - (not an exercise for this day)
     const checkComplete = (exercises, exname) => {
       // Iterate through set for the day
       for (let i = 0; i < exercises.length; i++) {
         if (exercises[i].name === exname) {
           // Return bool
-          return exercises[i].complete.toString();
+          if (exercises[i].complete) {
+            return <img className={classes.checkIcon} src="/img/complete.png"></img>
+          }
+          else {
+            return <img className={classes.checkIcon} src="/img/incomplete.png"></img>
+          }
         }
       }
       return "-";
@@ -268,7 +277,7 @@ const IndividualPatientView = (props) => {
             <Row>
               <Col>Exercise Name</Col>
               {exerciseSets
-                ? exerciseSets[0].exerciseList.map((ex) => <Col>{ex}</Col>)
+                ? exerciseSets[0].exerciseList.map((ex) => <Col className={classes.centeredCol}>{ex}</Col>)
                 : null}
             </Row>
 
@@ -282,8 +291,7 @@ const IndividualPatientView = (props) => {
                   <Col>{s["day"]}</Col>
                   {/* Map through each column */}
                   {s.exerciseList.map((name, i) => {
-                    // if s
-                    return <Col>{checkComplete(s.exercise, name)}</Col>;
+                    return <Col className={classes.centeredCol}>{checkComplete(s.exercise, name)}</Col>;
                   })}
                 </Row>
               </Container>
