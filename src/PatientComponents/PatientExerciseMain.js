@@ -86,8 +86,8 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 35,
   },
   centeredCol: {
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
 }));
 
 const calculateTotalTime = (s) => {
@@ -157,7 +157,7 @@ const PatientExerciseMain = (props) => {
             .then(() => {
               console.log("THis is L: ", JSON.stringify(l));
               fullset.push({ day: day, exercise: ex, exerciseList: l });
-              console.log("fullset", JSON.stringify(fullset));
+              console.log("fullset", fullset);
               setExerciseSets(fullset);
             });
         });
@@ -172,18 +172,23 @@ const PatientExerciseMain = (props) => {
   }, [exerciseSets]);
 
   const renderItems = () => {
-
-  // Return true, false, or - (not an exercise for this day)
+    // Return true, false, or - (not an exercise for this day)
     const checkComplete = (exercises, exname) => {
       // Iterate through set for the day
       for (let i = 0; i < exercises.length; i++) {
         if (exercises[i].name === exname) {
           // Return bool
           if (exercises[i].complete) {
-            return <img className={classes.checkIcon} src="/img/complete.png"></img>
-          }
-          else {
-            return <img className={classes.checkIcon} src="/img/incomplete.png"></img>
+            return (
+              <img className={classes.checkIcon} src="/img/complete.png"></img>
+            );
+          } else {
+            return (
+              <img
+                className={classes.checkIcon}
+                src="/img/incomplete.png"
+              ></img>
+            );
           }
         }
       }
@@ -192,28 +197,31 @@ const PatientExerciseMain = (props) => {
 
     return (
       <div className={classes.window}>
-          {/* Progress Chart */}
-          <div className={classes.exerciseContainer}>
+        {/* Progress Chart */}
+        <div className={classes.exerciseContainer}>
           <Typography variant="h4" className={classes.header}>
             Your Progress
           </Typography>
           <Row>
             <Col>Exercise Name</Col>
             {exerciseSets
-              ? exerciseSets[0].exerciseList.map((ex) => <Col className={classes.centeredCol}>{ex}</Col>)
+              ? exerciseSets[0].exerciseList.map((ex) => (
+                  <Col className={classes.centeredCol}>{ex}</Col>
+                ))
               : null}
           </Row>
           <Divider />
 
           {exerciseSets.map((s, i) => {
+            console.log("This is s: ", s);
             return (
               <Row key={i}>
                 <Col>{s["day"]}</Col>
-                {/* Map through each column */}
-                {s.exerciseList.map((name, i) => {
+                {/* Map through each column */ console.log(s["day"])}
+                {s.exerciseList.map((name, j) => {
                   // if s
                   return (
-                    <Col className={classes.centeredCol}> 
+                    <Col className={classes.centeredCol} key={j}>
                       {checkComplete(s.exercise, name)}
                     </Col>
                   );
