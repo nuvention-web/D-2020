@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     minHeight: "65vh",
     width: "70%",
-    marginTop: "2%"
+    marginTop: "2%",
   },
   appBar: {
     backgroundColor: "#bfd9ff",
@@ -117,13 +117,12 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignContent: "center",
-    margin: "0 auto"
+    margin: "0 auto",
   },
-  alertText: {
-  }
+  alertText: {},
 }));
 
-const ExerciseCarousel = ({ set }) => {
+const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(null);
   const classes = useStyles();
@@ -134,7 +133,7 @@ const ExerciseCarousel = ({ set }) => {
   const currUser = useContext(UserContext).user;
   const { day } = useParams();
 
-  console.log("set in carousel",set);
+  console.log("set in carousel", set);
 
   // Update 'complete' flag when timer hits 0
   const updateCompleted = (exercisename, currUser) => {
@@ -146,7 +145,7 @@ const ExerciseCarousel = ({ set }) => {
       .doc(currUser.uid)
       .collection("exercisesets")
       .doc(day)
-      .collection("exercises")
+      .collection("exercises");
 
     exerciseRef
       .where("name", "==", exercisename)
@@ -154,8 +153,9 @@ const ExerciseCarousel = ({ set }) => {
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
-          exerciseRef.doc(doc.id).update({ complete: true })
-          alert('Good work!');
+          exerciseRef.doc(doc.id).update({ complete: true });
+          alert("Good work!");
+          setExerciseDone(true);
         });
       })
       .catch(function (error) {
@@ -189,11 +189,12 @@ const ExerciseCarousel = ({ set }) => {
       {set.map((exercise) => (
         <Carousel.Item key={exercise.id}>
           {/* Success Alert When Exercise is Completed*/}
-          {exercise.complete ?
+          {exercise.complete ? (
             <Alert severity="success" className={classes.completionAlert}>
               <AlertTitle>Success</AlertTitle>
               Nice! You've completed this exercise. <strong>Keep it up!</strong>
-            </Alert> : null}
+            </Alert>
+          ) : null}
           {/* End Alert */}
 
           <YouTube videoId={exercise.videoId} className={classes.video} />
@@ -237,7 +238,6 @@ const ExerciseCarousel = ({ set }) => {
                 )}
               </Timer>
             ) : null}
-
           </div>
         </Carousel.Item>
       ))}
@@ -253,6 +253,7 @@ const ExerciseTracking = (props) => {
   const [sidebar, setSidebar] = useState(false);
   const [checked, setChecked] = useState([]);
   const [progress, setProgress] = useState(0);
+  const [exerciseDone, setExerciseDone] = useState({});
 
   // Added
   const currUser = useContext(UserContext).user;
@@ -283,10 +284,10 @@ const ExerciseTracking = (props) => {
           console.log("Got data again via snapshot", doc.data());
           l.push(doc.data());
         });
-          setCurrentSet(l);
+        setCurrentSet(l);
       });
     }
-  }, [currUser]);
+  }, [currUser, exerciseDone]);
 
   // Make sure set and user are both non-empty before loading page
   useEffect(() => {
@@ -356,7 +357,7 @@ const ExerciseTracking = (props) => {
             </Button>
           </Link>
           {day}'s Exercises
-            <Button
+          <Button
             variant="light"
             onClick={() => setSidebar(true)}
             className={classes.tasksBtn}
@@ -365,8 +366,12 @@ const ExerciseTracking = (props) => {
           </Button>
         </Typography>
         <Divider />
-        {console.log('set in RET', currentSet)}
-        <ExerciseCarousel set={currentSet} />
+        {console.log("set in RET", currentSet)}
+        <ExerciseCarousel
+          set={currentSet}
+          exerciseDone={exerciseDone}
+          setExerciseDone={setExerciseDone}
+        />
       </div>
       // </Sidebar>
     );
