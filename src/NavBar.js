@@ -111,7 +111,7 @@ const NavBar = () => {
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
   const history = useHistory();
-  const [type, setType] = useState();
+  const [type, setType] = useState(localStorage.getItem("type"));
   const [haveLoggedIn, setHaveLoggedIn] = useState(null);
 
   useEffect(() => {
@@ -119,7 +119,7 @@ const NavBar = () => {
     if (localStorage.getItem("type") !== undefined) {
       setType(localStorage.getItem("type"));
     }
-  }, [currUser]);
+  }, [currUser, type]);
 
   return (
     <nav>
