@@ -19,7 +19,7 @@ import {
   faTasks,
 } from "@fortawesome/free-solid-svg-icons";
 import Timer from "react-compound-timer";
-import { Link } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import "../PatientExerciseTracking.css";
 import Sidebar from "react-sidebar";
@@ -132,9 +132,12 @@ const ExerciseCarousel = ({ set }) => {
     setDirection(e.direction);
   };
   const currUser = useContext(UserContext).user;
+  const { day } = useParams();
+
+  console.log("set in carousel",set);
 
   // Update 'complete' flag when timer hits 0
-  const updateCompleted = (exercisename, day, currUser) => {
+  const updateCompleted = (exercisename, currUser) => {
     console.log("Checkpoint A");
 
     // Firestore reference
@@ -150,9 +153,9 @@ const ExerciseCarousel = ({ set }) => {
       .get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
-          // doc.data() is never undefined for query doc snapshots
           console.log(doc.id, " => ", doc.data());
           exerciseRef.doc(doc.id).update({ complete: true })
+          alert('Good work!');
         });
       })
       .catch(function (error) {
@@ -183,17 +186,14 @@ const ExerciseCarousel = ({ set }) => {
       interval={0}
       indicators={false}
     >
-      {Object.values(set.exercise).map((exercise) => (
+      {set.map((exercise) => (
         <Carousel.Item key={exercise.id}>
           {/* Success Alert When Exercise is Completed*/}
-            <br />
-            {/* Status (for debugging): {exercise.complete.toString()} */}
-            <br />
-            {exercise.complete ?
-              <Alert severity="success" className={classes.completionAlert}>
-                <AlertTitle>Success</AlertTitle>
-                Nice! You've completed this exercise. <strong>Keep it up!</strong>
-              </Alert> : null}
+          {exercise.complete ?
+            <Alert severity="success" className={classes.completionAlert}>
+              <AlertTitle>Success</AlertTitle>
+              Nice! You've completed this exercise. <strong>Keep it up!</strong>
+            </Alert> : null}
           {/* End Alert */}
 
           <YouTube videoId={exercise.videoId} className={classes.video} />
@@ -210,7 +210,7 @@ const ExerciseCarousel = ({ set }) => {
                 checkpoints={[
                   {
                     time: 0,
-                    callback: () => updateCompleted(exercise.name, set.day, currUser),
+                    callback: () => updateCompleted(exercise.name, currUser),
                   },
                 ]}
               >
@@ -247,7 +247,7 @@ const ExerciseCarousel = ({ set }) => {
 
 // Main function
 const ExerciseTracking = (props) => {
-  const [currentSet, setCurrentSet] = useState(props.location.exerciseProps);
+  const [currentSet, setCurrentSet] = useState([]);
   const classes = useStyles();
   const [loaded, setLoaded] = useState(false);
   const [sidebar, setSidebar] = useState(false);
@@ -259,31 +259,39 @@ const ExerciseTracking = (props) => {
   console.log("Current User from Main", currUser);
   console.log("currentSet", currentSet);
 
-  useEffect(() => {
-    //if page is refreshed, can retrieve and parse into JSON
-    if (typeof props.location.exerciseProps === "undefined") {
-      var retrievedSet = JSON.parse(localStorage.getItem("currSet"));
-      setCurrentSet(retrievedSet);
-      setChecked(Array(Object.values(retrievedSet.exercise).length).fill(0));
-    }
+  // Added
+  const location = useLocation();
+  const { day } = useParams();
 
-    //store object for refresh as string
-    else {
-      localStorage.setItem(
-        "currSet",
-        JSON.stringify(props.location.exerciseProps)
-      );
-      setChecked(
-        Array(Object.values(props.location.exerciseProps.exercise).length).fill(
-          0
-        )
-      );
+  // Use docID to retreive a specific patient's data from Firestore
+  useEffect(() => {
+    if (Object.entries(currUser).length > 0) {
+      // Newly added to load Firestore data
+      console.log(location.patientInfo);
+      var setRef = db
+        .collection("patients")
+        .doc(currUser.uid)
+        .collection("exercisesets")
+        .doc(day)
+        .collection("exercises");
+
+      console.log("setRef", setRef);
+      // Newly added to load Firestore data, using onSnapshot to get live updates
+      var l = [];
+      setRef.onSnapshot(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          console.log("Got data again via snapshot", doc.data());
+          l.push(doc.data());
+        });
+          setCurrentSet(l);
+      });
     }
-  }, []);
+  }, [currUser]);
 
   // Make sure set and user are both non-empty before loading page
   useEffect(() => {
-    if (typeof currentSet !== "undefined") {
+    if (currentSet.length !== 0) {
+      console.log("currentSet length", currentSet.length);
       setLoaded(true);
     }
   }, [currentSet]);
@@ -340,25 +348,26 @@ const ExerciseTracking = (props) => {
       //     overlay: { marginTop: "8%", height: "100%"},
       //   }}
       // >
-        <div className={classes.exerciseContainer}>
-          <Typography variant="h4" className={classes.header}>
-            <Link to="/workout" className={classes.link}>
-              <Button variant="light" className={classes.backButton}>
-                <FontAwesomeIcon icon={faArrowLeft} color="#9DB4FF" />
-              </Button>
-            </Link>
-            {currentSet.day}'s Exercises
-            <Button
-              variant="light"
-              onClick={() => setSidebar(true)}
-              className={classes.tasksBtn}
-            >
-              <FontAwesomeIcon icon={faTasks} color="#9DB4FF" />
+      <div className={classes.exerciseContainer}>
+        <Typography variant="h4" className={classes.header}>
+          <Link to="/workout" className={classes.link}>
+            <Button variant="light" className={classes.backButton}>
+              <FontAwesomeIcon icon={faArrowLeft} color="#9DB4FF" />
             </Button>
-          </Typography>
-          <Divider />
-          <ExerciseCarousel set={currentSet} />
-        </div>
+          </Link>
+          {day}'s Exercises
+            <Button
+            variant="light"
+            onClick={() => setSidebar(true)}
+            className={classes.tasksBtn}
+          >
+            <FontAwesomeIcon icon={faTasks} color="#9DB4FF" />
+          </Button>
+        </Typography>
+        <Divider />
+        {console.log('set in RET', currentSet)}
+        <ExerciseCarousel set={currentSet} />
+      </div>
       // </Sidebar>
     );
   };

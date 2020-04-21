@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     background: "#9DB4FF",
   },
   checkIcon: {
-    maxWidth: 25,
+    maxWidth: 35,
   },
   inputBox: {
     width: 50,
@@ -265,7 +265,7 @@ const IndividualPatientView = (props) => {
         <div>
           <Container>
             <Typography variant="h4" className={classes.header}>
-              Name - Week of 3/2 - Progress
+              Week of 4/13 - Progress
             </Typography>
             {/* <div className={classes.accentDivider}></div> */}
             {console.log(

@@ -41,7 +41,7 @@ const App = () => {
           <Switch>
             <Route exact path="/" component={(props) => <Landing />}></Route>
             <Route
-              path="/workout/dotw"
+              path="/workout/:day"
               component={(props) => (
                 <ExerciseTracking {...props}></ExerciseTracking>
               )}
