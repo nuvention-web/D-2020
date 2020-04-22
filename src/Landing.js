@@ -10,8 +10,6 @@ import "./App.css";
 import { UserContext } from "./contexts/UserContext";
 import { db } from "./Firebase";
 import { useHistory } from "react-router-dom";
-import NavBar from "./NavBar";
-import { scryRenderedComponentsWithType } from "react-dom/test-utils";
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -118,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Landing = () => {
+const Landing = ({ haveLoggedIn, setHaveLoggedIn }) => {
   const classes = useStyles();
 
   //Access currentUser info from anywhere in the app using context
@@ -126,7 +124,6 @@ const Landing = () => {
   const [isPatient, setIsPatient] = useState(null);
   const [isPT, setIsPT] = useState(null);
   const history = useHistory();
-  const [isNewUser, setIsNewUser] = useState();
   // Check if user is patient
   useEffect(() => {
     const patientRef = db.collection("patients");
@@ -176,12 +173,13 @@ const Landing = () => {
         console.log("is New User?: ", temp);
         // If the new user was set
         // Initial login
-        if (isNewUser === true) {
+        if (haveLoggedIn === true) {
+          // Name might be deceiving but this means that it's a new user.
           history.push("/newUser");
         } else {
           if (localStorage.getItem("type") !== null) {
             console.log("happening");
-            setIsNewUser(temp);
+            setHaveLoggedIn(temp);
           }
         }
       }
