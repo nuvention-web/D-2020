@@ -60,6 +60,7 @@ const NewUserForm = () => {
       })
       .then(function () {
         console.log("Document successfully written!");
+        localStorage.setItem("type", userInfo.type);
         history.push({
           pathname: "/profile",
           notNewUser: true,

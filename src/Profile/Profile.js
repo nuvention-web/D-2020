@@ -44,7 +44,7 @@ const Profile = (props) => {
   const location = useLocation();
 
   useEffect(() => {
-    if (Object.entries(currUser).length >= 1 && type) {
+    if (Object.entries(currUser).length > 0 && type) {
       db.collection(type)
         .doc(currUser.uid)
         .get()
