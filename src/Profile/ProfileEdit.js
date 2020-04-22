@@ -1,35 +1,68 @@
 import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../contexts/UserContext";
 import { db, storageRef, firebase } from "../Firebase";
-import {
-  Button,
-  FormControl,
-  Select,
-  InputLabel,
-  MenuItem,
-  FormHelperText,
-  TextField,
-} from "@material-ui/core";
+import { Typography, 
+         FormControl, 
+         Select, 
+         InputLabel, 
+         MenuItem, 
+         FormHelperText, TextField, } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { Button } from "react-bootstrap";
 
 const ProfileEdit = () => {
   const useStyles = makeStyles((theme) => ({
+    root: {
+      color: "#80858a",
+      marginLeft: "3%"
+    },
     form: {
+      textAlign: "left",
+      marginTop: "3%",
       "& > *": {
-        margin: theme.spacing(1),
+        marginTop: theme.spacing(5),  
         width: "25ch",
-        textAlign: "center",
-        justifyContent: "center",
       },
     },
     image: {
       width: "25%",
       height: "25%",
     },
-    container: {
-      textAlign: "center",
+    profileType: {
+      width: "150%",
+      fontSize: 18
     },
+    addPhoto: {
+      marginBottom: "-1.5%"
+    },
+    bio: {
+      width: "130%",
+    },
+    purpleDivider: {
+      backgroundColor: "#9DB4FF",
+      height: ".225rem",
+      width: "4.00rem"
+    },
+    blueDivider: {
+      backgroundColor: "#3358C4",
+      height: ".225rem",
+      width: "10.75rem"
+    },
+    dividers: {
+      display: "flex",
+      flexDirection: "row",
+      marginTop: 10,
+    },
+    nameField: {
+      width: "130%",
+    },
+    codeField: {
+      width: "130%",
+    },
+    resize: {
+      fontSize: 18
+    }
   }));
 
   const currUser = useContext(UserContext).user;
@@ -167,10 +200,14 @@ const ProfileEdit = () => {
     }
   };
   return (
-    <div>
+    <div className={classes.root}>
       {userProfile ? (
         <div>
-          <h1>Edit your Profile!</h1>
+          <Typography variant="h4">Edit your profile</Typography>
+          <div className={classes.dividers}>
+            <div className={classes.purpleDivider}></div>
+            <div className={classes.blueDivider}></div>
+          </div>
           {console.log(userProfile.name)}
           <form
             className={classes.form}
@@ -181,14 +218,15 @@ const ProfileEdit = () => {
             <div>
               <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="demo-simple-select-outlined-label">
-                  Type
+                  Profile Type
                 </InputLabel>
                 <Select
                   labelId="demo-simple-select-outlined-label"
                   id="demo-simple-select-outlined"
                   value={userInfo.type !== "" ? userInfo.type : preType}
                   onChange={(e) => setUserField("type", e.target.value)}
-                  label="Type"
+                  label="Profile Type"
+                  className={classes.profileType}
                 >
                   <MenuItem value="">
                     <em>None</em>
@@ -205,18 +243,30 @@ const ProfileEdit = () => {
                 label="Name"
                 value={userInfo.name !== "" ? userInfo.name : userProfile.name}
                 onChange={(e) => setUserField("name", e.target.value)}
+                className={classes.nameField}
+                InputProps={{
+                  classes: {
+                    input: classes.resize,
+                  },
+                }}
               />
             </div>
             <div>
               <TextField
                 id="outlined-multiline-static"
-                label="Multiline"
+                label="Bio"
                 multiline
                 value={userInfo.bio !== "" ? userInfo.bio : userProfile.bio}
                 onChange={(e) => setUserField("bio", e.target.value)}
                 rows={4}
                 defaultValue="Default Value"
                 variant="outlined"
+                className={classes.bio}
+                InputProps={{
+                  classes: {
+                    input: classes.resize,
+                  },
+                }}
               />
             </div>
             {preType && preType == "patients" ? (
@@ -228,11 +278,17 @@ const ProfileEdit = () => {
                     userInfo.code !== "" ? userInfo.code : userProfile.code
                   }
                   onChange={(e) => setUserField("code", e.target.value)}
+                  className={classes.codeField}
+                  InputProps={{
+                    classes: {
+                      input: classes.resize,
+                    },
+                  }}
                 />
               </div>
             ) : null}
 
-            <p>Add a photo of you:</p>
+            <p className={classes.addPhoto}>Add a photo of you:</p>
             <input
               fullWidth
               margin="normal"
@@ -242,7 +298,8 @@ const ProfileEdit = () => {
               accept="image/*"
               onChange={onPhotoChange}
             />
-            <Button variant="contained" color="primary" type="submit">
+            <br/>
+            <Button variant="light" type="submit">
               Submit
             </Button>
           </form>
