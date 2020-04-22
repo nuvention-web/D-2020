@@ -60,7 +60,10 @@ const NewUserForm = () => {
       })
       .then(function () {
         console.log("Document successfully written!");
-        history.push("/profile");
+        history.push({
+          pathname: "/profile",
+          notNewUser: true,
+        });
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);

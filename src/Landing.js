@@ -173,7 +173,7 @@ const Landing = ({ haveLoggedIn, setHaveLoggedIn }) => {
         console.log("is New User?: ", temp);
         // If the new user was set
         // Initial login
-        if (haveLoggedIn === true) {
+        if (haveLoggedIn === true && temp === true) {
           // Name might be deceiving but this means that it's a new user.
           history.push("/newUser");
         } else {

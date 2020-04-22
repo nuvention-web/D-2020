@@ -111,12 +111,15 @@ const NavBar = ({ haveLoggedIn }) => {
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
   const history = useHistory();
-  var type = localStorage.getItem("type");
-
+  const [type, setType] = useState(localStorage.getItem("type"));
+  const [dummyState, setDummyState] = useState();
   useEffect(() => {
     console.log("have changed");
-    if (localStorage.getItem("type") !== undefined) {
-      type = localStorage.getItem("type");
+    console.log("local storage in Navbar: ", localStorage.getItem("type"));
+    if (localStorage.getItem("type") !== "") {
+      setType(localStorage.getItem("type"));
+      // console.log("THis is the userType from navBar: ", type);
+      // setDummyState(true);
     }
   }, [currUser, haveLoggedIn]);
 
@@ -127,7 +130,7 @@ const NavBar = ({ haveLoggedIn }) => {
           <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>{" "}
         </Link>
         <Toolbar className={classes.navBar}>
-          {console.log(type)}
+          {console.log(typeof type)}
           {Object.entries(currUser).length >= 1 && type == "therapists" ? (
             <Link to="/PT">
               <Button variant="light" className={classes.navButton}>

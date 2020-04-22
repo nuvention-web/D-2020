@@ -119,8 +119,8 @@ const ProfileEdit = () => {
     if (type === "") type = preType;
     if (name === "") name = userProfile.name;
     if (bio === "") bio = userProfile.bio;
-    if (code)
-      console.log("type: ", type, "name: ", name, "bio: ", bio, "code: ", code);
+    if (code === "" && userProfile.code) code = userProfile.code;
+    console.log("type: ", type, "name: ", name, "bio: ", bio, "code: ", code);
     const Ref = db.collection(type);
 
     // If photo was selected
@@ -178,19 +178,27 @@ const ProfileEdit = () => {
             : { img_name: "" }),
           ...(code && code !== ""
             ? { code: code }
-            : { code: userProfile.code }),
+            : userProfile.code
+            ? { code: userProfile.code }
+            : { code: null }),
         })
         .then(function () {
-          console.log("Document successfully written!");
-          if (code && code !== "") {
-            // Update the patient
-            const PTRef = db.collection("therapists").doc(code);
+          if (type == "patients") {
+            console.log("Document successfully written!");
+            if (userProfile.code && userProfile.code !== "") {
+              // Update the patient
+              console.log(code);
+              console.log(userProfile.code);
+              const PTRef = db.collection("therapists").doc(userProfile.code);
 
-            // Atomically add a new patient to the "patients" array field.
-            PTRef.update({
-              patients: firebase.firestore.FieldValue.arrayUnion(currUser.uid),
-            });
-            console.log("updated the patient");
+              // Atomically add a new patient to the "patients" array field.
+              PTRef.update({
+                patients: firebase.firestore.FieldValue.arrayUnion(
+                  currUser.uid
+                ),
+              });
+              console.log("updated the patient");
+            }
           }
           history.push("/profile");
         })
