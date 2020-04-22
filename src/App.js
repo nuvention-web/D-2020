@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.css";
 import DoctorView from "./DoctorComponents/DoctorView";
@@ -29,17 +29,27 @@ const useStyles = makeStyles((theme) => ({
 
 const App = () => {
   const classes = useStyles();
+  const [haveLoggedIn, setHaveLoggedIn] = useState(null);
 
   return (
     <UserProvider>
       <Router>
-        <NavBar />
+        <NavBar haveLoggedIn={haveLoggedIn} setHaveLoggedIn={setHaveLoggedIn} />
 
         <div className={classes.window}>
           {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
           <Switch>
-            <Route exact path="/" component={(props) => <Landing />}></Route>
+            <Route
+              exact
+              path="/"
+              component={() => (
+                <Landing
+                  haveLoggedIn={haveLoggedIn}
+                  setHaveLoggedIn={setHaveLoggedIn}
+                />
+              )}
+            ></Route>
             <Route
               path="/workout/:day"
               component={(props) => (

@@ -106,20 +106,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NavBar = () => {
+const NavBar = ({ haveLoggedIn }) => {
   const classes = useStyles();
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
   const history = useHistory();
-  const [type, setType] = useState(localStorage.getItem("type"));
-  const [haveLoggedIn, setHaveLoggedIn] = useState(null);
+  var type = localStorage.getItem("type");
 
   useEffect(() => {
     console.log("have changed");
     if (localStorage.getItem("type") !== undefined) {
-      setType(localStorage.getItem("type"));
+      type = localStorage.getItem("type");
     }
-  }, [currUser, type]);
+  }, [currUser, haveLoggedIn]);
 
   return (
     <nav>
