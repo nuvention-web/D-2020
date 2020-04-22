@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../contexts/UserContext";
 import { db } from "../Firebase";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Card,
@@ -41,6 +41,7 @@ const Profile = (props) => {
   const [userProfile, setUserProfile] = useState();
   const classes = useStyles();
   const history = useHistory();
+  const location = useLocation();
 
   useEffect(() => {
     if (Object.entries(currUser).length >= 1 && type) {
@@ -51,7 +52,7 @@ const Profile = (props) => {
           setUserProfile(doc.data());
         });
     }
-  }, [type, currUser]);
+  }, [type, currUser, location]);
 
   return (
     <div>
