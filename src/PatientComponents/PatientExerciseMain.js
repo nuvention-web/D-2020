@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   exercises: {
     marginTop: "6%",
     height: "45vh",
-    overflowY: "scroll"
+    overflowY: "scroll",
   },
   header: {
     marginTop: 10,
@@ -160,8 +160,8 @@ const PatientExerciseMain = (props) => {
               if (fullset.length === exercisesLen) {
                 setExerciseSets(fullset);
               }
-            })
-        })
+            });
+        });
       });
     }
   }, [currUser]);

@@ -154,7 +154,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
           exerciseRef.doc(doc.id).update({ complete: true });
-          alert("Good work!");
+          // alert("Good work!");
           setExerciseDone(true);
         });
       })

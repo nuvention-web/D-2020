@@ -16,7 +16,7 @@ const Profile = (props) => {
   const useStyles = makeStyles((theme) => ({
     root: {
       textAlign: "center",
-      color: "#80858a"
+      color: "#80858a",
     },
     card: {
       marginTop: "3%",
@@ -29,12 +29,12 @@ const Profile = (props) => {
       height: "100%",
     },
     editButton: {
-      marginBottom: "2%"
+      marginBottom: "2%",
     },
     bio: {
       textAlign: "justify",
-      textJustify: "inter-word"
-    }
+      textJustify: "inter-word",
+    },
   }));
   const currUser = useContext(UserContext).user;
   const type = localStorage.getItem("type");
@@ -88,7 +88,12 @@ const Profile = (props) => {
                   </div>
                 ) : null}
 
-                <Typography variant="body2" color="textSecondary" component="p" className={classes.bio}>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.bio}
+                >
                   Bio: {userProfile.bio}
                 </Typography>
               </CardContent>
