@@ -77,8 +77,8 @@ const useStyles = makeStyles((theme) => ({
     border: "1px solid #ccc",
   },
   centeredCol: {
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
   // // For Grid
   // root: {
   //   flexGrow: 1,
@@ -136,8 +136,8 @@ const IndividualPatientView = (props) => {
             .doc(doc.id)
             .collection("exercises")
             .get()
-            .then((querySnapshot) => {
-              querySnapshot.forEach((doc1) => {
+            .then((snap) => {
+              snap.forEach((doc1) => {
                 const exercise = doc1.data();
                 console.log("exercise.name", exercise.name);
                 ex.push(exercise);
@@ -151,8 +151,11 @@ const IndividualPatientView = (props) => {
             .then(() => {
               console.log("THis is L: ", JSON.stringify(l));
               fullset.push({ day: day, exercise: ex, exerciseList: l });
-              console.log("fullset", JSON.stringify(fullset));
-              setExerciseSets(fullset);
+              // When everything's fully loaded
+              if (querySnapshot.docs.length === fullset.length) {
+                console.log("fullset", JSON.stringify(fullset.length));
+                setExerciseSets(fullset);
+              }
             });
         });
       });
@@ -242,7 +245,6 @@ const IndividualPatientView = (props) => {
   };
 
   const renderItems = () => {
-
     // Return true, false, or - (not an exercise for this day)
     const checkComplete = (exercises, exname) => {
       // Iterate through set for the day
@@ -250,10 +252,16 @@ const IndividualPatientView = (props) => {
         if (exercises[i].name === exname) {
           // Return bool
           if (exercises[i].complete) {
-            return <img className={classes.checkIcon} src="/img/complete.png"></img>
-          }
-          else {
-            return <img className={classes.checkIcon} src="/img/incomplete.png"></img>
+            return (
+              <img className={classes.checkIcon} src="/img/complete.png"></img>
+            );
+          } else {
+            return (
+              <img
+                className={classes.checkIcon}
+                src="/img/incomplete.png"
+              ></img>
+            );
           }
         }
       }
@@ -277,7 +285,9 @@ const IndividualPatientView = (props) => {
             <Row>
               <Col>Exercise Name</Col>
               {exerciseSets
-                ? exerciseSets[0].exerciseList.map((ex) => <Col className={classes.centeredCol}>{ex}</Col>)
+                ? exerciseSets[0].exerciseList.map((ex) => (
+                    <Col className={classes.centeredCol}>{ex}</Col>
+                  ))
                 : null}
             </Row>
 
@@ -291,7 +301,11 @@ const IndividualPatientView = (props) => {
                   <Col>{s["day"]}</Col>
                   {/* Map through each column */}
                   {s.exerciseList.map((name, i) => {
-                    return <Col className={classes.centeredCol}>{checkComplete(s.exercise, name)}</Col>;
+                    return (
+                      <Col className={classes.centeredCol}>
+                        {checkComplete(s.exercise, name)}
+                      </Col>
+                    );
                   })}
                 </Row>
               </Container>

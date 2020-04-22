@@ -105,7 +105,11 @@ const DoctorView = () => {
           returnPat.push(individual);
         })
         .then(() => {
-          setPatients(returnPat);
+          // When everything's fully loaded
+          if (patientId.length === returnPat.length) {
+            console.log("This is returnPat: ", returnPat);
+            setPatients(returnPat);
+          }
         });
     });
   }, [patientId]);
