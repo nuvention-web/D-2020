@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../contexts/UserContext";
 import { db, storageRef, firebase } from "../Firebase";
 import {
@@ -28,8 +28,8 @@ const ProfileEdit = () => {
       height: "25%",
     },
     container: {
-      textAlign: "center"
-    }
+      textAlign: "center",
+    },
   }));
 
   const currUser = useContext(UserContext).user;
@@ -42,9 +42,22 @@ const ProfileEdit = () => {
   });
   const history = useHistory();
   const location = useLocation();
+  const [userProfile, setUserProfile] = useState();
   const classes = useStyles();
   const preType = localStorage.getItem("type");
-  console.log(preType);
+
+  useEffect(() => {
+    if (location.userProfile) {
+      console.log(location.userProfile);
+      localStorage.setItem("userProfile", JSON.stringify(location.userProfile));
+      setUserProfile(location.userProfile);
+    } else {
+      // if refreshed
+      const item = JSON.parse(localStorage.getItem("userProfile"));
+      console.log(item);
+      setUserProfile(item);
+    }
+  }, []);
 
   const setUserField = (field, data) => {
     setUserInfo({ ...userInfo, [field]: data });
@@ -71,19 +84,17 @@ const ProfileEdit = () => {
       var code = userInfo.code;
     }
     if (type === "") type = preType;
-    if (name === "") name = location.userProfile.name;
-    if (bio === "") bio = location.userProfile.bio;
+    if (name === "") name = userProfile.name;
+    if (bio === "") bio = userProfile.bio;
     if (code)
       console.log("type: ", type, "name: ", name, "bio: ", bio, "code: ", code);
     const Ref = db.collection(type);
 
     // If photo was selected
     if (photo) {
-      const prevImgRef = storageRef.child(
-        `images/${location.userProfile.img_name}`
-      );
+      const prevImgRef = storageRef.child(`images/${userProfile.img_name}`);
       const hasPrevImg = storageRef
-        .child(`images/${location.userProfile.img_name}`)
+        .child(`images/${userProfile.img_name}`)
         .getDownloadURL()
         .then(onResolve, onReject);
       if (hasPrevImg === true) await prevImgRef.delete();
@@ -101,7 +112,7 @@ const ProfileEdit = () => {
           img_name: photo.name,
           ...(code && code !== ""
             ? { code: code }
-            : { code: location.userProfile.code }),
+            : { code: userProfile.code }),
         })
         .then(function () {
           console.log("Document successfully written!");
@@ -128,15 +139,13 @@ const ProfileEdit = () => {
           name: name,
           type: type,
           bio: bio,
-          ...(location.userProfile.img
-            ? { img: location.userProfile.img }
-            : { img: "" }),
-          ...(location.userProfile.img_name
-            ? { img_name: location.userProfile.img_name }
+          ...(userProfile.img ? { img: userProfile.img } : { img: "" }),
+          ...(userProfile.img_name
+            ? { img_name: userProfile.img_name }
             : { img_name: "" }),
           ...(code && code !== ""
             ? { code: code }
-            : { code: location.userProfile.code }),
+            : { code: userProfile.code }),
         })
         .then(function () {
           console.log("Document successfully written!");
@@ -159,84 +168,86 @@ const ProfileEdit = () => {
   };
   return (
     <div>
-      <h1>Edit your Profile!</h1>
+      {userProfile ? (
+        <div>
+          <h1>Edit your Profile!</h1>
+          {console.log(userProfile.name)}
+          <form
+            className={classes.form}
+            noValidate
+            autoComplete="off"
+            onSubmit={handleSubmit}
+          >
+            <div>
+              <FormControl variant="outlined" className={classes.formControl}>
+                <InputLabel id="demo-simple-select-outlined-label">
+                  Type
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-outlined-label"
+                  id="demo-simple-select-outlined"
+                  value={userInfo.type !== "" ? userInfo.type : preType}
+                  onChange={(e) => setUserField("type", e.target.value)}
+                  label="Type"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  <MenuItem value={"patients"}>Patient</MenuItem>
+                  <MenuItem value={"therapists"}>Therapist</MenuItem>
+                </Select>
+                <FormHelperText>Required</FormHelperText>
+              </FormControl>
+            </div>
+            <div>
+              <TextField
+                id="standard-basic"
+                label="Name"
+                value={userInfo.name !== "" ? userInfo.name : userProfile.name}
+                onChange={(e) => setUserField("name", e.target.value)}
+              />
+            </div>
+            <div>
+              <TextField
+                id="outlined-multiline-static"
+                label="Multiline"
+                multiline
+                value={userInfo.bio !== "" ? userInfo.bio : userProfile.bio}
+                onChange={(e) => setUserField("bio", e.target.value)}
+                rows={4}
+                defaultValue="Default Value"
+                variant="outlined"
+              />
+            </div>
+            {preType && preType == "patients" ? (
+              <div>
+                <TextField
+                  id="standard-basic"
+                  label="Your Therapist Code"
+                  value={
+                    userInfo.code !== "" ? userInfo.code : userProfile.code
+                  }
+                  onChange={(e) => setUserField("code", e.target.value)}
+                />
+              </div>
+            ) : null}
 
-      <form
-        className={classes.form}
-        noValidate
-        autoComplete="off"
-        onSubmit={handleSubmit}
-      >
-        <div>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel id="demo-simple-select-outlined-label">Type</InputLabel>
-            <Select
-              labelId="demo-simple-select-outlined-label"
-              id="demo-simple-select-outlined"
-              value={userInfo.type !== "" ? userInfo.type : preType}
-              onChange={(e) => setUserField("type", e.target.value)}
-              label="Type"
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={"patients"}>Patient</MenuItem>
-              <MenuItem value={"therapists"}>Therapist</MenuItem>
-            </Select>
-            <FormHelperText>Required</FormHelperText>
-          </FormControl>
-        </div>
-        <div>
-          <TextField
-            id="standard-basic"
-            label="Name"
-            value={
-              userInfo.name !== "" ? userInfo.name : location.userProfile.name
-            }
-            onChange={(e) => setUserField("name", e.target.value)}
-          />
-        </div>
-        <div>
-          <TextField
-            id="outlined-multiline-static"
-            label="Multiline"
-            multiline
-            value={
-              userInfo.bio !== "" ? userInfo.bio : location.userProfile.bio
-            }
-            onChange={(e) => setUserField("bio", e.target.value)}
-            rows={4}
-            defaultValue="Default Value"
-            variant="outlined"
-          />
-        </div>
-        {preType && preType == "patients" ? (
-          <div>
-            <TextField
-              id="standard-basic"
-              label="Your Therapist Code"
-              value={
-                userInfo.code !== "" ? userInfo.code : location.userProfile.code
-              }
-              onChange={(e) => setUserField("code", e.target.value)}
+            <p>Add a photo of you:</p>
+            <input
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              type="file"
+              className="input-button"
+              accept="image/*"
+              onChange={onPhotoChange}
             />
-          </div>
-        ) : null}
-
-        <p>Add a photo of you:</p>
-        <input
-          fullWidth
-          margin="normal"
-          variant="outlined"
-          type="file"
-          className="input-button"
-          accept="image/*"
-          onChange={onPhotoChange}
-        />
-        <Button variant="contained" color="primary" type="submit">
-          Submit
-        </Button>
-      </form>
+            <Button variant="contained" color="primary" type="submit">
+              Submit
+            </Button>
+          </form>
+        </div>
+      ) : null}
     </div>
   );
 };
