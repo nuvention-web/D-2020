@@ -178,13 +178,13 @@ const IndividualPatientView = (props) => {
   //     }
   // }
 
-  const getUpdatedSet = (setIndex) => {
+  const getUpdatedSet = () => {
     // Generate new exercise
     var exerciseObjectData = {
       id: 0,
       name: newExercise,
       reps: parseInt(newReps),
-      duration: parseInt(newDuration),
+      duration: parseFloat(newDuration),
       videoId: "MW2WG5l-fYE",
       complete: false,
     };
@@ -195,11 +195,11 @@ const IndividualPatientView = (props) => {
   };
 
   // Submit new exercise to firebase
-  const addExercise = async (e, setIndex) => {
+  const addExercise = async (e, setDay) => {
     // For debugging purposes - pauses refresh on submit
     e.preventDefault();
 
-    const newExercise = await getUpdatedSet(setIndex);
+    const newExercise = await getUpdatedSet();
     console.log("newExercise", newExercise);
 
     // Firestore reference
@@ -207,7 +207,7 @@ const IndividualPatientView = (props) => {
       .collection("patients")
       .doc(id)
       .collection("exercisesets")
-      .doc(dotw[setIndex])
+      .doc(setDay)
       .collection("exercises");
 
     patientRef
@@ -299,10 +299,10 @@ const IndividualPatientView = (props) => {
           })}
           {/* End Progress Chart */}
 
-          {exerciseSets.map((s, i) => {
+          {exerciseSets.map((s, set_ind) => {
             return (
               <div>
-                <Container className={classes.exerciseContainer} key={i}>
+                <Container className={classes.exerciseContainer} key={set_ind}>
                   <Typography variant="h4" className={classes.header}>
                     {s["day"]} Exercises
                   </Typography>
@@ -372,7 +372,7 @@ const IndividualPatientView = (props) => {
                           type="submit"
                           className={classes.blueButton}
                           onClick={(e) => {
-                            addExercise(e, i);
+                            addExercise(e, s["day"]);
                           }}
                         >
                           Add
