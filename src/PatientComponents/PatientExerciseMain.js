@@ -17,20 +17,21 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 8,
     color: "#80858a",
   },
+  progressHeader: {
+    marginTop: 10,
+    marginBottom: 8,
+    color: "#80858a",
+    marginLeft: "9.75%"
+  },
   meter: {
     marginTop: 25,
-  },
-  video: {
-    marginTop: 60,
-    marginLeft: 120,
-    height: 250,
-    width: 460,
   },
   exerciseContainer: {
     marginTop: 30,
     marginBottom: 40,
     width: "80%",
     margin: "0 auto",
+    overflowX: "scroll"
   },
   link: {
     textDecoration: "none",
@@ -199,10 +200,10 @@ const PatientExerciseMain = (props) => {
     return (
       <div className={classes.window}>
         {/* Progress Chart */}
-        <div className={classes.exerciseContainer}>
-          <Typography variant="h4" className={classes.header}>
+        <Typography variant="h4" className={classes.progressHeader}>
             Your Progress
           </Typography>
+        <div className={classes.exerciseContainer}>
           <Row>
             <Col>Exercise Name</Col>
             {exerciseSets
