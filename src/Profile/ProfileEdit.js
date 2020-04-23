@@ -1,12 +1,15 @@
 import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../contexts/UserContext";
 import { db, storageRef, firebase } from "../Firebase";
-import { Typography, 
-         FormControl, 
-         Select, 
-         InputLabel, 
-         MenuItem, 
-         FormHelperText, TextField, } from "@material-ui/core";
+import {
+  Typography,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
+  FormHelperText,
+  TextField,
+} from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button } from "react-bootstrap";
@@ -15,13 +18,13 @@ const ProfileEdit = () => {
   const useStyles = makeStyles((theme) => ({
     root: {
       color: "#80858a",
-      marginLeft: "3%"
+      marginLeft: "3%",
     },
     form: {
       textAlign: "left",
       marginTop: "3%",
       "& > *": {
-        marginTop: theme.spacing(5),  
+        marginTop: theme.spacing(5),
         width: "25ch",
       },
     },
@@ -31,10 +34,10 @@ const ProfileEdit = () => {
     },
     profileType: {
       width: "150%",
-      fontSize: 18
+      fontSize: 18,
     },
     addPhoto: {
-      marginBottom: "-1.5%"
+      marginBottom: "-1.5%",
     },
     bio: {
       width: "130%",
@@ -42,12 +45,12 @@ const ProfileEdit = () => {
     purpleDivider: {
       backgroundColor: "#9DB4FF",
       height: ".225rem",
-      width: "4.00rem"
+      width: "4.00rem",
     },
     blueDivider: {
       backgroundColor: "#3358C4",
       height: ".225rem",
-      width: "10.75rem"
+      width: "10.75rem",
     },
     dividers: {
       display: "flex",
@@ -61,8 +64,8 @@ const ProfileEdit = () => {
       width: "130%",
     },
     resize: {
-      fontSize: 18
-    }
+      fontSize: 18,
+    },
   }));
 
   const currUser = useContext(UserContext).user;
@@ -306,7 +309,7 @@ const ProfileEdit = () => {
               accept="image/*"
               onChange={onPhotoChange}
             />
-            <br/>
+            <br />
             <Button variant="light" type="submit">
               Submit
             </Button>
