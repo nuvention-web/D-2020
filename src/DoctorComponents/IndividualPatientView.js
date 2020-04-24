@@ -104,6 +104,10 @@ const IndividualPatientView = (props) => {
   // For loading data, taken from PatientExerciseMain
   const [loaded, setLoaded] = useState(false);
   const [exerciseType, setExerciseType] = useState([]);
+
+  // Load eventually
+  // window.setTimeout(setLoaded(true), 2000);
+
   const dotw = [
     "Monday",
     "Tuesday",
@@ -231,7 +235,7 @@ const IndividualPatientView = (props) => {
   };
 
   // Submit new exercise to firebase
-  const addExercise = async (e, setDay) => {
+  const addExercise = async (e, setDay, l) => {
     // For debugging purposes - pauses refresh on submit
     e.preventDefault();
 
@@ -239,10 +243,16 @@ const IndividualPatientView = (props) => {
     console.log("newExercise", newExercise);
 
     // Firestore reference
-    var patientRef = db
+    var dayRef = db
       .collection("patients")
       .doc(id)
       .collection("exercisesets")
+
+    if (l == 0) {
+      dayRef.doc(setDay).set({ day: setDay });
+    }
+
+    var patientRef = dayRef
       .doc(setDay)
       .collection("exercises");
 
@@ -301,6 +311,16 @@ const IndividualPatientView = (props) => {
       return "-";
     };
 
+    const checkMatch = (day) => {
+      // .find returns the element that matches
+      let s = exerciseSets.find(element => element.day == day);
+      // Undefined if there are no matches
+      if (s === undefined) {
+        return [];
+      }
+      return s.exercise;
+    }
+
     return (
       <div>
         <div>
@@ -319,8 +339,8 @@ const IndividualPatientView = (props) => {
               <Col>Exercise Name</Col>
               {exerciseSets
                 ? exerciseSets[0].exerciseList.map((ex) => (
-                    <Col className={classes.centeredCol}>{ex}</Col>
-                  ))
+                  <Col className={classes.centeredCol}>{ex}</Col>
+                ))
                 : null}
             </Row>
 
@@ -346,12 +366,13 @@ const IndividualPatientView = (props) => {
           })}
           {/* End Progress Chart */}
 
-          {exerciseSets.map((s, set_ind) => {
+          {dotw.map((day, ind) => {
             return (
               <div>
-                <Container className={classes.exerciseContainer} key={set_ind}>
+                <Container className={classes.exerciseContainer} key={ind}>
                   <Typography variant="h4" className={classes.header}>
-                    {s["day"]} Exercises
+                    {day} Exercises
+                    {console.log("exerciseSets", exerciseSets)}
                   </Typography>
                   <Row>
                     <Col>Exercise</Col>
@@ -360,7 +381,9 @@ const IndividualPatientView = (props) => {
                     <Col></Col>
                   </Row>
                   <Divider />
-                  {s["exercise"].map((ex, k) => {
+
+                  {console.log("checkMatch:", day, checkMatch(day))}
+                  {checkMatch(day).map((ex, k) => {
                     return (
                       <div>
                         <Row key={k}>
@@ -372,6 +395,7 @@ const IndividualPatientView = (props) => {
                       </div>
                     );
                   })}
+
                   <Form>
                     <br />
                     <Row>
@@ -419,7 +443,7 @@ const IndividualPatientView = (props) => {
                           type="submit"
                           className={classes.blueButton}
                           onClick={(e) => {
-                            addExercise(e, s["day"]);
+                            addExercise(e, day, checkMatch(day).length);
                           }}
                         >
                           Add
