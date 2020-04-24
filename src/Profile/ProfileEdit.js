@@ -45,12 +45,12 @@ const ProfileEdit = () => {
     purpleDivider: {
       backgroundColor: "#9DB4FF",
       height: ".225rem",
-      width: "4.00rem",
+      width: "6.00rem",
     },
     blueDivider: {
       backgroundColor: "#3358C4",
       height: ".225rem",
-      width: "10.75rem",
+      width: "14.50rem",
     },
     dividers: {
       display: "flex",
@@ -138,6 +138,7 @@ const ProfileEdit = () => {
       const snapshot = await imageRef.put(photo);
       const downloadUrl = await snapshot.ref.getDownloadURL();
 
+      console.log(Ref);
       Ref.doc(currUser.uid)
         .update({
           ...userInfo,
@@ -214,7 +215,7 @@ const ProfileEdit = () => {
     <div className={classes.root}>
       {userProfile ? (
         <div>
-          <Typography variant="h4">Edit your profile</Typography>
+          <Typography variant="h3">Edit your profile</Typography>
           <div className={classes.dividers}>
             <div className={classes.purpleDivider}></div>
             <div className={classes.blueDivider}></div>
