@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  Button,
+  Typography,
   FormControl,
   Select,
   InputLabel,
@@ -12,15 +12,52 @@ import {
 import { useHistory } from "react-router-dom";
 import { db, storageRef } from "./Firebase";
 import { UserContext } from "./contexts/UserContext";
+import { Button } from "react-bootstrap";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    color: "#80858a",
+    marginLeft: "3%",
+  },
   form: {
+    textAlign: "left",
+    marginTop: "3%",
     "& > *": {
-      margin: theme.spacing(1),
+      marginTop: theme.spacing(5),
       width: "25ch",
-      textAlign: "center",
-      justifyContent: "center",
     },
+  },
+  profileType: {
+    width: "150%",
+    fontSize: 18,
+  },
+  nameField: {
+    width: "130%",
+  },
+  addPhoto: {
+    marginBottom: "-1.5%",
+  },
+  bio: {
+    width: "130%",
+  },
+  purpleDivider: {
+    backgroundColor: "#9DB4FF",
+    height: ".225rem",
+    width: "8.00rem",
+  },
+  blueDivider: {
+    backgroundColor: "#3358C4",
+    height: ".225rem",
+    width: "18.50rem",
+  },
+  dividers: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 10,
+    marginBottom: "1.5%"
+  },
+  resize: {
+    fontSize: 18,
   },
 }));
 
@@ -46,12 +83,18 @@ const NewUserForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { type, name, bio } = userInfo;
-    const Ref = db.collection(type);
-    const imageRef = storageRef.child(`images/${photo.name}`);
-    const snapshot = await imageRef.put(photo);
-    const downloadUrl = await snapshot.ref.getDownloadURL();
 
-    Ref.doc(currUser.uid)
+    if (userInfo.type !== "" && userInfo.name !== "") {
+      const Ref = db.collection(type);
+      
+      //case where user doesn't upload pic
+      var downloadUrl = ""
+      if (photo) {
+        const imageRef = storageRef.child(`images/${photo.name}`);
+        const snapshot = await imageRef.put(photo);
+        downloadUrl = await snapshot.ref.getDownloadURL();
+      }
+      Ref.doc(currUser.uid)
       .set({
         ...userInfo,
         name: name,
@@ -69,11 +112,20 @@ const NewUserForm = () => {
       .catch(function (error) {
         console.error("Error writing document: ", error);
       });
+    }
+    else {
+      alert("Please complete the 'type' and 'name' fields first");
+    }
   };
 
   return (
-    <div>
-      <h1>Welcome to our website! Let's get you started!</h1>
+    <div className={classes.root}>
+      <Typography variant="h3">Welcome to Tendon</Typography>
+      <div className={classes.dividers}>
+            <div className={classes.purpleDivider}></div>
+            <div className={classes.blueDivider}></div>
+        </div>
+        <Typography variant="h5">Let's make your profile</Typography>
 
       <form
         className={classes.form}
@@ -90,6 +142,7 @@ const NewUserForm = () => {
               value={userInfo.type}
               onChange={(e) => setUserField("type", e.target.value)}
               label="Type"
+              className={classes.profileType}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -106,6 +159,12 @@ const NewUserForm = () => {
             label="Name"
             value={userInfo.name}
             onChange={(e) => setUserField("name", e.target.value)}
+            className={classes.nameField}
+            InputProps={{
+              classes: {
+                input: classes.resize,
+              },
+            }}
           />
         </div>
         <div>
@@ -118,9 +177,15 @@ const NewUserForm = () => {
             rows={4}
             defaultValue="Default Value"
             variant="outlined"
+            className={classes.bio}
+            InputProps={{
+              classes: {
+                input: classes.resize,
+              },
+            }}
           />
         </div>
-        <p>Add a photo of you:</p>
+        <p className={classes.addPhoto}>Add a photo of you:</p>
         <input
           fullWidth
           margin="normal"
@@ -130,7 +195,8 @@ const NewUserForm = () => {
           accept="image/*"
           onChange={onPhotoChange}
         />
-        <Button variant="contained" color="primary" type="submit">
+        <br/>
+        <Button variant="light" type="submit">
           Submit
         </Button>
       </form>
