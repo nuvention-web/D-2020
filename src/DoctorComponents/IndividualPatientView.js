@@ -91,7 +91,8 @@ const useStyles = makeStyles((theme) => ({
     },
     textAlign: "center",
     borderRadius: "50%",
-    padding: 2
+    padding: 2,
+    margin: 1,
   },
   loadingContainer: {
     textAlign: "center",
@@ -430,7 +431,7 @@ const IndividualPatientView = (props) => {
                           <Col>{formatExerciseName(ex.name)}</Col>
                           <Col>{ex.reps}</Col>
                           <Col>{ex.duration}</Col>
-                          <Col>
+                          <Col className={classes.centeredCol}>
                             <Button
                               variant="primary"
                               type="submit"
@@ -438,7 +439,7 @@ const IndividualPatientView = (props) => {
                               onClick={(e) => {
                                 deleteExercise(e, day, ex.docId);
                               }}>
-                              x
+                              X
                         </Button>
                           </Col>
                         </Row>
@@ -486,7 +487,7 @@ const IndividualPatientView = (props) => {
                           }}
                         />
                       </Col>
-                      <Col>
+                      <Col className={classes.centeredCol}>
                         <Button
                           variant="primary"
                           className={classes.inputBox}
