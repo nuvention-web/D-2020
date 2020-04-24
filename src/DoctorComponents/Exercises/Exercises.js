@@ -15,6 +15,8 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 10,
     marginBottom: 8,
     color: "#80858a",
+    display: "inline",
+    marginRight: 50,
   },
   meter: {
     marginTop: 25,
@@ -56,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   accentDivider: {
     content: "",
     display: "block",
-    width: "6.25rem",
+    width: "13.25rem",
     height: ".325rem",
     marginTop: "1.5rem",
     background: "#9DB4FF",
@@ -70,13 +72,21 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     border: "1px solid #ccc",
   },
+
   centeredCol: {
     textAlign: "center",
   },
-  // // For Grid
-  // root: {
-  //   flexGrow: 1,
-  // },
+
+  exercisesGrid: {
+    margin: 15,
+    display: "flex",
+    flexWrap: "wrap",
+  },
+
+  exerciseGridContainer: {
+    marginTop: 40,
+  },
+
   // paper: {
   //   padding: theme.spacing(2),
   //   textAlign: "center",
@@ -118,30 +128,6 @@ const Exercises = () => {
         <Typography variant="h4" className={classes.header}>
           Your Patients
         </Typography>
-        <div className={classes.accentDivider}></div>
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-          spacing={1}
-        >
-          {exercises && currUser
-            ? exercises.map((e, i) => {
-                return (
-                  <div>
-                    <Grid item className={classes.patientInfoCard} key={i}>
-                      <Exercise
-                        exercise={e}
-                        currUser={currUser}
-                        setDeleted={setDeleted}
-                      />
-                    </Grid>
-                  </div>
-                );
-              })
-            : null}
-        </Grid>
         <Link
           to={{
             pathname: "/PT/exercises/new",
@@ -153,6 +139,31 @@ const Exercises = () => {
             Add a new Exercise
           </Button>
         </Link>
+
+        <div className={classes.accentDivider}></div>
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          className={classes.exerciseGridContainer}
+        >
+          {exercises && currUser
+            ? exercises.map((e, i) => {
+                return (
+                  <div>
+                    <Grid item key={i} className={classes.exercisesGrid}>
+                      <Exercise
+                        exercise={e}
+                        currUser={currUser}
+                        setDeleted={setDeleted}
+                      />
+                    </Grid>
+                  </div>
+                );
+              })
+            : null}
+        </Grid>
       </Container>
     </div>
   );

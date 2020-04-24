@@ -16,6 +16,7 @@ const useStyles = makeStyles({
   root: {
     width: 345,
     height: 200,
+    textAlign: "right",
   },
   blueButton: {
     backgroundColor: "#9DB4FF",
@@ -26,6 +27,7 @@ const useStyles = makeStyles({
       color: "white",
       backgroundColor: "#3358C4",
     },
+    margin: 3,
   },
 });
 
