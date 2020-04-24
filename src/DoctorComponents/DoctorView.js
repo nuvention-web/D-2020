@@ -133,7 +133,6 @@ const DoctorView = () => {
             Your Patients
           </Typography>
           <div className={classes.accentDivider}></div>
-
           <Grid
             container
             direction="row"
@@ -159,6 +158,15 @@ const DoctorView = () => {
               );
             })}
           </Grid>
+          <Typography variant="h4" className={classes.header}>
+            Your Exercises
+          </Typography>
+          <div className={classes.accentDivider}></div>
+          <Link to="/PT/exercises" className={classes.link}>
+            <Button className={classes.blueButton} variant="outline-primary">
+              More Information
+            </Button>
+          </Link>
         </Container>
       </div>
     );

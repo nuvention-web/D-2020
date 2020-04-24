@@ -12,6 +12,10 @@ import Profile from "./Profile/Profile";
 import ProfileEdit from "./Profile/ProfileEdit";
 import NewUserForm from "./NewUserForm";
 import NavBar from "./NavBar";
+import Exercises from "./DoctorComponents/Exercises/Exercises";
+import Exercise from "./DoctorComponents/Exercises/Exercise";
+import ExerciseEdit from "./DoctorComponents/Exercises/ExerciseEdit";
+import ExerciseNew from "./DoctorComponents/Exercises/ExerciseNew";
 // Add login/auth logic here, add react routing to correct pages
 // React routing flow
 // Landing Page (doctor signin and patient signin)
@@ -70,6 +74,18 @@ const App = () => {
               component={(props) => (
                 <IndividualPatientView {...props}></IndividualPatientView>
               )}
+            ></Route>
+            <Route
+              path="/PT/exercises/new"
+              component={(props) => <ExerciseNew {...props}></ExerciseNew>}
+            ></Route>
+            <Route
+              path="/PT/exercises/:id"
+              component={(props) => <ExerciseEdit {...props}></ExerciseEdit>}
+            ></Route>
+            <Route
+              path="/PT/exercises"
+              component={(props) => <Exercises {...props}></Exercises>}
             ></Route>
             <Route
               path="/PT"
