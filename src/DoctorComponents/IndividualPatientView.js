@@ -92,17 +92,11 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     borderRadius: "50%",
     padding: 2
+  },
+  loadingContainer: {
+    textAlign: "center",
+    paddingTop: "30vh"
   }
-  // // For Grid
-  // root: {
-  //   flexGrow: 1,
-  // },
-  // paper: {
-  //   padding: theme.spacing(2),
-  //   textAlign: "center",
-  //   color: theme.palette.text.secondary,
-  // },
-  // // End for grid
 }));
 
 const IndividualPatientView = (props) => {
@@ -137,7 +131,7 @@ const IndividualPatientView = (props) => {
   useEffect(() => {
     const fetchPatient = () => {
       // Newly added to load Firestore data
-      console.log(location.patientInfo);
+      console.log("location.patientInfo", location.patientInfo);
       var patientRef = db
         .collection("patients")
         .doc(id)
@@ -371,6 +365,7 @@ const IndividualPatientView = (props) => {
         <div>
           <Container>
             <Typography variant="h4" className={classes.header}>
+              {/* {location.patientInfo.name} */}
               Week of 4/13 - Progress
             </Typography>
             {/* <div className={classes.accentDivider}></div> */}
@@ -534,11 +529,7 @@ const IndividualPatientView = (props) => {
   };
 
   const renderLoading = () => {
-    return (
-      <h1>
-        <CircularProgress />
-      </h1>
-    );
+    return <Container className={classes.loadingContainer}><CircularProgress /></Container>;
   };
 
   return <div>{loaded ? renderTable() : renderLoading()}</div>;
