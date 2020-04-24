@@ -79,6 +79,20 @@ const useStyles = makeStyles((theme) => ({
   centeredCol: {
     textAlign: "center",
   },
+  deleteButton: {
+    backgroundColor: "#9DB4FF",
+    color: "white",
+    border: "none",
+    height: "calc(1em + .75rem)",
+    width: "calc(1em + .75rem)",
+    "&:hover": {
+      color: "white",
+      backgroundColor: "#3358C4",
+    },
+    textAlign: "center",
+    borderRadius: "50%",
+    padding: 2
+  }
   // // For Grid
   // root: {
   //   flexGrow: 1,
@@ -145,6 +159,8 @@ const IndividualPatientView = (props) => {
             .then((snap) => {
               snap.forEach((doc1) => {
                 const exercise = doc1.data();
+                // Append docId to each exercise to enable easy delete
+                exercise.docId = doc1.id; 
                 console.log("exercise.name", exercise.name);
                 ex.push(exercise);
                 if (!l.includes(exercise.name)) {
@@ -159,7 +175,8 @@ const IndividualPatientView = (props) => {
               fullset.push({ day: day, exercise: ex, exerciseList: l });
               // When everything's fully loaded
               if (querySnapshot.docs.length === fullset.length) {
-                console.log("fullset", JSON.stringify(fullset.length));
+                console.log("fullset length", JSON.stringify(fullset.length));
+                console.log("fullset", fullset);
                 setExerciseSets(fullset);
               }
             });
@@ -264,6 +281,34 @@ const IndividualPatientView = (props) => {
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
+      });
+  };
+
+  // Delete exercise from firebase
+  const deleteExercise = async (e, setDay, docId) => {
+    // For debugging purposes - pauses refresh on submit
+    e.preventDefault();
+
+    console.log("Deleting!");
+    console.log("docId", docId);
+
+    // Firestore reference
+    var exerciseRef = db
+      .collection("patients")
+      .doc(id)
+      .collection("exercisesets")
+      .doc(setDay)
+      .collection("exercises")
+      .doc(docId);
+
+    exerciseRef
+      .delete()
+      .then(function () {
+        console.log("Document successfuly deleted!");
+        window.location.reload(false);
+      })
+      .catch(function (error) {
+        console.error("Error removing document: ", error);
       });
   };
 
@@ -390,7 +435,17 @@ const IndividualPatientView = (props) => {
                           <Col>{formatExerciseName(ex.name)}</Col>
                           <Col>{ex.reps}</Col>
                           <Col>{ex.duration}</Col>
-                          <Col></Col>
+                          <Col>
+                            <Button
+                              variant="primary"
+                              type="submit"
+                              className={classes.deleteButton}
+                              onClick={(e) => {
+                                deleteExercise(e, day, ex.docId);
+                              }}>
+                              x
+                        </Button>
+                          </Col>
                         </Row>
                       </div>
                     );
