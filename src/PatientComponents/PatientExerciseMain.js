@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Divider, Typography, Container } from "@material-ui/core";
+import { Divider, Typography, Container, CircularProgress } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Row, Col, Button } from "react-bootstrap";
 import { db } from "../Firebase.js";
@@ -90,6 +90,10 @@ const useStyles = makeStyles((theme) => ({
   centeredCol: {
     textAlign: "center",
   },
+  loadingContainer: {
+    textAlign: "center",
+    paddingTop: "30vh"
+  }
 }));
 
 const calculateTotalTime = (s) => {
@@ -118,6 +122,29 @@ const PatientExerciseMain = (props) => {
   //user id used to load correct user exercises (taken from landing page)
   const currUser = useContext(UserContext).user;
   const classes = useStyles();
+
+  useEffect(() => {
+    if (Object.entries(currUser).length > 0) {
+
+      console.log("this runs");
+      var collectionRef = db
+        .collection("patients")
+        .doc(currUser.uid)
+        .collection("exercisesets")
+        .limit(1)
+
+      collectionRef
+        .get()
+        .then((query) => {
+          console.log("query size:", query.size);
+          if (query.size === 0) {
+            setLoaded(true);
+          }
+          // query => query.size
+        });
+    }
+  }, [currUser]);
+
 
   // note: need to load data asynchronously first
   // Use docID to retreive a specific patient's data from Firestore
@@ -197,20 +224,25 @@ const PatientExerciseMain = (props) => {
       return "-";
     };
 
+
     return (
       <div className={classes.window}>
         {/* Progress Chart */}
         <Typography variant="h4" className={classes.progressHeader}>
-            Your Progress
+          Your Progress
           </Typography>
         <div className={classes.exerciseContainer}>
           <Row>
-            <Col>Exercise Name</Col>
-            {exerciseSets
-              ? exerciseSets[0].exerciseList.map((ex) => (
-                  <Col className={classes.centeredCol}>{ex}</Col>
-                ))
+            {exerciseSets.length !== 0
+              ?
+              <React.Fragment>
+                <Col>Exercise Name</Col>
+                {exerciseSets[0].exerciseList.map((ex) => (
+                  <Col className={classes.centeredCol}>{ex}</Col>))}
+              </React.Fragment>
               : null}
+            {exerciseSets.length === 0 ?
+              <Col>You have no exercises yet - please check with your PT!</Col> : null}
           </Row>
           <Divider />
 
@@ -301,7 +333,8 @@ const PatientExerciseMain = (props) => {
   };
 
   const renderLoading = () => {
-    return <h1>Loading...</h1>;
+    return <Container className={classes.loadingContainer}><CircularProgress /></Container>;
+    
   };
 
   return (
