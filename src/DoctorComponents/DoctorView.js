@@ -9,6 +9,9 @@ import Patient from "../PatientComponents/Patient";
 import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    color: "#80858a"
+  }, 
   appBar: {
     backgroundColor: "transparent",
     boxShadow: "none",
@@ -26,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 250,
   },
   header: {
-    marginTop: 10,
+    marginTop: "2.0rem",
     marginBottom: 8,
     color: "#80858a",
   },
@@ -62,7 +65,11 @@ const useStyles = makeStyles((theme) => ({
     height: ".325rem",
     marginTop: "1.5rem",
     background: "#9DB4FF",
+    marginBottom: "2.5rem"
   },
+  yourExercises: {
+    marginTop: "9.5rem"
+  }
 }));
 
 const DoctorView = () => {
@@ -84,17 +91,25 @@ const DoctorView = () => {
         .then(async (doc) => {
           let therapist = doc.data();
           console.log(therapist);
-          therapist.patients.forEach((patient) => p.push(patient));
-          console.log(p);
-          setPatientId(p);
+          //load patient ids if PT has patients
+          if (therapist.patients) {
+            therapist.patients.forEach((patient) => p.push(patient));
+            setPatientId(p);
+          }
+          //handles case if PT has no patients
+          else {
+            setPatients(["noPatients"]);
+          }
         });
     }
   }, [currUser]);
 
   useEffect(() => {
-    // Get actual connected patients
-    let returnPat = [];
-    patientId.forEach((pId) => {
+    // Get connected patients if PT has any
+    if (patientId.length !== 0) {
+      // Get actual connected patients
+      let returnPat = [];
+      patientId.forEach((pId) => {
       db.collection("patients")
         .doc(pId)
         .get()
@@ -108,68 +123,100 @@ const DoctorView = () => {
           // When everything's fully loaded
           if (patientId.length === returnPat.length) {
             console.log("This is returnPat: ", returnPat);
-            setPatients(returnPat);
+            setPatients(returnPat); 
           }
         });
     });
+    }
   }, [patientId]);
 
   useEffect(() => {
-    if (patients.length != 0) {
+    if (patients.length !== 0) {
       setLoaded(true);
     }
   }, [patients]);
 
   const renderItems = () => {
-    return (
-      <div>
-        <Container fixed>
-          <Link to="/" className={classes.link}>
-            <Button className={classes.blueButton} variant="outline-primary">
-              Back
-            </Button>
-          </Link>
-          <Typography variant="h4" className={classes.header}>
-            Your Patients
-          </Typography>
-          <div className={classes.accentDivider}></div>
-          <Grid
-            container
-            direction="row"
-            justify="center"
-            alignItems="center"
-            spacing={1}
-          >
-            {patients.map((p, i) => {
-              return (
-                <Link
-                  to={{
-                    pathname: `/PT/patient/${p.uid}`,
-                    patientInfo: p,
-                  }}
-                  className={classes.link}
-                >
-                  <div>
-                    <Grid item className={classes.patientInfoCard} key={i}>
-                      <Patient name={p.name} photo={p.img} bio={p.bio} />
-                    </Grid>
-                  </div>
-                </Link>
-              );
-            })}
-          </Grid>
-          <Typography variant="h4" className={classes.header}>
-            Your Exercises
-          </Typography>
-          <div className={classes.accentDivider}></div>
-          <Link to="/PT/exercises" className={classes.link}>
-            <Button className={classes.blueButton} variant="outline-primary">
-              More Information
-            </Button>
-          </Link>
-        </Container>
-      </div>
-    );
+    if (patients[0] !== "noPatients") {
+        return (
+        <div>
+          <Container fixed>
+            <Link to="/" className={classes.link}>
+              <Button className={classes.blueButton} variant="outline-primary">
+                Back
+              </Button>
+            </Link>
+            <Typography variant="h3" className={classes.header}>
+              Your Patients
+            </Typography>
+            <div className={classes.accentDivider}></div>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              spacing={1}
+            >
+              { patients.map((p, i) => {
+                return (
+                  <Link
+                    to={{
+                      pathname: `/PT/patient/${p.uid}`,
+                      patientInfo: p,
+                    }}
+                    className={classes.link}
+                  >
+                    <div>
+                      <Grid item className={classes.patientInfoCard} key={i}>
+                        <Patient name={p.name} photo={p.img} bio={p.bio} />
+                      </Grid>
+                    </div>
+                  </Link>
+                );
+              })}
+            </Grid>
+            <Typography variant="h3" className={classes.header}>
+              Your Exercises
+            </Typography>
+            <div className={classes.accentDivider}></div>
+            <Link to="/PT/exercises" className={classes.link}>
+              <Button className={classes.blueButton} variant="outline-primary">
+                More Information
+              </Button>
+            </Link>
+          </Container>
+        </div>
+      );
+    }
+    else if (patients[0] === "noPatients") {
+      return(
+        <div className={classes.root}>
+          <Container fixed>
+            <Link to="/" className={classes.link}>
+              <Button className={classes.blueButton} variant="outline-primary">
+                Back
+              </Button>
+            </Link>
+            <Typography variant="h3" className={classes.header}>
+              Your Patients
+            </Typography>
+            <div className={classes.accentDivider}></div>
+            <Typography variant="h4">You don't have any patients connected with you yet</Typography>
+            <div className={classes.yourExercises}>
+              <Typography variant="h3" className={classes.header}>
+                Your Exercises
+              </Typography>
+              <div className={classes.accentDivider}></div>
+              <Link to="/PT/exercises" className={classes.link}>
+                <Button className={classes.blueButton} variant="outline-primary">
+                  More Information
+                </Button>
+              </Link>
+            </div>
+          </Container>
+        </div>
+      );
+    }
   };
 
   const renderTable = () => {

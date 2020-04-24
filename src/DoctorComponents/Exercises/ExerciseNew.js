@@ -6,7 +6,7 @@ import { UserContext } from "../../contexts/UserContext";
 import { db } from "../../Firebase";
 
 const ExerciseNew = () => {
-  const classes = makeStyles((theme) => ({
+  const useStyles = makeStyles((theme) => ({
     root: {
       color: "#80858a",
       marginLeft: "3%",
@@ -36,12 +36,12 @@ const ExerciseNew = () => {
     purpleDivider: {
       backgroundColor: "#9DB4FF",
       height: ".225rem",
-      width: "4.00rem",
+      width: "8.00rem",
     },
     blueDivider: {
       backgroundColor: "#3358C4",
       height: ".225rem",
-      width: "10.75rem",
+      width: "21.00rem",
     },
     dividers: {
       display: "flex",
@@ -61,6 +61,8 @@ const ExerciseNew = () => {
 
   const history = useHistory();
   const currUser = useContext(UserContext).user;
+  const classes = useStyles();
+
   const [exerciseForm, setExerciseForm] = useState({
     name: "",
     stretched: "",
@@ -124,7 +126,7 @@ const ExerciseNew = () => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h4">Create a new Exercise</Typography>
+      <Typography variant="h3">Create a new exercise</Typography>
       <div className={classes.dividers}>
         <div className={classes.purpleDivider}></div>
         <div className={classes.blueDivider}></div>
