@@ -79,16 +79,24 @@ const useStyles = makeStyles((theme) => ({
   centeredCol: {
     textAlign: "center",
   },
-  // // For Grid
-  // root: {
-  //   flexGrow: 1,
-  // },
-  // paper: {
-  //   padding: theme.spacing(2),
-  //   textAlign: "center",
-  //   color: theme.palette.text.secondary,
-  // },
-  // // End for grid
+  deleteButton: {
+    backgroundColor: "#9DB4FF",
+    color: "white",
+    border: "none",
+    height: "calc(1em + .75rem)",
+    width: "calc(1em + .75rem)",
+    "&:hover": {
+      color: "white",
+      backgroundColor: "#3358C4",
+    },
+    textAlign: "center",
+    borderRadius: "50%",
+    padding: 2
+  },
+  loadingContainer: {
+    textAlign: "center",
+    paddingTop: "30vh"
+  }
 }));
 
 const IndividualPatientView = (props) => {
@@ -123,7 +131,7 @@ const IndividualPatientView = (props) => {
   useEffect(() => {
     const fetchPatient = () => {
       // Newly added to load Firestore data
-      console.log(location.patientInfo);
+      console.log("location.patientInfo", location.patientInfo);
       var patientRef = db
         .collection("patients")
         .doc(id)
@@ -145,6 +153,8 @@ const IndividualPatientView = (props) => {
             .then((snap) => {
               snap.forEach((doc1) => {
                 const exercise = doc1.data();
+                // Append docId to each exercise to enable easy delete
+                exercise.docId = doc1.id; 
                 console.log("exercise.name", exercise.name);
                 ex.push(exercise);
                 if (!l.includes(exercise.name)) {
@@ -159,7 +169,8 @@ const IndividualPatientView = (props) => {
               fullset.push({ day: day, exercise: ex, exerciseList: l });
               // When everything's fully loaded
               if (querySnapshot.docs.length === fullset.length) {
-                console.log("fullset", JSON.stringify(fullset.length));
+                console.log("fullset length", JSON.stringify(fullset.length));
+                console.log("fullset", fullset);
                 setExerciseSets(fullset);
               }
             });
@@ -267,6 +278,34 @@ const IndividualPatientView = (props) => {
       });
   };
 
+  // Delete exercise from firebase
+  const deleteExercise = async (e, setDay, docId) => {
+    // For debugging purposes - pauses refresh on submit
+    e.preventDefault();
+
+    console.log("Deleting!");
+    console.log("docId", docId);
+
+    // Firestore reference
+    var exerciseRef = db
+      .collection("patients")
+      .doc(id)
+      .collection("exercisesets")
+      .doc(setDay)
+      .collection("exercises")
+      .doc(docId);
+
+    exerciseRef
+      .delete()
+      .then(function () {
+        console.log("Document successfuly deleted!");
+        window.location.reload(false);
+      })
+      .catch(function (error) {
+        console.error("Error removing document: ", error);
+      });
+  };
+
   // Repeat function from PatientExerciseMain
   const calculateTotalTime = (s) => {
     var t = 0;
@@ -326,6 +365,7 @@ const IndividualPatientView = (props) => {
         <div>
           <Container>
             <Typography variant="h4" className={classes.header}>
+              {/* {location.patientInfo.name} */}
               Week of 4/13 - Progress
             </Typography>
             {/* <div className={classes.accentDivider}></div> */}
@@ -390,7 +430,17 @@ const IndividualPatientView = (props) => {
                           <Col>{formatExerciseName(ex.name)}</Col>
                           <Col>{ex.reps}</Col>
                           <Col>{ex.duration}</Col>
-                          <Col></Col>
+                          <Col>
+                            <Button
+                              variant="primary"
+                              type="submit"
+                              className={classes.deleteButton}
+                              onClick={(e) => {
+                                deleteExercise(e, day, ex.docId);
+                              }}>
+                              x
+                        </Button>
+                          </Col>
                         </Row>
                       </div>
                     );
@@ -479,11 +529,7 @@ const IndividualPatientView = (props) => {
   };
 
   const renderLoading = () => {
-    return (
-      <h1>
-        <CircularProgress />
-      </h1>
-    );
+    return <Container className={classes.loadingContainer}><CircularProgress /></Container>;
   };
 
   return <div>{loaded ? renderTable() : renderLoading()}</div>;
