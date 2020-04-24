@@ -43,6 +43,9 @@ const Profile = (props) => {
   const history = useHistory();
   const location = useLocation();
 
+  //if profile pic is not uploaded use blank
+  const [profilePic, setProfilePic] = useState("/img/blankProfile.png");
+
   useEffect(() => {
     if (Object.entries(currUser).length > 0 && type) {
       db.collection(type)
@@ -50,6 +53,9 @@ const Profile = (props) => {
         .get()
         .then(function (doc) {
           setUserProfile(doc.data());
+          if (doc.data().img !== "") {
+            setProfilePic(`${doc.data().img}`);
+          }
         });
     }
   }, [type, currUser, location]);
@@ -57,16 +63,17 @@ const Profile = (props) => {
   return (
     <div>
       <Container className={classes.root}>
-        <Typography gutterBottom variant="h4" component="h2">
+        <Typography gutterBottom variant="h3">
           Your Profile
         </Typography>{" "}
+        {console.log(profilePic)}
         {userProfile ? (
           <div className={classes.root}>
             <Card className={classes.card}>
               <CardMedia
                 component="img"
                 height="230"
-                src={`${userProfile.img}`}
+                src={profilePic}
                 alt=""
                 className={classes.image}
               />
