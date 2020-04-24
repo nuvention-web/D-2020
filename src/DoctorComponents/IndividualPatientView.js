@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Container,
   Typography,
@@ -8,9 +8,9 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Form, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import PresetExercisesData from "../ModelJSON/PresetExercises.json";
 import { db } from "../Firebase.js";
 import { useLocation, useParams } from "react-router-dom";
+import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -95,13 +95,15 @@ const IndividualPatientView = (props) => {
   const classes = useStyles();
   // exerciseSets stores the "exercisesets" of the patient we are looking at
   const [exerciseSets, setExerciseSets] = useState([]);
-  const [newExercise, setNewExercise] = useState("Calf Wall Stretch");
+  const [newExercise, setNewExercise] = useState("");
   const [newReps, setNewReps] = useState(1);
   const [newDuration, setNewDuration] = useState(5);
   const { id } = useParams();
+  const currUser = useContext(UserContext).user;
 
   // For loading data, taken from PatientExerciseMain
   const [loaded, setLoaded] = useState(false);
+  const [exerciseType, setExerciseType] = useState([]);
   const dotw = [
     "Monday",
     "Tuesday",
@@ -166,7 +168,7 @@ const IndividualPatientView = (props) => {
 
   // last line refers to how this useEffect will rerun if value of foundDID changes
   useEffect(() => {
-    if (exerciseSets.length !== 0) {
+    if (exerciseSets.length !== 0 && exerciseType.length !== 0) {
       setLoaded(true);
     }
   }, [exerciseSets]);
@@ -181,14 +183,45 @@ const IndividualPatientView = (props) => {
   //     }
   // }
 
-  const getUpdatedSet = () => {
+  // Fetch exercise type of this therapist
+  useEffect(() => {
+    if (Object.entries(currUser).length > 0) {
+      const exerciseArr = [];
+      db.collection("therapists")
+        .doc(currUser.uid)
+        .collection("exercises")
+        .get()
+        .then((querySnapshot) => {
+          console.log(querySnapshot);
+          querySnapshot.docs.forEach((doc) => {
+            const data = doc.data();
+            const id = doc.id;
+            exerciseArr.push({ ...data, id });
+          });
+        })
+        .then(() => {
+          setExerciseType(exerciseArr);
+        });
+    }
+  }, [currUser]);
+
+  const getUpdatedSet = async () => {
+    console.log("current new Exercise: ", newExercise);
+    console.log(exerciseType);
+    let newEx = "";
+    if (newExercise === "") newEx = exerciseType[0].name;
+    else newEx = newExercise;
+    const selectedExerciseType = await exerciseType.filter(
+      (ex) => ex.name === newEx
+    );
+    console.log("Selected ExerciseType: ", selectedExerciseType);
     // Generate new exercise
-    var exerciseObjectData = {
+    const exerciseObjectData = {
       id: 0,
-      name: newExercise,
+      name: newEx,
       reps: parseInt(newReps),
       duration: parseFloat(newDuration),
-      videoId: "MW2WG5l-fYE",
+      videoId: selectedExerciseType[0].videoId,
       complete: false,
     };
     // var exerciseObjectData = findExercise(newExercise);
@@ -351,7 +384,7 @@ const IndividualPatientView = (props) => {
                               setNewExercise(event.target.value);
                             }}
                           >
-                            {PresetExercisesData.map((exercise, i) => {
+                            {exerciseType.map((exercise, i) => {
                               return (
                                 <option value={exercise.name}>
                                   {exercise.name}
