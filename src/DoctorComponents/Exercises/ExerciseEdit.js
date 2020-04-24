@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, TextField, Button } from "@material-ui/core";
 import { UserContext } from "../../contexts/UserContext";
@@ -60,6 +60,7 @@ const ExerciseEdit = () => {
   }));
 
   const { id } = useParams();
+  const history = useHistory();
   const youtubeUrlPrefix = "https://www.youtube.com/watch?v=";
   const [exercise, setExercise] = useState();
   const currUser = useContext(UserContext).user;
@@ -74,9 +75,33 @@ const ExerciseEdit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, stretched, url } = exerciseForm;
-    const parsedUrl = videoIdParser(url);
+    let parsedUrl = "";
+    let { name, stretched, url } = exerciseForm;
+    if (name === "") name = exercise.name;
+    if (stretched === "") stretched = exercise.stretched;
 
+    if (url === "") {
+      parsedUrl = exercise.videoId;
+    } else parsedUrl = videoIdParser(url);
+
+    console.log(name, stretched, parsedUrl);
+
+    db.collection("therapists")
+      .doc(currUser.uid)
+      .collection("exercises")
+      .doc(id)
+      .update({
+        name: name,
+        stretched: stretched,
+        videoId: parsedUrl,
+      })
+      .then(function () {
+        console.log("Document successfully written!");
+        history.push("/PT/exercises");
+      })
+      .catch(function (error) {
+        console.error("Error: updating document: ", error);
+      });
     // Add the new exercises to the DB
     /// Place to start
   };
@@ -162,7 +187,7 @@ const ExerciseEdit = () => {
                     ? exerciseForm.url
                     : youtubeUrlPrefix + exercise.videoId
                 }
-                onChange={(e) => setExerciseField("stretched", e.target.value)}
+                onChange={(e) => setExerciseField("url", e.target.value)}
                 className={classes.nameField}
                 InputProps={{
                   classes: {

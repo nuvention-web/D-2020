@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   CardActionArea,
@@ -9,7 +9,7 @@ import {
   Button,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
-
+import { db } from "../../Firebase";
 //commenting for commit
 
 const useStyles = makeStyles({
@@ -29,8 +29,23 @@ const useStyles = makeStyles({
   },
 });
 
-const Exercise = ({ exercise }) => {
+const Exercise = ({ exercise, currUser, setDeleted }) => {
   const classes = useStyles();
+
+  const handleDelete = () => {
+    db.collection("therapists")
+      .doc(currUser.uid)
+      .collection("exercises")
+      .doc(exercise.id)
+      .delete()
+      .then(() => {
+        console.log("Document successfully deleted!");
+        setDeleted(true);
+      })
+      .catch(function (error) {
+        console.error("Error removing document: ", error);
+      });
+  };
 
   return (
     <Card className={classes.root}>
@@ -57,6 +72,13 @@ const Exercise = ({ exercise }) => {
               Edit
             </Button>
           </Link>
+          <Button
+            className={classes.blueButton}
+            variant="outline-primary"
+            onClick={() => handleDelete()}
+          >
+            Delete
+          </Button>
         </CardContent>
       </CardActionArea>
     </Card>

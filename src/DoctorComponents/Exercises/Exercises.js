@@ -89,6 +89,7 @@ const Exercises = () => {
   const classes = useStyles();
   const currUser = useContext(UserContext).user;
   const [exercises, setExercises] = useState([]);
+  const [deleted, setDeleted] = useState();
 
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {
@@ -109,7 +110,7 @@ const Exercises = () => {
           setExercises(exerciseArr);
         });
     }
-  }, [currUser]);
+  }, [currUser, deleted]);
 
   return (
     <div>
@@ -125,18 +126,33 @@ const Exercises = () => {
           alignItems="center"
           spacing={1}
         >
-          {exercises
+          {exercises && currUser
             ? exercises.map((e, i) => {
                 return (
                   <div>
                     <Grid item className={classes.patientInfoCard} key={i}>
-                      <Exercise exercise={e} />
+                      <Exercise
+                        exercise={e}
+                        currUser={currUser}
+                        setDeleted={setDeleted}
+                      />
                     </Grid>
                   </div>
                 );
               })
             : null}
         </Grid>
+        <Link
+          to={{
+            pathname: "/PT/exercises/new",
+          }}
+          className={classes.link}
+        >
+          {" "}
+          <Button className={classes.blueButton} variant="outline-primary">
+            Add a new Exercise
+          </Button>
+        </Link>
       </Container>
     </div>
   );
