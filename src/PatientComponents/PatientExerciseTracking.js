@@ -185,6 +185,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
       className={classes.carousel}
       interval={0}
       indicators={false}
+      wrap={false}
     >
       {set.map((exercise) => (
         <Carousel.Item key={exercise.id}>
