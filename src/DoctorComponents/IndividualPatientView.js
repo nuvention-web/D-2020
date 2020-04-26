@@ -96,8 +96,8 @@ const useStyles = makeStyles((theme) => ({
   },
   loadingContainer: {
     textAlign: "center",
-    paddingTop: "30vh"
-  }
+    paddingTop: "30vh",
+  },
 }));
 
 const IndividualPatientView = (props) => {
@@ -126,6 +126,7 @@ const IndividualPatientView = (props) => {
   const location = useLocation();
 
   const [validated, setValidated] = useState(false);
+  const [validatedDay, setValidatedDay] = useState("");
 
   // Handle new patient with no exercisesets collection yet
   useEffect(() => {
@@ -135,17 +136,15 @@ const IndividualPatientView = (props) => {
         .collection("patients")
         .doc(currUser.uid)
         .collection("exercisesets")
-        .limit(1)
+        .limit(1);
 
-      collectionRef
-        .get()
-        .then((query) => {
-          console.log("query size:", query.size);
-          if (query.size === 0) {
-            setLoaded(true);
-          }
-          // query => query.size
-        });
+      collectionRef.get().then((query) => {
+        console.log("query size:", query.size);
+        if (query.size === 0) {
+          setLoaded(true);
+        }
+        // query => query.size
+      });
     }
   }, [currUser]);
 
@@ -276,18 +275,13 @@ const IndividualPatientView = (props) => {
     console.log("newExercise", newExercise);
 
     // Firestore reference
-    var dayRef = db
-      .collection("patients")
-      .doc(id)
-      .collection("exercisesets")
+    var dayRef = db.collection("patients").doc(id).collection("exercisesets");
 
     if (l == 0) {
       dayRef.doc(setDay).set({ day: setDay });
     }
 
-    var patientRef = dayRef
-      .doc(setDay)
-      .collection("exercises");
+    var patientRef = dayRef.doc(setDay).collection("exercises");
 
     patientRef
       .add(newExercise)
@@ -374,50 +368,54 @@ const IndividualPatientView = (props) => {
 
     const checkMatch = (day) => {
       // .find returns the element that matches
-      let s = exerciseSets.find(element => element.day == day);
+      let s = exerciseSets.find((element) => element.day == day);
       // Undefined if there are no matches
       if (s === undefined) {
         return [];
       }
       return s.exercise;
-    }
-
+    };
 
     const canClick = (day) => {
-      var r = document.getElementById("reps-"+ day);
-      console.log('what is r', r, r.value)
+      var r = document.getElementById("reps-" + day);
+
+      console.log("what is r", r, r.value);
+
       // if ((document.getElementById("reps-"+ day) === null) || (document.getElementById("dur-" + day) === null)) {
       //   return false;
       // }
-      if (typeof newReps === 'undefined' || typeof newDuration === 'undefined') {
+      if (
+        typeof newReps === "undefined" ||
+        typeof newDuration === "undefined"
+      ) {
         return false;
       }
       return true;
-    }
+    };
 
-    const doNothing = (e) => {
+    const doNothing = (e, day) => {
       e.preventDefault();
-      console.log("click cannot execute, do nothing")
-
+      console.log("click cannot execute, do nothing");
       const form = e.currentTarget;
+      console.log("This is the form that's being targeted: ", form);
       if (form.checkValidity() === false) {
         e.preventDefault();
         e.stopPropagation();
       }
 
-      setValidated(true);
-
-    }
-
-    const handleSubmit = (event) => {
-      const form = event.currentTarget;
-      if (form.checkValidity() === false) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-
-      setValidated(true);
+      setValidatedDay(day);
     };
+
+    // const handleSubmit = (event) => {
+    //   const form = event.currentTarget;
+    //   console.log("This is the form that's being targeted: ", form);
+    //   if (form.checkValidity() === false) {
+    //     event.preventDefault();
+    //     event.stopPropagation();
+    //   }
+
+    //   setValidated(true);
+    // };
     // end form validation stuff
 
     return (
@@ -433,8 +431,7 @@ const IndividualPatientView = (props) => {
 
             {/* Progress Chart */}
             <Row>
-              {exerciseSets.length !== 0
-                ?
+              {exerciseSets.length !== 0 ? (
                 <React.Fragment>
                   <Col>Exercise Name</Col>
 
@@ -442,9 +439,10 @@ const IndividualPatientView = (props) => {
                     <Col className={classes.centeredCol}>{ex}</Col>
                   ))}
                 </React.Fragment>
-                : null}
-              {exerciseSets.length === 0 ?
-                <Col>A new patient - add exercises below!</Col> : null}
+              ) : null}
+              {exerciseSets.length === 0 ? (
+                <Col>A new patient - add exercises below!</Col>
+              ) : null}
             </Row>
             <Divider />
           </Container>
@@ -499,26 +497,36 @@ const IndividualPatientView = (props) => {
                               className={classes.deleteButton}
                               onClick={(e) => {
                                 deleteExercise(e, day, ex.docId);
-                              }}>
+                              }}
+                            >
                               X
-                        </Button>
+                            </Button>
                           </Col>
                         </Row>
                       </div>
                     );
                   })}
-
-                  <Form noValidate validated={validated} onSubmit={handleSubmit} id="form1">
+                  {console.log(day == validatedDay)}
+                  <Form
+                    noValidate
+                    validated={day == validatedDay}
+                    // onSubmit={handleSubmit}
+                    id={`form1-${day}`}
+                  >
                     <Row>
                       <Col>
-                        <Form.Group controlId="exampleForm1">
+                        <Form.Group controlId={`exampleForm${day}`}>
                           <Form.Control
                             as="select"
                             className={classes.exerciseBox}
                             onChange={(event) => {
                               setNewExercise(event.target.value);
-                            }}>
-                              {console.log("exampleForm1", document.getElementById('reps-Monday'))}
+                            }}
+                          >
+                            {console.log(
+                              "exampleForm1",
+                              document.getElementById("reps-Monday")
+                            )}
                             {exerciseType.map((exercise, i) => {
                               return (
                                 <option value={exercise.name}>
@@ -539,14 +547,16 @@ const IndividualPatientView = (props) => {
                             onChange={(event) => {
                               setNewReps(event.target.value);
                             }}
-                            required />
+                            required
+                          />
                           <Form.Control.Feedback type="invalid">
                             Reps are required.
-                        </Form.Control.Feedback>
+                          </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
                       <Col>
-                        <Form.Control as="input"
+                        <Form.Control
+                          as="input"
                           type="number"
                           min="1"
                           step="0.5"
@@ -555,7 +565,8 @@ const IndividualPatientView = (props) => {
                           onChange={(event) => {
                             setNewDuration(event.target.value);
                           }}
-                          required />
+                          required
+                        />
                         <Form.Control.Feedback type="invalid">
                           Duration is required.
                         </Form.Control.Feedback>
@@ -567,8 +578,9 @@ const IndividualPatientView = (props) => {
                           // className={classes.blueButton}
                           // disabled={(typeof newReps === 'undefined' || typeof newDuration === 'undefined')}
                           onClick={(e) => {
-                            canClick(day) ?
-                              addExercise(e, day, checkMatch(day).length) : doNothing(e)
+                            canClick(day)
+                              ? addExercise(e, day, checkMatch(day).length)
+                              : doNothing(e, day);
                           }}
                         >
                           Add
@@ -604,7 +616,11 @@ const IndividualPatientView = (props) => {
   };
 
   const renderLoading = () => {
-    return <Container className={classes.loadingContainer}><CircularProgress /></Container>;
+    return (
+      <Container className={classes.loadingContainer}>
+        <CircularProgress />
+      </Container>
+    );
   };
 
   return <div>{loaded ? renderTable() : renderLoading()}</div>;
