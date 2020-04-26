@@ -127,6 +127,34 @@ const IndividualPatientView = (props) => {
   ];
   const location = useLocation();
 
+
+  // Handle new patient with no exercisesets collection yet
+  useEffect(() => {
+    if (Object.entries(currUser).length > 0) {
+      console.log("this runs");
+      var collectionRef = db
+        .collection("patients")
+        .doc(currUser.uid)
+        .collection("exercisesets")
+        .limit(1)
+
+      collectionRef
+        .get()
+        .then((query) => {
+          console.log("query size:", query.size);
+          if (query.size === 0) {
+            setLoaded(true);
+          }
+          // query => query.size
+        });
+    }
+  }, [currUser]);
+
+
+
+
+
+
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
     const fetchPatient = () => {
@@ -154,7 +182,7 @@ const IndividualPatientView = (props) => {
               snap.forEach((doc1) => {
                 const exercise = doc1.data();
                 // Append docId to each exercise to enable easy delete
-                exercise.docId = doc1.id; 
+                exercise.docId = doc1.id;
                 console.log("exercise.name", exercise.name);
                 ex.push(exercise);
                 if (!l.includes(exercise.name)) {
@@ -369,21 +397,23 @@ const IndividualPatientView = (props) => {
               Week of 4/13 - Progress
             </Typography>
             {/* <div className={classes.accentDivider}></div> */}
-            {console.log(
-              "exerciseList",
-              JSON.stringify(exerciseSets[0].exercise)
-            )}
+            {/* {console.log("exerciseList", JSON.stringify(exerciseSets[0].exercise))} */}
 
             {/* Progress Chart */}
             <Row>
-              <Col>Exercise Name</Col>
-              {exerciseSets
-                ? exerciseSets[0].exerciseList.map((ex) => (
-                  <Col className={classes.centeredCol}>{ex}</Col>
-                ))
-                : null}
-            </Row>
+              {exerciseSets.length !== 0
+                ?
+                <React.Fragment>
+                  <Col>Exercise Name</Col>
 
+                  {exerciseSets[0].exerciseList.map((ex) => (
+                    <Col className={classes.centeredCol}>{ex}</Col>
+                  ))}
+                </React.Fragment>
+                : null}
+              {exerciseSets.length === 0 ?
+                <Col>A new patient - add exercises below!</Col> : null}
+            </Row>
             <Divider />
           </Container>
 
