@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 55,
   },
   exerciseBox: {
-    width: 200,
+    width: 250,
   },
   blueButton: {
     backgroundColor: "#9DB4FF",
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 35,
   },
   inputBox: {
-    width: 50,
+    width: 80,
     height: "calc(1.5em + .75rem + 2px)",
     borderRadius: 5,
     border: "1px solid #ccc",
@@ -105,17 +105,14 @@ const IndividualPatientView = (props) => {
   // exerciseSets stores the "exercisesets" of the patient we are looking at
   const [exerciseSets, setExerciseSets] = useState([]);
   const [newExercise, setNewExercise] = useState("");
-  const [newReps, setNewReps] = useState(1);
-  const [newDuration, setNewDuration] = useState(5);
+  const [newReps, setNewReps] = useState();
+  const [newDuration, setNewDuration] = useState();
   const { id } = useParams();
   const currUser = useContext(UserContext).user;
 
   // For loading data, taken from PatientExerciseMain
   const [loaded, setLoaded] = useState(false);
   const [exerciseType, setExerciseType] = useState([]);
-
-  // Load eventually
-  // window.setTimeout(setLoaded(true), 2000);
 
   const dotw = [
     "Monday",
@@ -128,6 +125,7 @@ const IndividualPatientView = (props) => {
   ];
   const location = useLocation();
 
+  const [validated, setValidated] = useState(false);
 
   // Handle new patient with no exercisesets collection yet
   useEffect(() => {
@@ -150,11 +148,6 @@ const IndividualPatientView = (props) => {
         });
     }
   }, [currUser]);
-
-
-
-
-
 
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
@@ -389,6 +382,44 @@ const IndividualPatientView = (props) => {
       return s.exercise;
     }
 
+
+    const canClick = (day) => {
+      var r = document.getElementById("reps-"+ day);
+      console.log('what is r', r, r.value)
+      // if ((document.getElementById("reps-"+ day) === null) || (document.getElementById("dur-" + day) === null)) {
+      //   return false;
+      // }
+      if (typeof newReps === 'undefined' || typeof newDuration === 'undefined') {
+        return false;
+      }
+      return true;
+    }
+
+    const doNothing = (e) => {
+      e.preventDefault();
+      console.log("click cannot execute, do nothing")
+
+      const form = e.currentTarget;
+      if (form.checkValidity() === false) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      setValidated(true);
+
+    }
+
+    const handleSubmit = (event) => {
+      const form = event.currentTarget;
+      if (form.checkValidity() === false) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      setValidated(true);
+    };
+    // end form validation stuff
+
     return (
       <div>
         <div>
@@ -477,18 +508,17 @@ const IndividualPatientView = (props) => {
                     );
                   })}
 
-                  <Form>
-                    <br />
+                  <Form noValidate validated={validated} onSubmit={handleSubmit} id="form1">
                     <Row>
                       <Col>
-                        <Form.Group controlId="exampleForm.ControlSelect1">
+                        <Form.Group controlId="exampleForm1">
                           <Form.Control
                             as="select"
                             className={classes.exerciseBox}
                             onChange={(event) => {
                               setNewExercise(event.target.value);
-                            }}
-                          >
+                            }}>
+                              {console.log("exampleForm1", document.getElementById('reps-Monday'))}
                             {exerciseType.map((exercise, i) => {
                               return (
                                 <option value={exercise.name}>
@@ -500,31 +530,45 @@ const IndividualPatientView = (props) => {
                         </Form.Group>
                       </Col>
                       <Col>
-                        <input
-                          type="text"
-                          className={classes.inputBox}
-                          onChange={(event) => {
-                            setNewReps(event.target.value);
-                          }}
-                        />
+                        <Form.Group>
+                          <Form.Control
+                            type="number"
+                            min="0"
+                            className={classes.inputBox}
+                            id={`reps-${day}`}
+                            onChange={(event) => {
+                              setNewReps(event.target.value);
+                            }}
+                            required />
+                          <Form.Control.Feedback type="invalid">
+                            Reps are required.
+                        </Form.Control.Feedback>
+                        </Form.Group>
                       </Col>
                       <Col>
-                        <input
-                          type="text"
+                        <Form.Control as="input"
+                          type="number"
+                          min="1"
+                          step="0.5"
                           className={classes.inputBox}
+                          id={`dur-${day}`}
                           onChange={(event) => {
                             setNewDuration(event.target.value);
                           }}
-                        />
+                          required />
+                        <Form.Control.Feedback type="invalid">
+                          Duration is required.
+                        </Form.Control.Feedback>
                       </Col>
                       <Col className={classes.centeredCol}>
                         <Button
                           variant="primary"
-                          className={classes.inputBox}
                           type="submit"
-                          className={classes.blueButton}
+                          // className={classes.blueButton}
+                          // disabled={(typeof newReps === 'undefined' || typeof newDuration === 'undefined')}
                           onClick={(e) => {
-                            addExercise(e, day, checkMatch(day).length);
+                            canClick(day) ?
+                              addExercise(e, day, checkMatch(day).length) : doNothing(e)
                           }}
                         >
                           Add
