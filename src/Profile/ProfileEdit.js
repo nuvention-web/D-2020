@@ -50,7 +50,7 @@ const ProfileEdit = () => {
     blueDivider: {
       backgroundColor: "#3358C4",
       height: ".225rem",
-      width: "14.50rem",
+      width: "15.00rem",
     },
     dividers: {
       display: "flex",
@@ -215,7 +215,7 @@ const ProfileEdit = () => {
     <div className={classes.root}>
       {userProfile ? (
         <div>
-          <Typography variant="h3">Edit your profile</Typography>
+          <Typography variant="h3">Edit Your Profile</Typography>
           <div className={classes.dividers}>
             <div className={classes.purpleDivider}></div>
             <div className={classes.blueDivider}></div>

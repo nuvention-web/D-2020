@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, TextField, Button } from "@material-ui/core";
+import { Typography, TextField} from "@material-ui/core";
 import { UserContext } from "../../contexts/UserContext";
 import { db } from "../../Firebase";
+import { Button } from "react-bootstrap";
 
 const ExerciseNew = () => {
   const useStyles = makeStyles((theme) => ({
@@ -41,7 +42,7 @@ const ExerciseNew = () => {
     blueDivider: {
       backgroundColor: "#3358C4",
       height: ".225rem",
-      width: "21.00rem",
+      width: "21.50rem",
     },
     dividers: {
       display: "flex",
@@ -128,7 +129,7 @@ const ExerciseNew = () => {
 
   return (
     <div className={classes.root}>
-      <Typography variant="h3">Create a new exercise</Typography>
+      <Typography variant="h3">Create a New Exercise</Typography>
       <div className={classes.dividers}>
         <div className={classes.purpleDivider}></div>
         <div className={classes.blueDivider}></div>
