@@ -105,8 +105,8 @@ const IndividualPatientView = (props) => {
   // exerciseSets stores the "exercisesets" of the patient we are looking at
   const [exerciseSets, setExerciseSets] = useState([]);
   const [newExercise, setNewExercise] = useState("");
-  const [newReps, setNewReps] = useState();
-  const [newDuration, setNewDuration] = useState();
+  const [newReps, setNewReps] = useState({});
+  const [newDuration, setNewDuration] = useState({});
   const { id } = useParams();
   const currUser = useContext(UserContext).user;
 
@@ -143,7 +143,6 @@ const IndividualPatientView = (props) => {
         if (query.size === 0) {
           setLoaded(true);
         }
-        // query => query.size
       });
     }
   }, [currUser]);
@@ -241,7 +240,7 @@ const IndividualPatientView = (props) => {
     }
   }, [currUser]);
 
-  const getUpdatedSet = async () => {
+  const getUpdatedSet = async (day) => {
     console.log("current new Exercise: ", newExercise);
     console.log(exerciseType);
     let newEx = "";
@@ -255,8 +254,8 @@ const IndividualPatientView = (props) => {
     const exerciseObjectData = {
       id: 0,
       name: newEx,
-      reps: parseInt(newReps),
-      duration: parseFloat(newDuration),
+      reps: parseInt(newReps[day]),
+      duration: parseFloat(newDuration[day]),
       videoId: selectedExerciseType[0].videoId,
       complete: false,
     };
@@ -271,7 +270,7 @@ const IndividualPatientView = (props) => {
     // For debugging purposes - pauses refresh on submit
     e.preventDefault();
 
-    const newExercise = await getUpdatedSet();
+    const newExercise = await getUpdatedSet(setDay);
     console.log("newExercise", newExercise);
 
     // Firestore reference
@@ -380,17 +379,27 @@ const IndividualPatientView = (props) => {
       var r = document.getElementById("reps-" + day);
 
       console.log("what is r", r, r.value);
+      console.log("newReps:", newReps);
+      console.log("newDuration:", newDuration);
 
-      // if ((document.getElementById("reps-"+ day) === null) || (document.getElementById("dur-" + day) === null)) {
-      //   return false;
-      // }
+      // Make sure anything has been entered
       if (
         typeof newReps === "undefined" ||
         typeof newDuration === "undefined"
-      ) {
-        return false;
+      ) { return false; }
+
+      // Make sure values are entered for proper day
+      if (
+        typeof newReps[day] === "undefined" ||
+        newReps[day] === "" ||
+        typeof newDuration[day] === "undefined" ||
+        newDuration[day] === ""
+      ) 
+      { 
+        return false; }
+      else {
+        return true;
       }
-      return true;
     };
 
     const doNothing = (e, day) => {
@@ -405,18 +414,6 @@ const IndividualPatientView = (props) => {
 
       setValidatedDay(day);
     };
-
-    // const handleSubmit = (event) => {
-    //   const form = event.currentTarget;
-    //   console.log("This is the form that's being targeted: ", form);
-    //   if (form.checkValidity() === false) {
-    //     event.preventDefault();
-    //     event.stopPropagation();
-    //   }
-
-    //   setValidated(true);
-    // };
-    // end form validation stuff
 
     return (
       <div>
@@ -545,10 +542,14 @@ const IndividualPatientView = (props) => {
                             className={classes.inputBox}
                             id={`reps-${day}`}
                             onChange={(event) => {
-                              setNewReps(event.target.value);
+                              let r = newReps;
+                              const d = day;
+                              r[d] = event.target.value;
+                              setNewReps(r);
                             }}
                             required
                           />
+                          {console.log("new reps??", newReps)}
                           <Form.Control.Feedback type="invalid">
                             Reps are required.
                           </Form.Control.Feedback>
@@ -563,7 +564,10 @@ const IndividualPatientView = (props) => {
                           className={classes.inputBox}
                           id={`dur-${day}`}
                           onChange={(event) => {
-                            setNewDuration(event.target.value);
+                            let dur = newDuration;
+                            const d = day;
+                            dur[d] = event.target.value;
+                            setNewDuration(dur);
                           }}
                           required
                         />
