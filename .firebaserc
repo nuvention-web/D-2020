@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "nuvention-team-d"
+  },
+  "targets": {
+    "nuvention-team-d": {
+      "hosting": {
+        "dev": [
+          "nuvention-team-d"
+        ],
+        "product": [
+          "tendon"
+        ]
+      }
+    }
   }
 }
