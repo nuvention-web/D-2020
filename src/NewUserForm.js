@@ -86,7 +86,7 @@ const NewUserForm = () => {
 
     if (userInfo.type !== "" && userInfo.name !== "") {
       const Ref = db.collection(type);
-      
+
       //case where user doesn't upload pic
       var downloadUrl = ""
       if (photo) {
@@ -95,23 +95,23 @@ const NewUserForm = () => {
         downloadUrl = await snapshot.ref.getDownloadURL();
       }
       Ref.doc(currUser.uid)
-      .set({
-        ...userInfo,
-        name: name,
-        bio: bio,
-        img: downloadUrl,
-      })
-      .then(function () {
-        console.log("Document successfully written!");
-        localStorage.setItem("type", userInfo.type);
-        history.push({
-          pathname: "/profile",
-          notNewUser: true,
+        .set({
+          ...userInfo,
+          name: name,
+          bio: bio,
+          img: downloadUrl,
+        })
+        .then(function () {
+          console.log("Document successfully written!");
+          localStorage.setItem("type", userInfo.type);
+          history.push({
+            pathname: "/profile",
+            notNewUser: true,
+          });
+        })
+        .catch(function (error) {
+          console.error("Error writing document: ", error);
         });
-      })
-      .catch(function (error) {
-        console.error("Error writing document: ", error);
-      });
     }
     else {
       alert("Please complete the 'type' and 'name' fields first");
@@ -122,10 +122,10 @@ const NewUserForm = () => {
     <div className={classes.root}>
       <Typography variant="h3">Welcome to Tendon</Typography>
       <div className={classes.dividers}>
-            <div className={classes.purpleDivider}></div>
-            <div className={classes.blueDivider}></div>
-        </div>
-        <Typography variant="h5">Let's make your profile</Typography>
+        <div className={classes.purpleDivider}></div>
+        <div className={classes.blueDivider}></div>
+      </div>
+      <Typography variant="h5">Let's make your profile</Typography>
 
       <form
         className={classes.form}
@@ -143,6 +143,8 @@ const NewUserForm = () => {
               onChange={(e) => setUserField("type", e.target.value)}
               label="Type"
               className={classes.profileType}
+              error={userInfo["type"] === ""}
+              id="outlined-error-helper-text"
             >
               <MenuItem value="">
                 <em>None</em>
@@ -165,6 +167,8 @@ const NewUserForm = () => {
                 input: classes.resize,
               },
             }}
+            error={userInfo["name"] === ""}
+            id="outlined-error-helper-text"
           />
         </div>
         <div>
@@ -183,6 +187,8 @@ const NewUserForm = () => {
                 input: classes.resize,
               },
             }}
+            error={userInfo["bio"] === ""}
+            id="outlined-error-helper-text"
           />
         </div>
         <p className={classes.addPhoto}>Add a photo of you:</p>
@@ -195,8 +201,9 @@ const NewUserForm = () => {
           accept="image/*"
           onChange={onPhotoChange}
         />
-        <br/>
-        <Button variant="light" type="submit">
+        <br />
+        <Button variant="light" type="submit"
+          disabled={(userInfo["type"] === "") || (userInfo["name"] === "") || (userInfo["bio"] === "")}>
           Submit
         </Button>
       </form>
