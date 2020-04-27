@@ -99,9 +99,6 @@ const useStyles = makeStyles((theme) => ({
       color: "#8ca1e6"
     }
   },
-  // addButton: {
-  //   borderRadius: "50%"
-  // }
 }));
 
 const IndividualPatientView = (props) => {

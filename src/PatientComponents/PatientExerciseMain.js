@@ -93,6 +93,9 @@ const useStyles = makeStyles((theme) => ({
   loadingContainer: {
     textAlign: "center",
     paddingTop: "30vh"
+  },
+  rows: {
+    marginTop: 10
   }
 }));
 
@@ -281,7 +284,7 @@ const PatientExerciseMain = (props) => {
                 {Object.values(s.exercise).map((ex, k) => {
                   return (
                     <div>
-                      <Row key={i}>
+                      <Row key={i} className={classes.rows}>
                         <Col>{formatExerciseName(ex.name)}</Col>
                         <Col>{ex.reps}</Col>
                         <Col>{ex.duration}</Col>
