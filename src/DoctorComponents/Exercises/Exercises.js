@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   accentDivider: {
     content: "",
     display: "block",
-    width: "13.25rem",
+    width: "8.25rem",
     height: ".325rem",
     marginTop: "1.5rem",
     background: "#9DB4FF",
@@ -78,13 +78,15 @@ const useStyles = makeStyles((theme) => ({
   },
 
   exercisesGrid: {
-    margin: 15,
+    marginTop: 15,
+    marginRight: 15,
     display: "flex",
     flexWrap: "wrap",
   },
 
   exerciseGridContainer: {
     marginTop: 40,
+    marginBottom: "4%"
   },
 
   // paper: {
@@ -125,27 +127,14 @@ const Exercises = () => {
   return (
     <div>
       <Container>
-        <Typography variant="h4" className={classes.header}>
+        <Typography variant="h3" className={classes.header}>
           Your Patients
         </Typography>
-        <Link
-          to={{
-            pathname: "/PT/exercises/new",
-          }}
-          className={classes.link}
-        >
-          {" "}
-          <Button className={classes.blueButton} variant="outline-primary">
-            Add a new Exercise
-          </Button>
-        </Link>
 
         <div className={classes.accentDivider}></div>
         <Grid
           container
           direction="row"
-          alignItems="center"
-          spacing={1}
           className={classes.exerciseGridContainer}
         >
           {exercises && currUser
@@ -164,6 +153,17 @@ const Exercises = () => {
               })
             : null}
         </Grid>
+        <Link
+          to={{
+            pathname: "/PT/exercises/new",
+          }}
+          className={classes.link}
+        >
+          {" "}
+          <Button className={classes.blueButton} variant="outline-primary">
+            Add a new Exercise
+          </Button>
+        </Link>
       </Container>
     </div>
   );

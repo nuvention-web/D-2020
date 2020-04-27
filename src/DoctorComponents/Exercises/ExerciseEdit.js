@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, TextField, Button } from "@material-ui/core";
+import { Typography, TextField } from "@material-ui/core";
 import { UserContext } from "../../contexts/UserContext";
 import { db } from "../../Firebase";
+import { Button } from "react-bootstrap";
 
 const ExerciseEdit = () => {
-  const classes = makeStyles((theme) => ({
+  const useStyles = makeStyles((theme) => ({
     root: {
       color: "#80858a",
-      marginLeft: "3%",
+      marginLeft: "3.5%",
     },
     form: {
       textAlign: "left",
@@ -36,12 +37,12 @@ const ExerciseEdit = () => {
     purpleDivider: {
       backgroundColor: "#9DB4FF",
       height: ".225rem",
-      width: "4.00rem",
+      width: "6.75rem",
     },
     blueDivider: {
       backgroundColor: "#3358C4",
       height: ".225rem",
-      width: "10.75rem",
+      width: "17.00rem",
     },
     dividers: {
       display: "flex",
@@ -64,6 +65,9 @@ const ExerciseEdit = () => {
   const youtubeUrlPrefix = "https://www.youtube.com/watch?v=";
   const [exercise, setExercise] = useState();
   const currUser = useContext(UserContext).user;
+  const classes = useStyles();
+
+
   const [exerciseForm, setExerciseForm] = useState({
     name: "",
     stretched: "",
@@ -133,7 +137,7 @@ const ExerciseEdit = () => {
     <div className={classes.root}>
       {exercise ? (
         <div>
-          <Typography variant="h4">Edit your Exercise</Typography>
+          <Typography variant="h3">Edit Your Exercise</Typography>
           <div className={classes.dividers}>
             <div className={classes.purpleDivider}></div>
             <div className={classes.blueDivider}></div>
