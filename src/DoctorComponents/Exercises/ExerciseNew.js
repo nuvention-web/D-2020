@@ -117,13 +117,15 @@ const ExerciseNew = () => {
   };
 
   const videoIdParser = (url) => {
-    const video_id = url.split("v=")[1];
+    let video_id = url.split("v=")[1];
     const ampersandPosition = video_id.indexOf("&");
     if (ampersandPosition != -1) {
       video_id = video_id.substring(0, ampersandPosition);
     }
     return video_id;
   };
+
+  {console.log("exerciseForm", exerciseForm)}
 
   return (
     <div className={classes.root}>
@@ -139,11 +141,15 @@ const ExerciseNew = () => {
         onSubmit={handleSubmit}
       >
         <div>
+          {console.log("exerciseForm.name", typeof exerciseForm["name"])}
           <TextField
             id="standard-basic"
             label="Name"
             value={exerciseForm.name}
             required
+            helperText="Name required."
+            error = {exerciseForm["name"] === ""}
+            id = "outlined-error-helper-text"
             onChange={(e) => setExerciseField("name", e.target.value)}
             className={classes.nameField}
             InputProps={{
@@ -173,6 +179,9 @@ const ExerciseNew = () => {
             label="Youtube Video URL of the exercise"
             value={exerciseForm.url}
             required
+            helperText="URL required."
+            error = {exerciseForm["url"] === ""}
+            id="outlined-error-helper-text"
             onChange={(e) => setExerciseField("url", e.target.value)}
             className={classes.nameField}
             InputProps={{
@@ -183,7 +192,8 @@ const ExerciseNew = () => {
           />
         </div>
         <br />
-        <Button variant="light" type="submit">
+        <Button variant="light" type="submit"
+        disabled={(exerciseForm["name"] === "") || (exerciseForm["url"] === "")}>
           Submit
         </Button>
       </form>
