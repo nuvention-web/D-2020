@@ -123,10 +123,33 @@ const IndividualPatientView = (props) => {
     "Saturday",
     "Sunday",
   ];
+
+  const dayToNumIdMap = new Map([["Monday", 0],["Tuesday", 1],
+                                ["Wednesday", 2], ["Thursday", 3],
+                                ["Friday", 4], ["Saturday", 5],
+                                ["Sunday", 6]]);
+
   const location = useLocation();
 
   const [validated, setValidated] = useState(false);
   const [validatedDay, setValidatedDay] = useState("");
+
+  //to sort exercisesets
+  const compareSets = (a, b) => {
+    const dayA = a.day;
+    const dayB = b.day;
+
+
+    let comparison = 0;
+    if (dayToNumIdMap.get(dayA) > dayToNumIdMap.get(dayB)) {
+      comparison = 1;
+    }
+    else if (dayToNumIdMap.get(dayA) < dayToNumIdMap.get(dayB)) {
+      comparison = -1;
+    }
+
+    return comparison
+  }
 
   // Handle new patient with no exercisesets collection yet
   useEffect(() => {
@@ -185,12 +208,10 @@ const IndividualPatientView = (props) => {
               });
             })
             .then(() => {
-              console.log("THis is L: ", JSON.stringify(l));
               fullset.push({ day: day, exercise: ex, exerciseList: l });
               // When everything's fully loaded
               if (querySnapshot.docs.length === fullset.length) {
-                console.log("fullset length", JSON.stringify(fullset.length));
-                console.log("fullset", fullset);
+                fullset.sort(compareSets);
                 setExerciseSets(fullset);
               }
             });
@@ -292,6 +313,7 @@ const IndividualPatientView = (props) => {
         console.error("Error writing document: ", error);
       });
   };
+
 
   // Delete exercise from firebase
   const deleteExercise = async (e, setDay, docId) => {
@@ -606,12 +628,12 @@ const IndividualPatientView = (props) => {
     return (
       <div>
         <Container>
-          <Link to="/PT" className={classes.link}>
-            <Button className={classes.blueButton} variant="outline-primary">
+          {/* <Link to="/PT" className={classes.link}>
+            <Button className={classes.blueButton} variant="outline-primary"> */}
               {/* <img className={classes.arrowIcon} src="/img/arrowleft.png"></img> */}
-              Back
+              {/* Back
             </Button>
-          </Link>
+          </Link> */}
         </Container>
 
         {renderItems()}

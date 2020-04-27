@@ -56,7 +56,8 @@ const useStyles = makeStyles((theme) => ({
   patientInfoCard: {
     width: 300,
     minHeight: 430,
-    margin: 10,
+    marginRight: 40,
+    marginTop: 10
   },
   accentDivider: {
     content: "",
@@ -68,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "2.5rem"
   },
   yourExercises: {
-    marginTop: "9.5rem"
+    marginTop: "8.5rem"
   }
 }));
 
@@ -141,11 +142,11 @@ const DoctorView = () => {
         return (
         <div>
           <Container fixed>
-            <Link to="/" className={classes.link}>
+            {/* <Link to="/" className={classes.link}>
               <Button className={classes.blueButton} variant="outline-primary">
                 Back
               </Button>
-            </Link>
+            </Link> */}
             <Typography variant="h3" className={classes.header}>
               Your Patients
             </Typography>
@@ -153,9 +154,7 @@ const DoctorView = () => {
             <Grid
               container
               direction="row"
-              justify="center"
-              alignItems="center"
-              spacing={1}
+              
             >
               { patients.map((p, i) => {
                 return (
@@ -175,15 +174,17 @@ const DoctorView = () => {
                 );
               })}
             </Grid>
+            <div className={classes.yourExercises}>
             <Typography variant="h3" className={classes.header}>
               Your Exercises
             </Typography>
             <div className={classes.accentDivider}></div>
             <Link to="/PT/exercises" className={classes.link}>
               <Button className={classes.blueButton} variant="outline-primary">
-                More Information
+                View Exercises
               </Button>
             </Link>
+            </div>
           </Container>
         </div>
       );
@@ -192,11 +193,11 @@ const DoctorView = () => {
       return(
         <div className={classes.root}>
           <Container fixed>
-            <Link to="/" className={classes.link}>
+            {/* <Link to="/" className={classes.link}>
               <Button className={classes.blueButton} variant="outline-primary">
                 Back
               </Button>
-            </Link>
+            </Link> */}
             <Typography variant="h3" className={classes.header}>
               Your Patients
             </Typography>
@@ -209,7 +210,7 @@ const DoctorView = () => {
               <div className={classes.accentDivider}></div>
               <Link to="/PT/exercises" className={classes.link}>
                 <Button className={classes.blueButton} variant="outline-primary">
-                  More Information
+                  View Exercises
                 </Button>
               </Link>
             </div>

@@ -50,7 +50,7 @@ const ProfileEdit = () => {
     blueDivider: {
       backgroundColor: "#3358C4",
       height: ".225rem",
-      width: "14.50rem",
+      width: "15.00rem",
     },
     dividers: {
       display: "flex",
