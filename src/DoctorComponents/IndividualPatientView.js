@@ -11,6 +11,11 @@ import { Link } from "react-router-dom";
 import { db } from "../Firebase.js";
 import { useLocation, useParams } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlusSquare
+} from "@fortawesome/free-regular-svg-icons";
+import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -79,25 +84,24 @@ const useStyles = makeStyles((theme) => ({
   centeredCol: {
     textAlign: "center",
   },
-  deleteButton: {
-    backgroundColor: "#9DB4FF",
-    color: "white",
-    border: "none",
-    height: "calc(1em + .75rem)",
-    width: "calc(1em + .75rem)",
-    "&:hover": {
-      color: "white",
-      backgroundColor: "#3358C4",
-    },
-    textAlign: "center",
-    borderRadius: "50%",
-    padding: 2,
-    margin: 1,
-  },
   loadingContainer: {
     textAlign: "center",
     paddingTop: "30vh",
   },
+  rows: {
+    marginTop: 10
+  },
+  newExercise: {
+    marginTop: 10
+  },
+  deleteIcon: {
+    '&:hover': {
+      color: "#8ca1e6"
+    }
+  },
+  // addButton: {
+  //   borderRadius: "50%"
+  // }
 }));
 
 const IndividualPatientView = (props) => {
@@ -505,21 +509,19 @@ const IndividualPatientView = (props) => {
                   {checkMatch(day).map((ex, k) => {
                     return (
                       <div>
-                        <Row key={k}>
+                        <Row key={k} className={classes.rows}>
                           <Col>{formatExerciseName(ex.name)}</Col>
                           <Col>{ex.reps}</Col>
                           <Col>{ex.duration}</Col>
                           <Col className={classes.centeredCol}>
-                            <Button
-                              variant="primary"
-                              type="submit"
-                              className={classes.deleteButton}
+                            <FontAwesomeIcon 
+                              icon={faTimes} 
+                              color="#9DB4FF" 
+                              size="2x"
+                              className={classes.deleteIcon}
                               onClick={(e) => {
                                 deleteExercise(e, day, ex.docId);
-                              }}
-                            >
-                              X
-                            </Button>
+                              }}/>
                           </Col>
                         </Row>
                       </div>
@@ -531,6 +533,7 @@ const IndividualPatientView = (props) => {
                     validated={day == validatedDay}
                     // onSubmit={handleSubmit}
                     id={`form1-${day}`}
+                    className={classes.newExercise}
                   >
                     <Row>
                       <Col>
@@ -599,9 +602,9 @@ const IndividualPatientView = (props) => {
                       </Col>
                       <Col className={classes.centeredCol}>
                         <Button
-                          variant="primary"
+                          variant="light"
                           type="submit"
-                          // className={classes.blueButton}
+                          className={classes.addButton}
                           // disabled={(typeof newReps === 'undefined' || typeof newDuration === 'undefined')}
                           onClick={(e) => {
                             canClick(day)
@@ -609,7 +612,11 @@ const IndividualPatientView = (props) => {
                               : doNothing(e, day);
                           }}
                         >
-                          Add
+                          <FontAwesomeIcon 
+                              icon={faPlus} 
+                              color="#3358C4" 
+                              size="2x"
+                              type="submit"/>
                         </Button>
                       </Col>
                     </Row>
