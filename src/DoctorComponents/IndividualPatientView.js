@@ -125,10 +125,9 @@ const IndividualPatientView = (props) => {
     "Sunday",
   ];
 
-  const dayToNumIdMap = new Map([["Monday", 0],["Tuesday", 1],
-                                ["Wednesday", 2], ["Thursday", 3],
-                                ["Friday", 4], ["Saturday", 5],
-                                ["Sunday", 6]]);
+  const dayToNumIdMap = new Map([["Sunday", 0], ["Monday", 1], ["Tuesday", 2],
+  ["Wednesday", 3], ["Thursday", 4],
+  ["Friday", 5], ["Saturday", 6]]);
 
   const location = useLocation();
 
@@ -265,12 +264,16 @@ const IndividualPatientView = (props) => {
   const getUpdatedSet = async (day) => {
     console.log("current new Exercise: ", newExercise);
     console.log(exerciseType);
+
+    // Retrieve name of new exercise
     let newEx = "";
     if (newExercise === "") newEx = exerciseType[0].name;
     else newEx = newExercise;
+
     const selectedExerciseType = await exerciseType.filter(
       (ex) => ex.name === newEx
     );
+
     console.log("Selected ExerciseType: ", selectedExerciseType);
     // Generate new exercise
     const exerciseObjectData = {
@@ -284,7 +287,26 @@ const IndividualPatientView = (props) => {
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
 
-    return exerciseObjectData;
+    // To find the date we are adding the exercise to
+    console.log("day", day);
+    console.log("index of day", dayToNumIdMap.get(day));
+
+    var n = new Date();
+    // Today's index - setDay's index
+    const diff = n.getDay() - dayToNumIdMap.get(day);
+    console.log("diff", diff);
+
+    // Diff will be neg. if in the future 
+    n = new Date(n.setDate(n.getDate() - diff));
+    console.log("n", n);
+
+    // For history object
+    const historyObjectData = {
+      date: n,
+      exercise: newEx
+    };
+
+    return [exerciseObjectData, historyObjectData];
   };
 
   // Submit new exercise to firebase
@@ -292,8 +314,9 @@ const IndividualPatientView = (props) => {
     // For debugging purposes - pauses refresh on submit
     e.preventDefault();
 
-    const newExercise = await getUpdatedSet(setDay);
+    const [newExercise, newHistory] = await getUpdatedSet(setDay);
     console.log("newExercise", newExercise);
+    console.log("newHistory", newHistory);
 
     // Firestore reference
     var dayRef = db.collection("patients").doc(id).collection("exercisesets");
@@ -302,17 +325,37 @@ const IndividualPatientView = (props) => {
       dayRef.doc(setDay).set({ day: setDay });
     }
 
+    // Add to exercisesets 
     var patientRef = dayRef.doc(setDay).collection("exercises");
 
     patientRef
       .add(newExercise)
       .then(function (docRef) {
-        console.log("Document written with ID: ", docRef.id);
+        console.log("Exercise document written with ID: ", docRef.id);
+
+        // Add docRef.id to history to double check
+        newHistory.exerciseDocId = docRef.id;
+        console.log("newHistory right before:", newHistory);
+
+        // Add document with same docId to history
+        var historyRef = db.collection("patients").doc(id).collection("history").doc(docRef.id)
+        historyRef
+          .set(newHistory)
+          .then(function () {
+            console.log("History document sucessfully written!");
+            // window.location.reload(false);
+          })
+          .catch(function (error) {
+            console.error("Error writing document: ", error);
+          });
+        // End add to history
+
         window.location.reload(false);
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
       });
+
   };
 
 
@@ -337,11 +380,26 @@ const IndividualPatientView = (props) => {
       .delete()
       .then(function () {
         console.log("Document successfuly deleted!");
+
+        // Delete history
+        var historyRef = db.collection("patients").doc(id).collection("history").doc(docId)
+
+        historyRef
+          .delete()
+          .then(function () {
+            console.log("History doc deleted");
+            // window.location.reload(false);
+          })
+          .catch(function (error) {
+            console.error("Error writing document: ", error);
+          });
+        // End Delete history
         window.location.reload(false);
       })
       .catch(function (error) {
         console.error("Error removing document: ", error);
       });
+
   };
 
   // Repeat function from PatientExerciseMain
@@ -417,9 +475,9 @@ const IndividualPatientView = (props) => {
         newReps[day] === "" ||
         typeof newDuration[day] === "undefined" ||
         newDuration[day] === ""
-      ) 
-      { 
-        return false; }
+      ) {
+        return false;
+      }
       else {
         return true;
       }
@@ -511,14 +569,14 @@ const IndividualPatientView = (props) => {
                           <Col>{ex.reps}</Col>
                           <Col>{ex.duration}</Col>
                           <Col className={classes.centeredCol}>
-                            <FontAwesomeIcon 
-                              icon={faTimes} 
-                              color="#9DB4FF" 
+                            <FontAwesomeIcon
+                              icon={faTimes}
+                              color="#9DB4FF"
                               size="2x"
                               className={classes.deleteIcon}
                               onClick={(e) => {
                                 deleteExercise(e, day, ex.docId);
-                              }}/>
+                              }} />
                           </Col>
                         </Row>
                       </div>
@@ -609,11 +667,11 @@ const IndividualPatientView = (props) => {
                               : doNothing(e, day);
                           }}
                         >
-                          <FontAwesomeIcon 
-                              icon={faPlus} 
-                              color="#3358C4" 
-                              size="2x"
-                              type="submit"/>
+                          <FontAwesomeIcon
+                            icon={faPlus}
+                            color="#3358C4"
+                            size="2x"
+                            type="submit" />
                         </Button>
                       </Col>
                     </Row>
@@ -634,8 +692,8 @@ const IndividualPatientView = (props) => {
         <Container>
           {/* <Link to="/PT" className={classes.link}>
             <Button className={classes.blueButton} variant="outline-primary"> */}
-              {/* <img className={classes.arrowIcon} src="/img/arrowleft.png"></img> */}
-              {/* Back
+          {/* <img className={classes.arrowIcon} src="/img/arrowleft.png"></img> */}
+          {/* Back
             </Button>
           </Link> */}
         </Container>
