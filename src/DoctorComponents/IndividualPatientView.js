@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlusSquare
 } from "@fortawesome/free-regular-svg-icons";
-import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPlus, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -30,21 +30,13 @@ const useStyles = makeStyles((theme) => ({
   meter: {
     marginTop: 25,
   },
-  video: {
-    marginTop: 30,
-    marginLeft: 120,
-    height: 250,
-    width: 460,
-  },
   exerciseContainer: {
     marginTop: 30,
   },
   link: {
-    textDecoration: "none",
+    //gets rid of underline
+    textDecoration: "none !important",
     textAlign: "right",
-    "&:hover": {
-      color: "white",
-    },
   },
   stretchGraphic: {
     height: 225,
@@ -99,6 +91,17 @@ const useStyles = makeStyles((theme) => ({
       color: "#8ca1e6"
     }
   },
+  viewHistory: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    width: 120
+  },
+  progressHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
+  }
 }));
 
 const IndividualPatientView = (props) => {
@@ -203,7 +206,6 @@ const IndividualPatientView = (props) => {
                 if (!l.includes(exercise.name)) {
                   l.push(exercise.name);
                   console.log("l now", l);
-                  // setExerciseList(l); // this causes ExerciseSets to be incorrect
                 }
               });
             })
@@ -500,12 +502,23 @@ const IndividualPatientView = (props) => {
       <div>
         <div>
           <Container>
+            <header className={classes.progressHeader}>
             <Typography variant="h4" className={classes.header}>
               {/* {location.patientInfo.name} */}
               Week of 4/13 - Progress
             </Typography>
-            {/* <div className={classes.accentDivider}></div> */}
-            {/* {console.log("exerciseList", JSON.stringify(exerciseSets[0].exercise))} */}
+            <Link
+                to={{
+                  pathname: `/PT/patient/${id}/history`
+                }}
+                className={classes.link}
+              >
+              <Button variant="light"
+                      className={classes.viewHistory}>
+                View History
+              </Button>
+            </Link>
+            </header>
 
             {/* Progress Chart */}
             <Row>
