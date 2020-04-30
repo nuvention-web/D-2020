@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Container, Grid, AppBar, Typography } from "@material-ui/core";
+import { Container, Grid, AppBar, Typography, CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "react-bootstrap/Button";
 import PatientExerciseData from "../ModelJSON/PatientExercises.json";
@@ -70,6 +70,12 @@ const useStyles = makeStyles((theme) => ({
   },
   yourExercises: {
     marginTop: "8.5rem"
+  },
+  loadingContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: "40vh"
   }
 }));
 
@@ -142,11 +148,6 @@ const DoctorView = () => {
         return (
         <div>
           <Container fixed>
-            {/* <Link to="/" className={classes.link}>
-              <Button className={classes.blueButton} variant="outline-primary">
-                Back
-              </Button>
-            </Link> */}
             <Typography variant="h3" className={classes.header}>
               Your Patients
             </Typography>
@@ -221,15 +222,19 @@ const DoctorView = () => {
   };
 
   const renderTable = () => {
-    return <div className={classes.window}>{renderItems()}</div>;
+    return <div>{renderItems()}</div>;
   };
 
   const renderLoading = () => {
-    return <h1>Loading...</h1>;
+    return (
+      <div className={classes.loadingContainer}>
+        <CircularProgress/>
+      </div>
+    );
   };
 
   return (
-    <div className={classes.window}>
+    <div>
       {loaded ? renderTable() : renderLoading()}
     </div>
   );
