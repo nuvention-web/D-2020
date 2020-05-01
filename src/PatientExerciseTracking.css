@@ -41,3 +41,7 @@ html, body {
     border-color: #9DB4FF !important;
     color: white;
   }
+
+/* div[style*="position: fixed"] {
+  z-index: 999 !important;
+} */
