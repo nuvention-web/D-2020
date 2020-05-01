@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import { Row, Col, Button } from "react-bootstrap";
 import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -141,8 +142,14 @@ const PatientExerciseMain = (props) => {
   const [percentFinished, setPercentFinished] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [therapistInfo, setTherapistInfo] = useState();
+  const [userProfile, setUserProfile] = useState();
+  const blankImg = "/img/blankProfile.png";
+  const type = localStorage.getItem("type");
+
   //user id used to load correct user exercises (taken from landing page)
   const currUser = useContext(UserContext).user;
+  const history = useHistory();
+
   const classes = useStyles();
 
   useEffect(() => {
@@ -234,6 +241,17 @@ const PatientExerciseMain = (props) => {
   }, [currUser]);
 
   useEffect(() => {
+    if (Object.entries(currUser).length > 0 && type) {
+      db.collection(type)
+        .doc(currUser.uid)
+        .get()
+        .then(function (doc) {
+          setUserProfile(doc.data());
+        });
+    }
+  }, [currUser, type]);
+
+  useEffect(() => {
     if (exerciseSets.length !== 0) {
       setLoaded(true);
     }
@@ -273,20 +291,45 @@ const PatientExerciseMain = (props) => {
                   Your Therapist
                 </Typography>
               </CardContent>
-              <CardActionArea>
-                <CardMedia
-                  component="img"
-                  //   alt="Contemplative Reptile"
-                  height="230"
-                  src={therapistInfo.img}
-                  //   title="Contemplative Reptile"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {therapistInfo.name}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>{" "}
+              {therapistInfo ? (
+                <div>
+                  <CardMedia
+                    component="img"
+                    //   alt="Contemplative Reptile"
+                    height="230"
+                    src={therapistInfo.img}
+                    //   title="Contemplative Reptile"
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {therapistInfo.name}
+                    </Typography>
+                  </CardContent>
+                </div>
+              ) : (
+                <div>
+                  <CardMedia
+                    component="img"
+                    //   alt="Contemplative Reptile"
+                    height="230"
+                    src={blankImg}
+                    //   title="Contemplative Reptile"
+                  />
+                  <Button
+                    variant="light"
+                    onClick={() =>
+                      history.push({
+                        pathname: "/profile/edit",
+                        userProfile: userProfile,
+                      })
+                    }
+                    className={classes.editButton}
+                  >
+                    Connect with your therapist!
+                  </Button>
+                </div>
+              )}
+
               <CardActions>
                 {therapistInfo && therapistInfo.zoom ? (
                   <a href={`${therapistInfo.zoom}`} target="_blank">
