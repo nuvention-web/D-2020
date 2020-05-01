@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Divider, Typography, Container, CircularProgress } from "@material-ui/core";
+import {
+  Divider,
+  Typography,
+  Container,
+  CircularProgress,
+  CardActionArea,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Grid,
+} from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Row, Col, Button } from "react-bootstrap";
 import { db } from "../Firebase.js";
@@ -8,7 +19,7 @@ import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
-    marginTop: "6%",
+    marginTop: "3%",
     height: "45vh",
     overflowY: "scroll",
   },
@@ -18,20 +29,20 @@ const useStyles = makeStyles((theme) => ({
     color: "#80858a",
   },
   progressHeader: {
-    marginTop: 10,
+    marginTop: 30,
     marginBottom: 8,
     color: "#80858a",
-    marginLeft: "9.75%"
+    marginLeft: "9.75%",
   },
   meter: {
     marginTop: 25,
   },
   exerciseContainer: {
-    marginTop: 30,
+    marginTop: 10,
     marginBottom: 40,
     width: "80%",
     margin: "0 auto",
-    overflowX: "scroll"
+    overflowX: "scroll",
   },
   link: {
     textDecoration: "none",
@@ -92,11 +103,19 @@ const useStyles = makeStyles((theme) => ({
   },
   loadingContainer: {
     textAlign: "center",
-    paddingTop: "30vh"
+    paddingTop: "30vh",
   },
   rows: {
-    marginTop: 10
-  }
+    marginTop: 10,
+  },
+  card: {
+    maxWidth: 345,
+    maxHeight: 430,
+  },
+  grid: {
+    width: "80%",
+    margin: "0 auto",
+  },
 }));
 
 const calculateTotalTime = (s) => {
@@ -121,33 +140,50 @@ const PatientExerciseMain = (props) => {
   const [exerciseSets, setExerciseSets] = useState([]);
   const [percentFinished, setPercentFinished] = useState(0);
   const [loaded, setLoaded] = useState(false);
-
+  const [therapistInfo, setTherapistInfo] = useState();
   //user id used to load correct user exercises (taken from landing page)
   const currUser = useContext(UserContext).user;
   const classes = useStyles();
 
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {
-
       console.log("this runs");
       var collectionRef = db
         .collection("patients")
         .doc(currUser.uid)
         .collection("exercisesets")
-        .limit(1)
+        .limit(1);
 
-      collectionRef
-        .get()
-        .then((query) => {
-          console.log("query size:", query.size);
-          if (query.size === 0) {
-            setLoaded(true);
-          }
-          // query => query.size
-        });
+      collectionRef.get().then((query) => {
+        console.log("query size:", query.size);
+        if (query.size === 0) {
+          setLoaded(true);
+        }
+        // query => query.size
+      });
     }
   }, [currUser]);
 
+  // Get zoom link of the therapist
+  useEffect(() => {
+    if (Object.entries(currUser).length > 0) {
+      db.collection("patients")
+        .doc(currUser.uid)
+        .get()
+        .then((snap) => {
+          const patient = snap.data();
+          if (patient.code) {
+            db.collection("therapists")
+              .doc(patient.code)
+              .get()
+              .then((th) => {
+                const therapist = th.data();
+                setTherapistInfo(therapist);
+              });
+          }
+        });
+    }
+  }, [currUser]);
 
   // note: need to load data asynchronously first
   // Use docID to retreive a specific patient's data from Firestore
@@ -227,46 +263,83 @@ const PatientExerciseMain = (props) => {
       return "-";
     };
 
-
     return (
       <div className={classes.window}>
-        {/* Progress Chart */}
-        <Typography variant="h4" className={classes.progressHeader}>
-          Your Progress
-          </Typography>
-        <div className={classes.exerciseContainer}>
-          <Row>
-            {exerciseSets.length !== 0
-              ?
-              <React.Fragment>
-                <Col>Exercise Name</Col>
-                {exerciseSets[0].exerciseList.map((ex) => (
-                  <Col className={classes.centeredCol}>{ex}</Col>))}
-              </React.Fragment>
-              : null}
-            {exerciseSets.length === 0 ?
-              <Col>You have no exercises yet - please check with your PT!</Col> : null}
-          </Row>
-          <Divider />
-
-          {exerciseSets.map((s, i) => {
-            return (
-              <Row key={i}>
-                <Col>{s["day"]}</Col>
-                {/* Map through each column */ console.log(s["day"])}
-                {s.exerciseList.map((name, j) => {
-                  // if s
-                  return (
-                    <Col className={classes.centeredCol} key={j}>
-                      {checkComplete(s.exercise, name)}
-                    </Col>
-                  );
-                })}
+        <Grid className={classes.grid} container spacing={3}>
+          <Grid item xs={3}>
+            <Card className={classes.card}>
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="h2">
+                  Your Therapist
+                </Typography>
+              </CardContent>
+              <CardActionArea>
+                <CardMedia
+                  component="img"
+                  //   alt="Contemplative Reptile"
+                  height="230"
+                  src={therapistInfo.img}
+                  //   title="Contemplative Reptile"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {therapistInfo.name}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>{" "}
+              <CardActions>
+                {therapistInfo && therapistInfo.zoom ? (
+                  <a href={`${therapistInfo.zoom}`} target="_blank">
+                    <Button size="small" color="primary">
+                      Start Zoom Call
+                    </Button>
+                  </a>
+                ) : null}
+              </CardActions>
+            </Card>
+          </Grid>
+          <Grid item xs={9}>
+            {/* Progress Chart */}
+            <Typography variant="h4" className={classes.progressHeader}>
+              Your Progress
+            </Typography>
+            <div className={classes.exerciseContainer}>
+              <Row>
+                {exerciseSets.length !== 0 ? (
+                  <React.Fragment>
+                    <Col>Exercise Name</Col>
+                    {exerciseSets[0].exerciseList.map((ex) => (
+                      <Col className={classes.centeredCol}>{ex}</Col>
+                    ))}
+                  </React.Fragment>
+                ) : null}
+                {exerciseSets.length === 0 ? (
+                  <Col>
+                    You have no exercises yet - please check with your PT!
+                  </Col>
+                ) : null}
               </Row>
-            );
-          })}
-        </div>
-        {/* End Progress Chart */}
+              <Divider />
+              {exerciseSets.map((s, i) => {
+                return (
+                  <Row key={i}>
+                    <Col>{s["day"]}</Col>
+                    {/* Map through each column */ console.log(s["day"])}
+                    {s.exerciseList.map((name, j) => {
+                      // if s
+                      return (
+                        <Col className={classes.centeredCol} key={j}>
+                          {checkComplete(s.exercise, name)}
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                );
+              })}
+              {/* End Progress Chart */}
+            </div>
+          </Grid>
+        </Grid>
 
         <div className={classes.exercises}>
           {exerciseSets.map((s, i) => {
@@ -336,8 +409,11 @@ const PatientExerciseMain = (props) => {
   };
 
   const renderLoading = () => {
-    return <Container className={classes.loadingContainer}><CircularProgress /></Container>;
-    
+    return (
+      <Container className={classes.loadingContainer}>
+        <CircularProgress />
+      </Container>
+    );
   };
 
   return (

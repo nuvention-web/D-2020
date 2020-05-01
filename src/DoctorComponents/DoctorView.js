@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Container, Grid, AppBar, Typography, CircularProgress } from "@material-ui/core";
+import {
+  Container,
+  Grid,
+  AppBar,
+  Typography,
+  CircularProgress,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "react-bootstrap/Button";
 import PatientExerciseData from "../ModelJSON/PatientExercises.json";
@@ -10,8 +16,8 @@ import { UserContext } from "../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    color: "#80858a"
-  }, 
+    color: "#80858a",
+  },
   appBar: {
     backgroundColor: "transparent",
     boxShadow: "none",
@@ -57,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     width: 300,
     minHeight: 430,
     marginRight: 40,
-    marginTop: 10
+    marginTop: 10,
   },
   accentDivider: {
     content: "",
@@ -66,17 +72,17 @@ const useStyles = makeStyles((theme) => ({
     height: ".325rem",
     marginTop: "1.5rem",
     background: "#9DB4FF",
-    marginBottom: "2.5rem"
+    marginBottom: "2.5rem",
   },
   yourExercises: {
-    marginTop: "8.5rem"
+    marginTop: "8.5rem",
   },
   loadingContainer: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: "40vh"
-  }
+    marginTop: "40vh",
+  },
 }));
 
 const DoctorView = () => {
@@ -86,16 +92,31 @@ const DoctorView = () => {
   const patientData = PatientExerciseData;
   const [loaded, setLoaded] = useState(false);
   const currUser = useContext(UserContext).user;
+  const [therapistInfo, setTherapistInfo] = useState({});
 
   useEffect(() => {
-    // Figure out the
     if (Object.entries(currUser).length > 0) {
       let p = [];
       // get patient of the therapist
       db.collection("therapists")
         .doc(currUser.uid)
         .get()
-        .then(async (doc) => {
+        .then((doc) => {
+          let therapist = doc.data();
+          setTherapistInfo(therapist);
+        });
+    }
+  }, [currUser]);
+
+  useEffect(() => {
+    // Figure out the patient of the therapist
+    if (Object.entries(currUser).length > 0) {
+      let p = [];
+      // get patient of the therapist
+      db.collection("therapists")
+        .doc(currUser.uid)
+        .get()
+        .then((doc) => {
           let therapist = doc.data();
           console.log(therapist);
           //load patient ids if PT has patients
@@ -103,6 +124,7 @@ const DoctorView = () => {
             therapist.patients.forEach((patient) => p.push(patient));
             setPatientId(p);
           }
+
           //handles case if PT has no patients
           else {
             setPatients(["noPatients"]);
@@ -117,23 +139,23 @@ const DoctorView = () => {
       // Get actual connected patients
       let returnPat = [];
       patientId.forEach((pId) => {
-      db.collection("patients")
-        .doc(pId)
-        .get()
-        .then((doc) => {
-          let individual = doc.data();
-          console.log("Individual", individual);
-          individual.uid = pId;
-          returnPat.push(individual);
-        })
-        .then(() => {
-          // When everything's fully loaded
-          if (patientId.length === returnPat.length) {
-            console.log("This is returnPat: ", returnPat);
-            setPatients(returnPat); 
-          }
-        });
-    });
+        db.collection("patients")
+          .doc(pId)
+          .get()
+          .then((doc) => {
+            let individual = doc.data();
+            console.log("Individual", individual);
+            individual.uid = pId;
+            returnPat.push(individual);
+          })
+          .then(() => {
+            // When everything's fully loaded
+            if (patientId.length === returnPat.length) {
+              console.log("This is returnPat: ", returnPat);
+              setPatients(returnPat);
+            }
+          });
+      });
     }
   }, [patientId]);
 
@@ -145,53 +167,41 @@ const DoctorView = () => {
 
   const renderItems = () => {
     if (patients[0] !== "noPatients") {
-        return (
+      return (
         <div>
           <Container fixed>
             <Typography variant="h3" className={classes.header}>
               Your Patients
             </Typography>
             <div className={classes.accentDivider}></div>
-            <Grid
-              container
-              direction="row"
-              
-            >
-              { patients.map((p, i) => {
+            <Grid container direction="row">
+              {patients.map((p, i) => {
                 return (
-                  <Link
-                    to={{
-                      pathname: `/PT/patient/${p.uid}`,
-                      patientInfo: p,
-                    }}
-                    className={classes.link}
-                  >
-                    <div>
-                      <Grid item className={classes.patientInfoCard} key={i}>
-                        <Patient name={p.name} photo={p.img} bio={p.bio} />
-                      </Grid>
-                    </div>
-                  </Link>
+                  <Grid item className={classes.patientInfoCard} key={i}>
+                    <Patient p={p} therapist={therapistInfo} />
+                  </Grid>
                 );
               })}
             </Grid>
             <div className={classes.yourExercises}>
-            <Typography variant="h3" className={classes.header}>
-              Your Exercises
-            </Typography>
-            <div className={classes.accentDivider}></div>
-            <Link to="/PT/exercises" className={classes.link}>
-              <Button className={classes.blueButton} variant="outline-primary">
-                View Exercises
-              </Button>
-            </Link>
+              <Typography variant="h3" className={classes.header}>
+                Your Exercises
+              </Typography>
+              <div className={classes.accentDivider}></div>
+              <Link to="/PT/exercises" className={classes.link}>
+                <Button
+                  className={classes.blueButton}
+                  variant="outline-primary"
+                >
+                  View Exercises
+                </Button>
+              </Link>
             </div>
           </Container>
         </div>
       );
-    }
-    else if (patients[0] === "noPatients") {
-      return(
+    } else if (patients[0] === "noPatients") {
+      return (
         <div className={classes.root}>
           <Container fixed>
             {/* <Link to="/" className={classes.link}>
@@ -203,14 +213,19 @@ const DoctorView = () => {
               Your Patients
             </Typography>
             <div className={classes.accentDivider}></div>
-            <Typography variant="h4">You don't have any patients connected with you yet</Typography>
+            <Typography variant="h4">
+              You don't have any patients connected with you yet
+            </Typography>
             <div className={classes.yourExercises}>
               <Typography variant="h3" className={classes.header}>
                 Your Exercises
               </Typography>
               <div className={classes.accentDivider}></div>
               <Link to="/PT/exercises" className={classes.link}>
-                <Button className={classes.blueButton} variant="outline-primary">
+                <Button
+                  className={classes.blueButton}
+                  variant="outline-primary"
+                >
                   View Exercises
                 </Button>
               </Link>
@@ -228,16 +243,12 @@ const DoctorView = () => {
   const renderLoading = () => {
     return (
       <div className={classes.loadingContainer}>
-        <CircularProgress/>
+        <CircularProgress />
       </div>
     );
   };
 
-  return (
-    <div>
-      {loaded ? renderTable() : renderLoading()}
-    </div>
-  );
+  return <div>{loaded ? renderTable() : renderLoading()}</div>;
 };
 
 export default DoctorView;

@@ -75,6 +75,7 @@ const ProfileEdit = () => {
     name: "",
     bio: "",
     code: "",
+    zoom: "",
   });
   const history = useHistory();
   const location = useLocation();
@@ -119,11 +120,27 @@ const ProfileEdit = () => {
     if (userInfo.code) {
       var code = userInfo.code;
     }
+    if (userInfo.zoom) {
+      var zoom = userInfo.zoom;
+    }
     if (type === "") type = preType;
     if (name === "") name = userProfile.name;
     if (bio === "") bio = userProfile.bio;
     if (code === "" && userProfile.code) code = userProfile.code;
-    console.log("type: ", type, "name: ", name, "bio: ", bio, "code: ", code);
+    if (zoom === "" && userProfile.zoom) zoom = userProfile.zoom;
+
+    console.log(
+      "type: ",
+      type,
+      "name: ",
+      name,
+      "bio: ",
+      bio,
+      "code: ",
+      code,
+      "zoom: ",
+      zoom
+    );
     const Ref = db.collection(type);
 
     // If photo was selected
@@ -150,6 +167,9 @@ const ProfileEdit = () => {
           ...(code && code !== ""
             ? { code: code }
             : { code: userProfile.code }),
+          ...(zoom && zoom !== ""
+            ? { zoom: zoom }
+            : { zoom: userProfile.zoom }),
         })
         .then(function () {
           console.log("Document successfully written!");
@@ -185,6 +205,11 @@ const ProfileEdit = () => {
             : userProfile.code
             ? { code: userProfile.code }
             : { code: null }),
+          ...(zoom && zoom !== ""
+            ? { zoom: zoom }
+            : userProfile.zoom
+            ? { zoom: userProfile.zoom }
+            : { zoom: null }),
         })
         .then(function () {
           if (type == "patients") {
@@ -290,6 +315,24 @@ const ProfileEdit = () => {
                     userInfo.code !== "" ? userInfo.code : userProfile.code
                   }
                   onChange={(e) => setUserField("code", e.target.value)}
+                  className={classes.codeField}
+                  InputProps={{
+                    classes: {
+                      input: classes.resize,
+                    },
+                  }}
+                />
+              </div>
+            ) : null}
+            {preType && preType == "therapists" ? (
+              <div>
+                <TextField
+                  id="standard-basic"
+                  label="Enter your Zoom Personal Meeting Id "
+                  value={
+                    userInfo.zoom !== "" ? userInfo.zoom : userProfile.zoom
+                  }
+                  onChange={(e) => setUserField("zoom", e.target.value)}
                   className={classes.codeField}
                   InputProps={{
                     classes: {
