@@ -7,6 +7,11 @@ import {
   ListItem,
   ListItemText,
   Checkbox,
+  CircularProgress,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
 } from "@material-ui/core";
 import YouTube from "react-youtube";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -26,6 +31,7 @@ import Sidebar from "react-sidebar";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
+import Drawer from 'react-drag-drawer';
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -119,25 +125,121 @@ const useStyles = makeStyles((theme) => ({
     alignContent: "center",
     margin: "0 auto",
   },
-  alertText: {},
+  loadingContainer: {
+    textAlign: "center",
+    paddingTop: "35vh",
+  },
+  painLevel: {
+    width: 150,
+  },
+  formControl: {
+    marginTop: 30
+  },
+  modal: {
+    outline: "none",
+    background: "white",
+    fontSize: "1.6rem",
+    width: "30rem",
+    height: "40rem",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    zIndex: 15
+  }
 }));
+
 
 const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(null);
   const classes = useStyles();
+  const [drawer, setDrawer] = useState(false);
+
+  const currUser = useContext(UserContext).user;
+  const { day } = useParams();
+  
   const handleSelect = (selectedIndex, e) => {
     setIndex(selectedIndex);
     setDirection(e.direction);
   };
-  const currUser = useContext(UserContext).user;
-  const { day } = useParams();
 
-  console.log("set in carousel", set);
+  const toggleDrawer = () => {
+    setDrawer(!drawer);
+  }
+
+  const handleSubmit = (feedback, pain) => {
+
+    // Firestore reference
+    var exerciseRef = db
+      .collection("patients")
+      .doc(feedback.currUser.uid)
+      .collection("exercisesets")
+      .doc(day)
+      .collection("exercises");
+
+      exerciseRef
+      .where("name", "==", feedback.exerciseName)
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          exerciseRef.doc(doc.id).update({ painLevel: pain});
+          setDrawer(false);
+        });
+      })
+      .catch(function (error) {
+        console.error("Error writing document: ", error);
+      });
+
+  }
+
+  const FeedbackPopUp = ({feedback}) => {
+    const painScale = Array.from({length:11},(v,k)=>k);
+    const [painLevel, setPainLevel] = useState("");
+    const handleChange = (event) => {
+      console.log(event.target.value)
+      setPainLevel(event.target.value);
+    }
+    
+    return(
+      <div>
+        <Drawer open={drawer}
+                onRequestClose={toggleDrawer}
+                modalElementClass={classes.modal}>
+            <form
+            className={classes.form}
+            autoComplete="off"
+            onSubmit={() => handleSubmit(feedback, painLevel)}
+            >
+            <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel id="demo-simple-select-outlined-label">
+                Pain Level
+            </InputLabel>
+              <Select
+                labelId="demo-simple-select-outlined-label"
+                id="demo-simple-select-outlined"
+                label="Pain Level"
+                value={painLevel}
+                onChange={handleChange}
+                className={classes.painLevel}>
+                {painScale.map((level, i) => 
+                    <MenuItem value={level}>{level}</MenuItem>
+                )}
+              </Select>
+            </FormControl>
+            <Button variant="light" onClick={() => handleSubmit(feedback, painLevel)}>
+              Submit
+            </Button>
+          </form>
+        </Drawer>
+      </div>
+    );
+  }
+  
+
 
   // Update 'complete' flag when timer hits 0
   const updateCompleted = (exercisename, currUser) => {
-    console.log("Checkpoint A");
 
     // Firestore reference
     var exerciseRef = db
@@ -156,6 +258,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
           exerciseRef.doc(doc.id).update({ complete: true });
           // alert("Good work!");
           setExerciseDone(true);
+          setDrawer(true);
         });
       })
       .catch(function (error) {
@@ -191,10 +294,13 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
         <Carousel.Item key={exercise.id}>
           {/* Success Alert When Exercise is Completed*/}
           {exercise.complete ? (
+            <div>
             <Alert severity="success" className={classes.completionAlert}>
               <AlertTitle>Success</AlertTitle>
               Nice! You've completed this exercise. <strong>Keep it up!</strong>
             </Alert>
+            <FeedbackPopUp feedback={{currUser, exerciseName: exercise.name}}/>
+            </div>
           ) : null}
           {/* End Alert */}
 
@@ -212,7 +318,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                 checkpoints={[
                   {
                     time: 0,
-                    callback: () => updateCompleted(exercise.name, currUser),
+                    callback: () => {updateCompleted(exercise.name, currUser);}
                   },
                 ]}
               >
@@ -279,8 +385,9 @@ const ExerciseTracking = (props) => {
 
       console.log("setRef", setRef);
       // Newly added to load Firestore data, using onSnapshot to get live updates
-      var l = [];
+
       setRef.onSnapshot(function (querySnapshot) {
+        var l = [];
         querySnapshot.forEach(function (doc) {
           console.log("Got data again via snapshot", doc.data());
           l.push(doc.data());
@@ -379,7 +486,11 @@ const ExerciseTracking = (props) => {
   };
 
   const renderLoading = () => {
-    return <h1>Loading...</h1>;
+    return (
+      <div className={classes.loadingContainer}>
+        <CircularProgress/>
+      </div>
+    );
   };
 
   return <div>{loaded ? renderExerciseTracking() : renderLoading()}</div>;
