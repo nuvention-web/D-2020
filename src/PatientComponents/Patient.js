@@ -9,6 +9,7 @@ import {
   Button,
   Typography,
 } from "@material-ui/core";
+import { Link } from "react-router-dom";
 
 //commenting for commit
 
@@ -19,9 +20,10 @@ const useStyles = makeStyles({
   },
 });
 
-const Patient = ({ name, photo, bio }) => {
+const Patient = ({ p, therapist }) => {
   const classes = useStyles();
-
+  const { name, img, bio, uid } = p;
+  console.log(name, img, bio, uid, therapist);
   return (
     <Card className={classes.root}>
       <CardActionArea>
@@ -29,7 +31,7 @@ const Patient = ({ name, photo, bio }) => {
           component="img"
           //   alt="Contemplative Reptile"
           height="230"
-          src={photo}
+          src={img}
           //   title="Contemplative Reptile"
         />
         <CardContent>
@@ -40,15 +42,27 @@ const Patient = ({ name, photo, bio }) => {
             {bio}
           </Typography>
         </CardContent>
-      </CardActionArea>
-      {/* <CardActions>
-        <Button size="small" color="primary">
-          View Routine
-        </Button>
-        <Button size="small" color="primary">
-          Progress
-        </Button>
-      </CardActions> */}
+      </CardActionArea>{" "}
+      <CardActions>
+        {therapist && therapist.zoom ? (
+          <a href={`${therapist.zoom}`} target="_blank">
+            <Button size="small" color="primary">
+              Start Zoom Call
+            </Button>
+          </a>
+        ) : null}
+        <Link
+          to={{
+            pathname: `/PT/patient/${uid}`,
+            patientInfo: p,
+          }}
+          className={classes.link}
+        >
+          <Button size="small" color="primary">
+            More Info
+          </Button>
+        </Link>
+      </CardActions>
     </Card>
   );
 };
