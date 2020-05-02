@@ -16,14 +16,15 @@ import { Link } from "react-router-dom";
 const useStyles = makeStyles({
   root: {
     maxWidth: 300,
-    maxHeight: 250,
+    minHeight: 250,
   },
 });
 
 const Patient = ({ p, therapist }) => {
   const classes = useStyles();
   const { name, img, bio, uid } = p;
-  console.log(name, img, bio, uid, therapist);
+  console.log(name, img, bio, uid);
+  console.log(therapist, therapist.zoom);
   return (
     <Card className={classes.root}>
       <CardActionArea>
@@ -43,26 +44,24 @@ const Patient = ({ p, therapist }) => {
           </Typography>
         </CardContent>
       </CardActionArea>{" "}
-      <CardActions>
-        {therapist && therapist.zoom ? (
-          <a href={`${therapist.zoom}`} target="_blank">
-            <Button size="small" color="primary">
-              Start Zoom Call
-            </Button>
-          </a>
-        ) : null}
-        <Link
-          to={{
-            pathname: `/PT/patient/${uid}`,
-            patientInfo: p,
-          }}
-          className={classes.link}
-        >
+      {therapist && therapist.zoom ? (
+        <a href={therapist.zoom} target="_blank">
           <Button size="small" color="primary">
-            More Info
+            Start Zoom Call
           </Button>
-        </Link>
-      </CardActions>
+        </a>
+      ) : null}
+      <Link
+        to={{
+          pathname: `/PT/patient/${uid}`,
+          patientInfo: p,
+        }}
+        className={classes.link}
+      >
+        <Button size="small" color="primary">
+          More Info
+        </Button>
+      </Link>
     </Card>
   );
 };
