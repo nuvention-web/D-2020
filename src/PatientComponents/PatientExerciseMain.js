@@ -17,6 +17,9 @@ import { Row, Col, Button } from "react-bootstrap";
 import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
 import { useHistory } from "react-router-dom";
+import { compareSets } from '../DoctorComponents/IndividualPatientView.js';
+
+
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -232,6 +235,7 @@ const PatientExerciseMain = (props) => {
 
               //when all the days are loaded in, you can set ExerciseSets
               if (fullset.length === exercisesLen) {
+                fullset.sort(compareSets);
                 setExerciseSets(fullset);
               }
             });

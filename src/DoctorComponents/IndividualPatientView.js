@@ -104,6 +104,27 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+export const dayToNumIdMap = new Map([["Sunday", 0], ["Monday", 1], ["Tuesday", 2],
+["Wednesday", 3], ["Thursday", 4],
+["Friday", 5], ["Saturday", 6]]);
+
+//to sort exercisesets
+export const compareSets = (a, b) => {
+  const dayA = a.day;
+  const dayB = b.day;
+
+
+  let comparison = 0;
+  if (dayToNumIdMap.get(dayA) > dayToNumIdMap.get(dayB)) {
+    comparison = 1;
+  }
+  else if (dayToNumIdMap.get(dayA) < dayToNumIdMap.get(dayB)) {
+    comparison = -1;
+  }
+
+  return comparison
+}
+
 const IndividualPatientView = (props) => {
   const classes = useStyles();
   // exerciseSets stores the "exercisesets" of the patient we are looking at
@@ -128,31 +149,14 @@ const IndividualPatientView = (props) => {
     "Sunday",
   ];
 
-  const dayToNumIdMap = new Map([["Sunday", 0], ["Monday", 1], ["Tuesday", 2],
-  ["Wednesday", 3], ["Thursday", 4],
-  ["Friday", 5], ["Saturday", 6]]);
+
 
   const location = useLocation();
 
   const [validated, setValidated] = useState(false);
   const [validatedDay, setValidatedDay] = useState("");
 
-  //to sort exercisesets
-  const compareSets = (a, b) => {
-    const dayA = a.day;
-    const dayB = b.day;
 
-
-    let comparison = 0;
-    if (dayToNumIdMap.get(dayA) > dayToNumIdMap.get(dayB)) {
-      comparison = 1;
-    }
-    else if (dayToNumIdMap.get(dayA) < dayToNumIdMap.get(dayB)) {
-      comparison = -1;
-    }
-
-    return comparison
-  }
 
   // Handle new patient with no exercisesets collection yet
   useEffect(() => {
@@ -503,21 +507,21 @@ const IndividualPatientView = (props) => {
         <div>
           <Container>
             <header className={classes.progressHeader}>
-            <Typography variant="h4" className={classes.header}>
-              {/* {location.patientInfo.name} */}
-              Week of 4/13 - Progress
+              <Typography variant="h4" className={classes.header}>
+                {/* {location.patientInfo.name} */}
+                Week of 4/13 - Progress
             </Typography>
-            <Link
+              <Link
                 to={{
                   pathname: `/PT/patient/${id}/history`
                 }}
                 className={classes.link}
               >
-              <Button variant="light"
-                      className={classes.viewHistory}>
-                View History
+                <Button variant="light"
+                  className={classes.viewHistory}>
+                  View History
               </Button>
-            </Link>
+              </Link>
             </header>
 
             {/* Progress Chart */}
