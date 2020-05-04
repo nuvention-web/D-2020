@@ -12,6 +12,7 @@ import {
   Select,
   InputLabel,
   MenuItem,
+  TextField,
 } from "@material-ui/core";
 import YouTube from "react-youtube";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -31,7 +32,7 @@ import Sidebar from "react-sidebar";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
-import Drawer from 'react-drag-drawer';
+import Drawer from "react-drag-drawer";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -130,24 +131,33 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "35vh",
   },
   painLevel: {
-    width: 150,
+    width: "100%",
+    marginBottom: 20,
   },
   formControl: {
-    marginTop: 30
+    marginTop: 30,
   },
+
   modal: {
     outline: "none",
     background: "white",
     fontSize: "1.6rem",
     width: "30rem",
-    height: "40rem",
+    height: "15rem",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    zIndex: 15
-  }
+    textAlign: "center",
+    zIndex: 15,
+    border: "8px",
+  },
+  submit: {
+    marginTop: 30,
+  },
+  resize: {
+    fontSize: 18,
+  },
 }));
-
 
 const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
   const [index, setIndex] = useState(0);
@@ -157,7 +167,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
 
   const currUser = useContext(UserContext).user;
   const { day } = useParams();
-  
+
   const handleSelect = (selectedIndex, e) => {
     setIndex(selectedIndex);
     setDirection(e.direction);
@@ -165,82 +175,100 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
 
   const toggleDrawer = () => {
     setDrawer(!drawer);
-  }
+  };
 
-  const handleSubmit = (feedback, pain) => {
-
+  const handleSubmit = (info, feedback) => {
     // Firestore reference
     var exerciseRef = db
       .collection("patients")
-      .doc(feedback.currUser.uid)
+      .doc(info.currUser.uid)
       .collection("exercisesets")
       .doc(day)
       .collection("exercises");
 
-      exerciseRef
-      .where("name", "==", feedback.exerciseName)
+    exerciseRef
+      .where("name", "==", info.exerciseName)
       .get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
-          exerciseRef.doc(doc.id).update({ painLevel: pain});
+          exerciseRef.doc(doc.id).update(feedback);
           setDrawer(false);
         });
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
       });
+  };
 
-  }
+  const FeedbackPopUp = ({ info }) => {
+    const painScale = Array.from({ length: 6 }, (v, k) => k);
+    const [feedback, setFeedback] = useState({});
 
-  const FeedbackPopUp = ({feedback}) => {
-    const painScale = Array.from({length:11},(v,k)=>k);
-    const [painLevel, setPainLevel] = useState("");
-    const handleChange = (event) => {
-      console.log(event.target.value)
-      setPainLevel(event.target.value);
-    }
-    
-    return(
+    const setFeedbackField = (field, data) => {
+      setFeedback({ ...feedback, [field]: data });
+    };
+
+    return (
       <div>
-        <Drawer open={drawer}
-                onRequestClose={toggleDrawer}
-                modalElementClass={classes.modal}>
-            <form
-            className={classes.form}
+        <Drawer
+          open={drawer}
+          onRequestClose={toggleDrawer}
+          modalElementClass={classes.modal}
+        >
+          <form
             autoComplete="off"
-            onSubmit={() => handleSubmit(feedback, painLevel)}
-            >
+            onSubmit={() => handleSubmit(info, feedback)}
+          >
             <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel id="demo-simple-select-outlined-label">
-                Pain Level
-            </InputLabel>
-              <Select
-                labelId="demo-simple-select-outlined-label"
-                id="demo-simple-select-outlined"
-                label="Pain Level"
-                value={painLevel}
-                onChange={handleChange}
-                className={classes.painLevel}>
-                {painScale.map((level, i) => 
+              <div>
+                <InputLabel id="demo-simple-select-outlined-label">
+                  Pain Level
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-outlined-label"
+                  id="demo-simple-select-outlined"
+                  label="Pain Level"
+                  value={feedback.painLevel}
+                  onChange={(e) =>
+                    setFeedbackField("painLevel", e.target.value)
+                  }
+                  className={classes.painLevel}
+                >
+                  {painScale.map((level, i) => (
                     <MenuItem value={level}>{level}</MenuItem>
-                )}
-              </Select>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <TextField
+                  id="standard-basic"
+                  label="Note anomalies"
+                  value={feedback.note}
+                  onChange={(e) => setFeedbackField("note", e.target.value)}
+                  InputProps={{
+                    classes: {
+                      input: classes.resize,
+                    },
+                  }}
+                />
+              </div>
+              <Button
+                variant="light"
+                onClick={() => handleSubmit(info, feedback)}
+                className={classes.submit}
+              >
+                Submit
+              </Button>
             </FormControl>
-            <Button variant="light" onClick={() => handleSubmit(feedback, painLevel)}>
-              Submit
-            </Button>
           </form>
         </Drawer>
       </div>
     );
-  }
-  
-
+  };
 
   // Update 'complete' flag when timer hits 0
   const updateCompleted = (exercisename, currUser) => {
-
     // Firestore reference
     var exerciseRef = db
       .collection("patients")
@@ -295,11 +323,12 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
           {/* Success Alert When Exercise is Completed*/}
           {exercise.complete ? (
             <div>
-            <Alert severity="success" className={classes.completionAlert}>
-              <AlertTitle>Success</AlertTitle>
-              Nice! You've completed this exercise. <strong>Keep it up!</strong>
-            </Alert>
-            <FeedbackPopUp feedback={{currUser, exerciseName: exercise.name}}/>
+              <Alert severity="success" className={classes.completionAlert}>
+                <AlertTitle>Success</AlertTitle>
+                Nice! You've completed this exercise.{" "}
+                <strong>Keep it up!</strong>
+              </Alert>
+              <FeedbackPopUp info={{ currUser, exerciseName: exercise.name }} />
             </div>
           ) : null}
           {/* End Alert */}
@@ -318,7 +347,9 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                 checkpoints={[
                   {
                     time: 0,
-                    callback: () => {updateCompleted(exercise.name, currUser);}
+                    callback: () => {
+                      updateCompleted(exercise.name, currUser);
+                    },
                   },
                 ]}
               >
@@ -488,7 +519,7 @@ const ExerciseTracking = (props) => {
   const renderLoading = () => {
     return (
       <div className={classes.loadingContainer}>
-        <CircularProgress/>
+        <CircularProgress />
       </div>
     );
   };
