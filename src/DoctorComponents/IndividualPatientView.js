@@ -16,6 +16,7 @@ import {
   faPlusSquare
 } from "@fortawesome/free-regular-svg-icons";
 import { faTimes, faPlus, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -428,6 +429,13 @@ const IndividualPatientView = (props) => {
     return splitStr.join(" ");
   };
 
+  const generateID = () => {
+    // Math.random should be unique because of its seeding algorithm.
+    // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+    // after the decimal.
+    return '_' + Math.random().toString(36).substr(2, 9);
+  };
+
   const renderItems = () => {
     // Return true, false, or - (not an exercise for this day)
     const checkComplete = (exercises, exname) => {
@@ -436,8 +444,17 @@ const IndividualPatientView = (props) => {
         if (exercises[i].name === exname) {
           // Return bool
           if (exercises[i].complete) {
+            const uuid = generateID();
             return (
-              <img className={classes.checkIcon} src="/img/complete.png"></img>
+              <div>
+                <img className={classes.checkIcon} src="/img/complete.png" data-tip data-for={`${uuid}`}></img>
+                <ReactTooltip
+                  effect='solid'
+                  id={`${uuid}`}
+                  >
+                  <span> Pain Level: {String(exercises[i].painLevel)} </span>
+                </ReactTooltip>
+              </div>
             );
           } else {
             return (
@@ -567,7 +584,6 @@ const IndividualPatientView = (props) => {
                 <Container className={classes.exerciseContainer} key={ind}>
                   <Typography variant="h4" className={classes.header}>
                     {day} Exercises
-                    {console.log("exerciseSets", exerciseSets)}
                   </Typography>
                   <Row>
                     <Col>Exercise</Col>
