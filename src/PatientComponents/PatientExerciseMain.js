@@ -19,7 +19,6 @@ import { useHistory } from "react-router-dom";
 import { compareSets } from '../DoctorComponents/IndividualPatientView.js';
 
 
-
 const useStyles = makeStyles((theme) => ({
   exercises: {
     marginTop: "3%",
@@ -119,6 +118,14 @@ const useStyles = makeStyles((theme) => ({
     width: "80%",
     margin: "0 auto",
   },
+  darkButton: {
+    backgroundColor: '#3358C4',
+    border: 'none',
+    "&:hover": {
+      backgroundColor: '#264291',
+    },
+    textAlign: 'center',
+  }
 }));
 
 const calculateTotalTime = (s) => {
@@ -286,18 +293,17 @@ const PatientExerciseMain = (props) => {
           <Grid item xs={3}>
             <Card className={classes.card}>
               <CardContent>
-                <Typography gutterBottom variant="h5" component="h2">
+                {/* <Typography gutterBottom variant="h5" component="h2">
                   Your Therapist
-                </Typography>
+                </Typography> */}
               </CardContent>
               {therapistInfo ? (
                 <div>
                   <CardMedia
                     component="img"
-                    //   alt="Contemplative Reptile"
+                    alt={therapistInfo.img}
                     height="230"
                     src={therapistInfo.img}
-                  //   title="Contemplative Reptile"
                   />
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
@@ -309,10 +315,9 @@ const PatientExerciseMain = (props) => {
                   <div>
                     <CardMedia
                       component="img"
-                      //   alt="Contemplative Reptile"
+                        alt="blank"
                       height="230"
                       src={blankImg}
-                    //   title="Contemplative Reptile"
                     />
                     <Button
                       variant="light"
@@ -332,7 +337,7 @@ const PatientExerciseMain = (props) => {
               <CardActions>
                 {therapistInfo && therapistInfo.zoom ? (
                   <a href={`${therapistInfo.zoom}`} target="_blank">
-                    <Button size="small" color="primary">
+                    <Button size="small" color="primary" className={classes.darkButton}>
                       Start Zoom Call
                     </Button>
                   </a>
@@ -343,7 +348,7 @@ const PatientExerciseMain = (props) => {
           <Grid item xs={9}>
             {/* Progress Chart */}
             <Typography variant="h4" className={classes.progressHeader}>
-              Your Progress
+              This Week's Progress
             </Typography>
             <div className={classes.exerciseContainer}>
               <Row>
@@ -387,40 +392,40 @@ const PatientExerciseMain = (props) => {
           {exerciseSets.map((s, i) => {
             return (
               (s.exercise.length === 0 ? null :
-              <div className={classes.exerciseContainer} key={i}>
-                {console.log('my s', s.exercise.length)}
-                <Typography variant="h4" className={classes.header}>
-                  {s.day} Exercises ({calculateTotalTime(s)} minutes)
+                <div className={classes.exerciseContainer} key={i}>
+                  {console.log('my s', s.exercise.length)}
+                  <Typography variant="h4" className={classes.header}>
+                    {s.day} Exercises ({calculateTotalTime(s)} minutes)
                 </Typography>
-                <Row>
-                  <Col>Exercise</Col>
-                  <Col>Reps</Col>
-                  <Col>Duration</Col>
-                </Row>
-                <Divider />
-                {Object.values(s.exercise).map((ex, k) => {
-                  return (
-                    <div>
-                      <Row key={i} className={classes.rows}>
-                        <Col>{formatExerciseName(ex.name)}</Col>
-                        <Col>{ex.reps}</Col>
-                        <Col>{ex.duration}</Col>
-                      </Row>
-                    </div>
-                  );
-                })}
-                <Link
-                  to={{
-                    pathname: `/workout/${s.day}`,
-                    exerciseProps: s,
-                    setInd: i,
-                  }}
-                >
-                  <Button variant="light" className={classes.startButton}>
-                    Start
+                  <Row>
+                    <Col>Exercise</Col>
+                    <Col>Reps</Col>
+                    <Col>Duration</Col>
+                  </Row>
+                  <Divider />
+                  {Object.values(s.exercise).map((ex, k) => {
+                    return (
+                      <div>
+                        <Row key={i} className={classes.rows}>
+                          <Col>{formatExerciseName(ex.name)}</Col>
+                          <Col>{ex.reps}</Col>
+                          <Col>{ex.duration}</Col>
+                        </Row>
+                      </div>
+                    );
+                  })}
+                  <Link
+                    to={{
+                      pathname: `/workout/${s.day}`,
+                      exerciseProps: s,
+                      setInd: i,
+                    }}
+                  >
+                    <Button variant="light" className={classes.startButton}>
+                      Start
                   </Button>
-                </Link>
-              </div>
+                  </Link>
+                </div>
               )
             );
           })}
