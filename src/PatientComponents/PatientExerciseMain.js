@@ -5,7 +5,6 @@ import {
   Typography,
   Container,
   CircularProgress,
-  CardActionArea,
   Card,
   CardActions,
   CardContent,
@@ -142,7 +141,6 @@ const formatExerciseName = (n) => {
 
 const PatientExerciseMain = (props) => {
   const [exerciseSets, setExerciseSets] = useState([]);
-  const [percentFinished, setPercentFinished] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [therapistInfo, setTherapistInfo] = useState();
   const [userProfile, setUserProfile] = useState();
@@ -270,14 +268,11 @@ const PatientExerciseMain = (props) => {
           // Return bool
           if (exercises[i].complete) {
             return (
-              <img className={classes.checkIcon} src="/img/complete.png"></img>
+              <img className={classes.checkIcon} src="/img/complete.png" alt="complete"></img>
             );
           } else {
             return (
-              <img
-                className={classes.checkIcon}
-                src="/img/incomplete.png"
-              ></img>
+              <img className={classes.checkIcon} src="/img/incomplete.png" alt="incomplete"></img>
             );
           }
         }
@@ -302,7 +297,7 @@ const PatientExerciseMain = (props) => {
                     //   alt="Contemplative Reptile"
                     height="230"
                     src={therapistInfo.img}
-                    //   title="Contemplative Reptile"
+                  //   title="Contemplative Reptile"
                   />
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
@@ -311,28 +306,28 @@ const PatientExerciseMain = (props) => {
                   </CardContent>
                 </div>
               ) : (
-                <div>
-                  <CardMedia
-                    component="img"
-                    //   alt="Contemplative Reptile"
-                    height="230"
-                    src={blankImg}
+                  <div>
+                    <CardMedia
+                      component="img"
+                      //   alt="Contemplative Reptile"
+                      height="230"
+                      src={blankImg}
                     //   title="Contemplative Reptile"
-                  />
-                  <Button
-                    variant="light"
-                    onClick={() =>
-                      history.push({
-                        pathname: "/profile/edit",
-                        userProfile: userProfile,
-                      })
-                    }
-                    className={classes.editButton}
-                  >
-                    Connect with your therapist!
+                    />
+                    <Button
+                      variant="light"
+                      onClick={() =>
+                        history.push({
+                          pathname: "/profile/edit",
+                          userProfile: userProfile,
+                        })
+                      }
+                      className={classes.editButton}
+                    >
+                      Connect with your therapist!
                   </Button>
-                </div>
-              )}
+                  </div>
+                )}
 
               <CardActions>
                 {therapistInfo && therapistInfo.zoom ? (
@@ -391,7 +386,9 @@ const PatientExerciseMain = (props) => {
         <div className={classes.exercises}>
           {exerciseSets.map((s, i) => {
             return (
+              (s.exercise.length === 0 ? null :
               <div className={classes.exerciseContainer} key={i}>
+                {console.log('my s', s.exercise.length)}
                 <Typography variant="h4" className={classes.header}>
                   {s.day} Exercises ({calculateTotalTime(s)} minutes)
                 </Typography>
@@ -424,6 +421,7 @@ const PatientExerciseMain = (props) => {
                   </Button>
                 </Link>
               </div>
+              )
             );
           })}
         </div>
