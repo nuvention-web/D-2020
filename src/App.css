@@ -28,10 +28,15 @@
   height: 100vh;
 }
 
-
 .App-link {
   color: #61dafb;
 }
+
+/* .navBar {
+  -webkit-box-shadow: 0 8px 6px -6px #999;
+  -moz-box-shadow: 0 8px 6px -6px #999;
+  box-shadow: 0 8px 6px -6px #999;
+} */
 
 /* @keyframes App-logo-spin {
   from {

@@ -124,8 +124,29 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: '#264291',
     },
-    textAlign: 'center',
+  },
+  accentDivider: {
+    content: "",
+    display: "block",
+    width: "6.25rem",
+    height: ".325rem",
+    marginTop: "1.5rem",
+    background: "#9DB4FF",
+    marginBottom: "3rem",
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+  },
+  centerBlock: {
+    textAlign: "center",
+    height: 30,
+    position: 'relative',
   }
+  // gradientContainer: {
+  //   background: 'linear-gradient(#fff 100%,#f6f6f6 0%)',
+  //   height: 50,
+  // }
 }));
 
 const calculateTotalTime = (s) => {
@@ -289,104 +310,88 @@ const PatientExerciseMain = (props) => {
 
     return (
       <div className={classes.window}>
-        <Grid className={classes.grid} container spacing={3}>
-          <Grid item xs={3}>
-            <Card className={classes.card}>
-              <CardContent>
-                {/* <Typography gutterBottom variant="h5" component="h2">
-                  Your Therapist
-                </Typography> */}
-              </CardContent>
-              {therapistInfo ? (
-                <div>
-                  <CardMedia
-                    component="img"
-                    alt={therapistInfo.img}
-                    height="230"
-                    src={therapistInfo.img}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {therapistInfo.name}
-                    </Typography>
-                  </CardContent>
-                </div>
-              ) : (
-                  <div>
-                    <CardMedia
-                      component="img"
-                        alt="blank"
-                      height="230"
-                      src={blankImg}
-                    />
-                    <Button
-                      variant="light"
-                      onClick={() =>
-                        history.push({
-                          pathname: "/profile/edit",
-                          userProfile: userProfile,
-                        })
-                      }
-                      className={classes.editButton}
-                    >
-                      Connect with your therapist!
-                  </Button>
-                  </div>
-                )}
+        {/* Start Jumbotron */}
+        <div class="jumbotron jumbotron-fluid">
+          <div class="container">
+            <h1 class="display-4">Hi, {userProfile.name}!</h1>
+            {console.log('userprofile', userProfile)}
 
-              <CardActions>
-                {therapistInfo && therapistInfo.zoom ? (
-                  <a href={`${therapistInfo.zoom}`} target="_blank">
-                    <Button size="small" color="primary" className={classes.darkButton}>
-                      Start Zoom Call
+            {therapistInfo ?
+              (<p class="lead">Launch Zoom call with {therapistInfo.name} now</p>) : (
+                <div>
+                  <Button
+                    variant="light"
+                    onClick={() =>
+                      history.push({
+                        pathname: "/profile/edit",
+                        userProfile: userProfile,
+                      })
+                    }
+                    className={classes.editButton}
+                  >
+                    Connect with your therapist!
+                  </Button>
+                </div>
+              )}
+
+            {therapistInfo && therapistInfo.zoom ? (
+              <a href={`${therapistInfo.zoom}`} target="_blank">
+                <Button size="small" color="primary" className={classes.darkButton}>
+                  Start Zoom Call
                     </Button>
-                  </a>
-                ) : null}
-              </CardActions>
-            </Card>
-          </Grid>
-          <Grid item xs={9}>
-            {/* Progress Chart */}
-            <Typography variant="h4" className={classes.progressHeader}>
-              This Week's Progress
+              </a>
+            ) : null}
+          </div>
+        </div>
+        {/* End Jumbotron */}
+
+
+
+        {/* Progress Chart */}
+        <Typography variant="h4" className={classes.progressHeader}>
+          This Week's Progress
             </Typography>
-            <div className={classes.exerciseContainer}>
-              <Row>
-                {exerciseSets.length !== 0 ? (
-                  <React.Fragment>
-                    <Col>Exercise Name</Col>
-                    {exerciseSets[0].exerciseList.map((ex) => (
-                      <Col className={classes.centeredCol}>{ex}</Col>
-                    ))}
-                  </React.Fragment>
-                ) : null}
-                {exerciseSets.length === 0 ? (
-                  <Col>
-                    You have no exercises yet - please check with your PT!
+        <div className={classes.exerciseContainer}>
+          <Row>
+            {exerciseSets.length !== 0 ? (
+              <React.Fragment>
+                <Col>Exercise Name</Col>
+                {exerciseSets[0].exerciseList.map((ex) => (
+                  <Col className={classes.centeredCol}>{ex}</Col>
+                ))}
+              </React.Fragment>
+            ) : null}
+            {exerciseSets.length === 0 ? (
+              <Col>
+                You have no exercises yet - please check with your PT!
                   </Col>
-                ) : null}
+            ) : null}
+          </Row>
+          <Divider />
+          {exerciseSets.map((s, i) => {
+            return (
+              <Row key={i}>
+                <Col>{s["day"]}</Col>
+                {/* Map through each column */ console.log(s["day"])}
+                {s.exerciseList.map((name, j) => {
+                  // if s
+                  return (
+                    <Col className={classes.centeredCol} key={j}>
+                      {checkComplete(s.exercise, name)}
+                    </Col>
+                  );
+                })}
               </Row>
-              <Divider />
-              {exerciseSets.map((s, i) => {
-                return (
-                  <Row key={i}>
-                    <Col>{s["day"]}</Col>
-                    {/* Map through each column */ console.log(s["day"])}
-                    {s.exerciseList.map((name, j) => {
-                      // if s
-                      return (
-                        <Col className={classes.centeredCol} key={j}>
-                          {checkComplete(s.exercise, name)}
-                        </Col>
-                      );
-                    })}
-                  </Row>
-                );
-              })}
-              {/* End Progress Chart */}
-            </div>
-          </Grid>
-        </Grid>
+            );
+          })}
+          {/* End Progress Chart */}
+        </div>
+
+        <div className={classes.centerBlock}>
+          <div className={classes.accentDivider}></div>
+        </div>
+        {/* <div class="container-fluid" className={classes.gradientContainer}>
+        </div> */}
 
         <div className={classes.exercises}>
           {exerciseSets.map((s, i) => {
@@ -431,7 +436,8 @@ const PatientExerciseMain = (props) => {
           })}
         </div>
 
-        <footer className={classes.footer}>
+
+        {/* <footer className={classes.footer}>
           <img
             src={"/img/StretchGraphic2.png"}
             className={classes.stretchGraphic2}
@@ -449,7 +455,7 @@ const PatientExerciseMain = (props) => {
               <br />- Carol Welch
             </Typography>
           </Typography>
-        </footer>
+        </footer> */}
       </div>
     );
   };

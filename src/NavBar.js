@@ -4,9 +4,31 @@ import { SignIn, LogOut } from "./Firebase";
 import { Link } from "react-router-dom";
 import Toolbar from "@material-ui/core/Toolbar";
 import { Button } from "@material-ui/core";
+// import { Button } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core/styles";
 import { UserContext } from "./contexts/UserContext";
 import { useHistory } from "react-router-dom";
+import "./App.css";
+import { createMuiTheme } from '@material-ui/core/styles';
+// import { ThemeProvider } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  // typography: {
+  //   fontFamily: [
+  //     '-apple-system',
+  //     'BlinkMacSystemFont',
+  //     '"Segoe UI"',
+  //     'Roboto',
+  //     '"Helvetica Neue"',
+  //     'Arial',
+  //     'sans-serif',
+  //     '"Apple Color Emoji"',
+  //     '"Segoe UI Emoji"',
+  //     '"Segoe UI Symbol"',
+  //   ].join(','),
+  // },
+  // color: 'pink',
+});
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -14,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "none",
     height: 100,
     display: "inline-block",
+    // boxShadow: '0px 1px 10px #999',
   },
   appBackground: {
     backgroundColor: "#FEFEFE",
@@ -31,19 +54,53 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     margin: "40px 0px",
   },
-  navButton: {
-    marginRight: "20px",
-    display: "inline-block",
+  navLink: {
+    color: 'black',
     margin: "0px 10px",
-    fontSize: 14,
-    backgroundColor: "inherit",
-    border: "none",
-    // fontFamily: "San Francisco",
+    marginRight: "50px",
+    fontSize: '18px',
+    fontWeight: 300,
     "&:hover": {
-      color: "#9DB4FF",
-      backgroundColor: "inherit",
+      color: '#3358C4',
+      textDecoration: 'none',
+      borderBottom: '2px solid #3358C4',
+      paddingBottom: 3,
     },
   },
+  navLogout: {
+    color: 'black',
+    margin: "0px 10px",
+    marginRight: "50px",
+    fontSize: '18px',
+    fontWeight: 300,
+    "&:hover": {
+      color: '#3358C4',
+      textDecoration: 'none',
+      boxShadow: '0 0.2rem 0.5rem #c7c7c7',
+    },
+    // '&$focused': {
+    //   outline: 'none',
+    // },
+    border: 'none',
+    outline: 0,
+    padding: '10px 25px',
+    borderRadius: 15,
+    // boxShadow: "2px 2px 5px 0px #80858a, 0 0 0 1px #fff",
+    boxShadow: '0 0.2rem 0.5rem #d6d6d6',
+  },
+  // navButton: {
+  //   marginRight: "20px",
+  //   display: "inline-block",
+  //   margin: "0px 10px",
+  //   fontSize: 14,
+  //   backgroundColor: "inherit",
+  //   border: "none",
+  //   outline: "none",
+  //   "&:hover": {
+  //     color: "#9DB4FF",
+  //     backgroundColor: "inherit",
+  //   },
+  // },
   accentDivider: {
     content: "",
     display: "block",
@@ -125,6 +182,7 @@ const NavBar = ({ haveLoggedIn }) => {
 
   return (
     <nav>
+      {/* <ThemeProvider theme={theme}> */}
       <AppBar position="static" className={classes.appBar}>
         <Link to="/">
           <img className={classes.tendonLogo} src="/img/tendonlogo.png"></img>{" "}
@@ -132,48 +190,46 @@ const NavBar = ({ haveLoggedIn }) => {
         <Toolbar className={classes.navBar}>
           {console.log(typeof type)}
           {Object.entries(currUser).length >= 1 && type == "therapists" ? (
-            <Link to="/PT">
-              <Button variant="light" className={classes.navButton}>
-                PT View
-              </Button>
-            </Link>
+            <Link to="/PT" className={classes.navLink}>
+              PT View
+              </Link>
           ) : null}
           {Object.entries(currUser).length >= 1 && type == "patients" ? (
             <Link
               to={{ pathname: "/workout", state: { userId: currUser.uid } }}
+              className={classes.navLink}
             >
-              <Button variant="light" className={classes.navButton}>
-                Exercise Tracking
-              </Button>
+              {/* <Button variant="light" className={classes.navButton}> */}
+              Exercise Tracking
+              {/* </Button> */}
             </Link>
           ) : null}
           {Object.entries(currUser).length >= 1 ? (
-            <Link to={{ pathname: "/profile" }}>
-              <Button variant="light" className={classes.navButton}>
-                Profile
-              </Button>
-            </Link>
+            <Link to={{ pathname: "/profile" }} className={classes.navLink}>
+              Profile
+              </Link>
           ) : null}
           <div className={classes.space}></div>
           <div className={classes.rightButtons}>
             {Object.entries(currUser).length < 1 ? (
               <SignIn />
             ) : (
-              <Button
-                variant="light"
-                className={classes.registerButton}
-                onClick={() => {
-                  LogOut();
-                  history.push("/");
-                  setCurrUser({});
-                }}
-              >
-                Log Out
-              </Button>
-            )}
+                <button
+                  variant="light"
+                  className={classes.navLogout}
+                  onClick={() => {
+                    LogOut();
+                    history.push("/");
+                    setCurrUser({});
+                  }}
+                >
+                  Log Out
+              </button>
+              )}
           </div>
         </Toolbar>
       </AppBar>
+      {/* </ThemeProvider> */}
     </nav>
   );
 };
