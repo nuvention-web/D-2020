@@ -63,8 +63,11 @@ const App = () => {
             ></Route>
             <Route
               path="/workout"
-              component={(props) => (
-                <PatientExerciseMain {...props}></PatientExerciseMain>
+              component={() => (
+                <PatientExerciseMain
+                  haveLoggedIn={haveLoggedIn}
+                  setHaveLoggedIn={setHaveLoggedIn}
+                ></PatientExerciseMain>
               )}
             ></Route>
             {/* <Route path="/users">
@@ -97,7 +100,12 @@ const App = () => {
             ></Route>
             <Route
               path="/PT"
-              component={(props) => <DoctorView></DoctorView>}
+              component={() => (
+                <DoctorView
+                  haveLoggedIn={haveLoggedIn}
+                  setHaveLoggedIn={setHaveLoggedIn}
+                ></DoctorView>
+              )}
             ></Route>
             <Route
               path="/newUser"

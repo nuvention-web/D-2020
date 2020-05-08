@@ -179,7 +179,9 @@ const Landing = ({ haveLoggedIn, setHaveLoggedIn }) => {
         } else {
           if (localStorage.getItem("type") !== null) {
             console.log("happening");
-            setHaveLoggedIn(temp);
+            localStorage.getItem("type") == "therapists"
+              ? history.push("/PT")
+              : history.push("/workout");
           }
         }
       }
