@@ -542,14 +542,8 @@ const IndividualPatientView = (props) => {
           <Container>
             <header className={classes.progressHeader}>
               <Typography variant="h4" className={classes.header}>
-<<<<<<< HEAD
                 Week of {weekBeginning} Progress
             </Typography>
-=======
-                {/* {location.patientInfo.name} */}
-                Week of 4/13 - Progress
-              </Typography>
->>>>>>> master
               <Link
                 to={{
                   pathname: `/PT/patient/${id}/history`,

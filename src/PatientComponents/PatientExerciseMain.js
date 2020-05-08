@@ -386,15 +386,9 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
 
         {/* Progress Chart */}
         <Typography variant="h4" className={classes.progressHeader}>
-<<<<<<< HEAD
           Week of {weekBeginning} Progress
             </Typography>
         <div className={classes.progressContainer}>
-=======
-          This Week's Progress
-        </Typography>
-        <div className={classes.exerciseContainer}>
->>>>>>> master
           <Row>
             {exerciseSets.length !== 0 ? (
               <React.Fragment>
