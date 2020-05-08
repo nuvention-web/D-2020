@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DoctorView = () => {
+const DoctorView = ({ setHaveLoggedIn }) => {
   const classes = useStyles();
   const [patients, setPatients] = useState([]);
   const [patientId, setPatientId] = useState([]);
@@ -93,6 +93,13 @@ const DoctorView = () => {
   const [loaded, setLoaded] = useState(false);
   const currUser = useContext(UserContext).user;
   const [therapistInfo, setTherapistInfo] = useState({});
+
+  // Load correct NavBar for PT
+  useEffect(() => {
+    if (localStorage.getItem("type") !== null) {
+      setHaveLoggedIn(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {

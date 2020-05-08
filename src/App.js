@@ -11,7 +11,7 @@ import UserProvider from "./contexts/UserContext";
 import Profile from "./Profile/Profile";
 import ProfileEdit from "./Profile/ProfileEdit";
 import NewUserForm from "./NewUserForm";
-import NavBar from "./NavBar";
+import NavBar from "./NavBar/NavBar";
 import Exercises from "./DoctorComponents/Exercises/Exercises";
 import Exercise from "./DoctorComponents/Exercises/Exercise";
 import ExerciseEdit from "./DoctorComponents/Exercises/ExerciseEdit";
@@ -34,7 +34,9 @@ const useStyles = makeStyles((theme) => ({
 
 const App = () => {
   const classes = useStyles();
-  const [haveLoggedIn, setHaveLoggedIn] = useState(null);
+
+  //set haveLoggedIn acts as a variable that triggers rerendering of navBar
+  const [haveLoggedIn, setHaveLoggedIn] = useState(false);
 
   return (
     <UserProvider>
@@ -63,8 +65,11 @@ const App = () => {
             ></Route>
             <Route
               path="/workout"
-              component={(props) => (
-                <PatientExerciseMain {...props}></PatientExerciseMain>
+              component={() => (
+                <PatientExerciseMain
+                  haveLoggedIn={haveLoggedIn}
+                  setHaveLoggedIn={setHaveLoggedIn}
+                ></PatientExerciseMain>
               )}
             ></Route>
             {/* <Route path="/users">
@@ -97,7 +102,12 @@ const App = () => {
             ></Route>
             <Route
               path="/PT"
-              component={(props) => <DoctorView></DoctorView>}
+              component={() => (
+                <DoctorView
+                  haveLoggedIn={haveLoggedIn}
+                  setHaveLoggedIn={setHaveLoggedIn}
+                ></DoctorView>
+              )}
             ></Route>
             <Route
               path="/newUser"
@@ -109,7 +119,12 @@ const App = () => {
             ></Route>
             <Route
               path="/profile"
-              component={(...props) => <Profile />}
+              component={() => (
+                <Profile
+                  haveLoggedIn={haveLoggedIn}
+                  setHaveLoggedIn={setHaveLoggedIn}
+                ></Profile>
+              )}
             ></Route>
           </Switch>
         </div>

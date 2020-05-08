@@ -12,10 +12,12 @@ import { db } from "../Firebase.js";
 import { useLocation, useParams } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlusSquare } from "@fortawesome/free-regular-svg-icons";
 import {
-  faPlusSquare
-} from "@fortawesome/free-regular-svg-icons";
-import { faTimes, faPlus, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+  faTimes,
+  faPlus,
+  faArrowRight,
+} from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
 const useStyles = makeStyles((theme) => ({
@@ -82,49 +84,53 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "30vh",
   },
   rows: {
-    marginTop: 10
+    marginTop: 10,
   },
   newExercise: {
-    marginTop: 10
+    marginTop: 10,
   },
   deleteIcon: {
-    '&:hover': {
-      color: "#8ca1e6"
-    }
+    "&:hover": {
+      color: "#8ca1e6",
+    },
   },
   viewHistory: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    width: 120
+    width: 120,
   },
   progressHeader: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 }));
 
-export const dayToNumIdMap = new Map([["Sunday", 0], ["Monday", 1], ["Tuesday", 2],
-["Wednesday", 3], ["Thursday", 4],
-["Friday", 5], ["Saturday", 6]]);
+export const dayToNumIdMap = new Map([
+  ["Sunday", 0],
+  ["Monday", 1],
+  ["Tuesday", 2],
+  ["Wednesday", 3],
+  ["Thursday", 4],
+  ["Friday", 5],
+  ["Saturday", 6],
+]);
 
 //to sort exercisesets
 export const compareSets = (a, b) => {
   const dayA = a.day;
   const dayB = b.day;
 
-
   let comparison = 0;
   if (dayToNumIdMap.get(dayA) > dayToNumIdMap.get(dayB)) {
     comparison = 1;
-  }
-  else if (dayToNumIdMap.get(dayA) < dayToNumIdMap.get(dayB)) {
+  } else if (dayToNumIdMap.get(dayA) < dayToNumIdMap.get(dayB)) {
     comparison = -1;
   }
 
-  return comparison
-}
+  return comparison;
+};
 
 
 
@@ -152,14 +158,10 @@ const IndividualPatientView = (props) => {
     "Sunday",
   ];
 
-
-
   const location = useLocation();
 
   const [validated, setValidated] = useState(false);
   const [validatedDay, setValidatedDay] = useState("");
-
-
 
   // Handle new patient with no exercisesets collection yet
   useEffect(() => {
@@ -296,14 +298,14 @@ const IndividualPatientView = (props) => {
     const diff = n.getDay() - dayToNumIdMap.get(day);
     console.log("diff", diff);
 
-    // Diff will be neg. if in the future 
+    // Diff will be neg. if in the future
     n = new Date(n.setDate(n.getDate() - diff));
     console.log("n", n);
 
     // For history object
     const historyObjectData = {
       date: n,
-      exercise: newEx
+      exercise: newEx,
     };
 
     return [exerciseObjectData, historyObjectData];
@@ -325,7 +327,7 @@ const IndividualPatientView = (props) => {
       dayRef.doc(setDay).set({ day: setDay });
     }
 
-    // Add to exercisesets 
+    // Add to exercisesets
     var patientRef = dayRef.doc(setDay).collection("exercises");
 
     patientRef
@@ -338,7 +340,11 @@ const IndividualPatientView = (props) => {
         console.log("newHistory right before:", newHistory);
 
         // Add document with same docId to history
-        var historyRef = db.collection("patients").doc(id).collection("history").doc(docRef.id)
+        var historyRef = db
+          .collection("patients")
+          .doc(id)
+          .collection("history")
+          .doc(docRef.id);
         historyRef
           .set(newHistory)
           .then(function () {
@@ -355,9 +361,7 @@ const IndividualPatientView = (props) => {
       .catch(function (error) {
         console.error("Error writing document: ", error);
       });
-
   };
-
 
   // Delete exercise from firebase
   const deleteExercise = async (e, setDay, docId) => {
@@ -382,7 +386,11 @@ const IndividualPatientView = (props) => {
         console.log("Document successfuly deleted!");
 
         // Delete history
-        var historyRef = db.collection("patients").doc(id).collection("history").doc(docId)
+        var historyRef = db
+          .collection("patients")
+          .doc(id)
+          .collection("history")
+          .doc(docId);
 
         historyRef
           .delete()
@@ -399,7 +407,6 @@ const IndividualPatientView = (props) => {
       .catch(function (error) {
         console.error("Error removing document: ", error);
       });
-
   };
 
   // Repeat function from PatientExerciseMain
@@ -439,7 +446,7 @@ const IndividualPatientView = (props) => {
     // Math.random should be unique because of its seeding algorithm.
     // Convert it to base 36 (numbers + letters), and grab the first 9 characters
     // after the decimal.
-    return '_' + Math.random().toString(36).substr(2, 9);
+    return "_" + Math.random().toString(36).substr(2, 9);
   };
 
   const renderItems = () => {
@@ -453,12 +460,15 @@ const IndividualPatientView = (props) => {
             const uuid = generateID();
             return (
               <div>
-                <img className={classes.checkIcon} src="/img/complete.png" data-tip data-for={`${uuid}`}></img>
-                <ReactTooltip
-                  effect='solid'
-                  id={`${uuid}`}
-                  >
-                  <span> Pain Level: {String(exercises[i].painLevel)} </span>
+                <img
+                  className={classes.checkIcon}
+                  src="/img/complete.png"
+                  data-tip
+                  data-for={`${uuid}`}
+                ></img>
+                <ReactTooltip effect="solid" id={`${uuid}`}>
+                  <div> Pain Level: {String(exercises[i].painLevel)} </div>
+                  <div> Note: {String(exercises[i].note)} </div>
                 </ReactTooltip>
               </div>
             );
@@ -496,7 +506,9 @@ const IndividualPatientView = (props) => {
       if (
         typeof newReps === "undefined" ||
         typeof newDuration === "undefined"
-      ) { return false; }
+      ) {
+        return false;
+      }
 
       // Make sure values are entered for proper day
       if (
@@ -506,8 +518,7 @@ const IndividualPatientView = (props) => {
         newDuration[day] === ""
       ) {
         return false;
-      }
-      else {
+      } else {
         return true;
       }
     };
@@ -531,18 +542,23 @@ const IndividualPatientView = (props) => {
           <Container>
             <header className={classes.progressHeader}>
               <Typography variant="h4" className={classes.header}>
+<<<<<<< HEAD
                 Week of {weekBeginning} Progress
             </Typography>
+=======
+                {/* {location.patientInfo.name} */}
+                Week of 4/13 - Progress
+              </Typography>
+>>>>>>> master
               <Link
                 to={{
-                  pathname: `/PT/patient/${id}/history`
+                  pathname: `/PT/patient/${id}/history`,
                 }}
                 className={classes.link}
               >
-                <Button variant="light"
-                  className={classes.viewHistory}>
+                <Button variant="light" className={classes.viewHistory}>
                   View History
-              </Button>
+                </Button>
               </Link>
             </header>
 
@@ -614,7 +630,8 @@ const IndividualPatientView = (props) => {
                               className={classes.deleteIcon}
                               onClick={(e) => {
                                 deleteExercise(e, day, ex.docId);
-                              }} />
+                              }}
+                            />
                           </Col>
                         </Row>
                       </div>
@@ -709,7 +726,8 @@ const IndividualPatientView = (props) => {
                             icon={faPlus}
                             color="#3358C4"
                             size="2x"
-                            type="submit" />
+                            type="submit"
+                          />
                         </Button>
                       </Col>
                     </Row>

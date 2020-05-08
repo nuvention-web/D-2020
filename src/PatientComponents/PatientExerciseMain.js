@@ -16,8 +16,7 @@ import { Row, Col, Button } from "react-bootstrap";
 import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
 import { useHistory } from "react-router-dom";
-import { compareSets } from '../DoctorComponents/IndividualPatientView.js';
-
+import { compareSets } from "../DoctorComponents/IndividualPatientView.js";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -125,10 +124,10 @@ const useStyles = makeStyles((theme) => ({
     margin: "0 auto",
   },
   darkButton: {
-    backgroundColor: '#3358C4',
-    border: 'none',
+    backgroundColor: "#3358C4",
+    border: "none",
     "&:hover": {
-      backgroundColor: '#264291',
+      backgroundColor: "#264291",
     },
   },
   accentDivider: {
@@ -139,16 +138,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "1.5rem",
     background: "#9DB4FF",
     marginBottom: "3rem",
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
   },
   centerBlock: {
     textAlign: "center",
     height: 30,
-    position: 'relative',
-  }
+    position: "relative",
+  },
   // gradientContainer: {
   //   background: 'linear-gradient(#fff 100%,#f6f6f6 0%)',
   //   height: 50,
@@ -173,19 +172,26 @@ const formatExerciseName = (n) => {
   return splitStr.join(" ");
 };
 
-const PatientExerciseMain = (props) => {
+const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   const [exerciseSets, setExerciseSets] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [therapistInfo, setTherapistInfo] = useState();
   const [userProfile, setUserProfile] = useState();
   const blankImg = "/img/blankProfile.png";
   const type = localStorage.getItem("type");
-
+  console.log("TYpe: ", type);
   //user id used to load correct user exercises (taken from landing page)
   const currUser = useContext(UserContext).user;
   const history = useHistory();
 
   const classes = useStyles();
+
+  // Load correct NavBar for patient
+  useEffect(() => {
+    if (localStorage.getItem("type") !== null) {
+      setHaveLoggedIn(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {
@@ -277,6 +283,7 @@ const PatientExerciseMain = (props) => {
   }, [currUser]);
 
   useEffect(() => {
+    console.log(type, currUser);
     if (Object.entries(currUser).length > 0 && type) {
       db.collection(type)
         .doc(currUser.uid)
@@ -315,11 +322,19 @@ const PatientExerciseMain = (props) => {
           // Return bool
           if (exercises[i].complete) {
             return (
-              <img className={classes.checkIcon} src="/img/complete.png" alt="complete"></img>
+              <img
+                className={classes.checkIcon}
+                src="/img/complete.png"
+                alt="complete"
+              ></img>
             );
           } else {
             return (
-              <img className={classes.checkIcon} src="/img/incomplete.png" alt="incomplete"></img>
+              <img
+                className={classes.checkIcon}
+                src="/img/incomplete.png"
+                alt="incomplete"
+              ></img>
             );
           }
         }
@@ -332,45 +347,54 @@ const PatientExerciseMain = (props) => {
         {/* Start Jumbotron */}
         <div class="jumbotron jumbotron-fluid">
           <div class="container">
-            <h1 class="display-4">Hi, {userProfile.name}!</h1>
-            {console.log('userprofile', userProfile)}
-
-            {therapistInfo ?
-              (<p class="lead">Launch Zoom call with {therapistInfo.name} now</p>) : (
-                <div>
-                  <Button
-                    variant="light"
-                    onClick={() =>
-                      history.push({
-                        pathname: "/profile/edit",
-                        userProfile: userProfile,
-                      })
-                    }
-                    className={classes.editButton}
-                  >
-                    Connect with your therapist!
-                  </Button>
-                </div>
-              )}
+            {userProfile ? (
+              <h1 class="display-4">Hi, {userProfile.name}!</h1>
+            ) : null}
+            {therapistInfo ? (
+              <p class="lead">Launch Zoom call with {therapistInfo.name} now</p>
+            ) : (
+              <div>
+                <Button
+                  variant="light"
+                  onClick={() =>
+                    history.push({
+                      pathname: "/profile/edit",
+                      userProfile: userProfile,
+                    })
+                  }
+                  className={classes.editButton}
+                >
+                  Connect with your therapist!
+                </Button>
+              </div>
+            )}
 
             {therapistInfo && therapistInfo.zoom ? (
               <a href={`${therapistInfo.zoom}`} target="_blank">
-                <Button size="small" color="primary" className={classes.darkButton}>
+                <Button
+                  size="small"
+                  color="primary"
+                  className={classes.darkButton}
+                >
                   Start Zoom Call
-                    </Button>
+                </Button>
               </a>
             ) : null}
           </div>
         </div>
         {/* End Jumbotron */}
 
-
-
         {/* Progress Chart */}
         <Typography variant="h4" className={classes.progressHeader}>
+<<<<<<< HEAD
           Week of {weekBeginning} Progress
             </Typography>
         <div className={classes.progressContainer}>
+=======
+          This Week's Progress
+        </Typography>
+        <div className={classes.exerciseContainer}>
+>>>>>>> master
           <Row>
             {exerciseSets.length !== 0 ? (
               <React.Fragment>
@@ -381,9 +405,7 @@ const PatientExerciseMain = (props) => {
               </React.Fragment>
             ) : null}
             {exerciseSets.length === 0 ? (
-              <Col>
-                You have no exercises yet - please check with your PT!
-                  </Col>
+              <Col>You have no exercises yet - please check with your PT!</Col>
             ) : null}
           </Row>
           <Divider />
@@ -412,47 +434,44 @@ const PatientExerciseMain = (props) => {
 
         <div className={classes.exercises}>
           {exerciseSets.map((s, i) => {
-            return (
-              (s.exercise.length === 0 ? null :
-                <div className={classes.exerciseContainer} key={i}>
-                  {console.log('my s', s.exercise.length)}
-                  <Typography variant="h4" className={classes.header}>
-                    {s.day} Exercises ({calculateTotalTime(s)} minutes)
+            return s.exercise.length === 0 ? null : (
+              <div className={classes.exerciseContainer} key={i}>
+                {console.log("my s", s.exercise.length)}
+                <Typography variant="h4" className={classes.header}>
+                  {s.day} Exercises ({calculateTotalTime(s)} minutes)
                 </Typography>
-                  <Row>
-                    <Col>Exercise</Col>
-                    <Col>Reps</Col>
-                    <Col>Duration</Col>
-                  </Row>
-                  <Divider />
-                  {Object.values(s.exercise).map((ex, k) => {
-                    return (
-                      <div>
-                        <Row key={i} className={classes.rows}>
-                          <Col>{formatExerciseName(ex.name)}</Col>
-                          <Col>{ex.reps}</Col>
-                          <Col>{ex.duration}</Col>
-                        </Row>
-                      </div>
-                    );
-                  })}
-                  <Link
-                    to={{
-                      pathname: `/workout/${s.day}`,
-                      exerciseProps: s,
-                      setInd: i,
-                    }}
-                  >
-                    <Button variant="light" className={classes.startButton}>
-                      Start
+                <Row>
+                  <Col>Exercise</Col>
+                  <Col>Reps</Col>
+                  <Col>Duration</Col>
+                </Row>
+                <Divider />
+                {Object.values(s.exercise).map((ex, k) => {
+                  return (
+                    <div>
+                      <Row key={i} className={classes.rows}>
+                        <Col>{formatExerciseName(ex.name)}</Col>
+                        <Col>{ex.reps}</Col>
+                        <Col>{ex.duration}</Col>
+                      </Row>
+                    </div>
+                  );
+                })}
+                <Link
+                  to={{
+                    pathname: `/workout/${s.day}`,
+                    exerciseProps: s,
+                    setInd: i,
+                  }}
+                >
+                  <Button variant="light" className={classes.startButton}>
+                    Start
                   </Button>
-                  </Link>
-                </div>
-              )
+                </Link>
+              </div>
             );
           })}
         </div>
-
 
         {/* <footer className={classes.footer}>
           <img
