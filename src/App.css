@@ -28,16 +28,31 @@
   height: 100vh;
 }
 
-
 .App-link {
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
+/* .navBar {
+  -webkit-box-shadow: 0 8px 6px -6px #999;
+  -moz-box-shadow: 0 8px 6px -6px #999;
+  box-shadow: 0 8px 6px -6px #999;
+} */
+
+/* @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
   }
+} */
+
+
+/* Shared CSS */
+/* .dark-button {
+  background-color: #3358C4;
 }
+
+.light-button {
+  background-color: #9DB4FF;
+} */

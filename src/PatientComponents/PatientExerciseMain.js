@@ -5,7 +5,6 @@ import {
   Typography,
   Container,
   CircularProgress,
-  CardActionArea,
   Card,
   CardActions,
   CardContent,
@@ -18,7 +17,6 @@ import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
 import { useHistory } from "react-router-dom";
 import { compareSets } from '../DoctorComponents/IndividualPatientView.js';
-
 
 
 const useStyles = makeStyles((theme) => ({
@@ -120,6 +118,35 @@ const useStyles = makeStyles((theme) => ({
     width: "80%",
     margin: "0 auto",
   },
+  darkButton: {
+    backgroundColor: '#3358C4',
+    border: 'none',
+    "&:hover": {
+      backgroundColor: '#264291',
+    },
+  },
+  accentDivider: {
+    content: "",
+    display: "block",
+    width: "6.25rem",
+    height: ".325rem",
+    marginTop: "1.5rem",
+    background: "#9DB4FF",
+    marginBottom: "3rem",
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+  },
+  centerBlock: {
+    textAlign: "center",
+    height: 30,
+    position: 'relative',
+  }
+  // gradientContainer: {
+  //   background: 'linear-gradient(#fff 100%,#f6f6f6 0%)',
+  //   height: 50,
+  // }
 }));
 
 const calculateTotalTime = (s) => {
@@ -142,7 +169,6 @@ const formatExerciseName = (n) => {
 
 const PatientExerciseMain = (props) => {
   const [exerciseSets, setExerciseSets] = useState([]);
-  const [percentFinished, setPercentFinished] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [therapistInfo, setTherapistInfo] = useState();
   const [userProfile, setUserProfile] = useState();
@@ -270,14 +296,11 @@ const PatientExerciseMain = (props) => {
           // Return bool
           if (exercises[i].complete) {
             return (
-              <img className={classes.checkIcon} src="/img/complete.png"></img>
+              <img className={classes.checkIcon} src="/img/complete.png" alt="complete"></img>
             );
           } else {
             return (
-              <img
-                className={classes.checkIcon}
-                src="/img/incomplete.png"
-              ></img>
+              <img className={classes.checkIcon} src="/img/incomplete.png" alt="incomplete"></img>
             );
           }
         }
@@ -287,38 +310,15 @@ const PatientExerciseMain = (props) => {
 
     return (
       <div className={classes.window}>
-        <Grid className={classes.grid} container spacing={3}>
-          <Grid item xs={3}>
-            <Card className={classes.card}>
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="h2">
-                  Your Therapist
-                </Typography>
-              </CardContent>
-              {therapistInfo ? (
+        {/* Start Jumbotron */}
+        <div class="jumbotron jumbotron-fluid">
+          <div class="container">
+            <h1 class="display-4">Hi, {userProfile.name}!</h1>
+            {console.log('userprofile', userProfile)}
+
+            {therapistInfo ?
+              (<p class="lead">Launch Zoom call with {therapistInfo.name} now</p>) : (
                 <div>
-                  <CardMedia
-                    component="img"
-                    //   alt="Contemplative Reptile"
-                    height="230"
-                    src={therapistInfo.img}
-                    //   title="Contemplative Reptile"
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {therapistInfo.name}
-                    </Typography>
-                  </CardContent>
-                </div>
-              ) : (
-                <div>
-                  <CardMedia
-                    component="img"
-                    //   alt="Contemplative Reptile"
-                    height="230"
-                    src={blankImg}
-                    //   title="Contemplative Reptile"
-                  />
                   <Button
                     variant="light"
                     onClick={() =>
@@ -334,101 +334,110 @@ const PatientExerciseMain = (props) => {
                 </div>
               )}
 
-              <CardActions>
-                {therapistInfo && therapistInfo.zoom ? (
-                  <a href={`${therapistInfo.zoom}`} target="_blank">
-                    <Button size="small" color="primary">
-                      Start Zoom Call
+            {therapistInfo && therapistInfo.zoom ? (
+              <a href={`${therapistInfo.zoom}`} target="_blank">
+                <Button size="small" color="primary" className={classes.darkButton}>
+                  Start Zoom Call
                     </Button>
-                  </a>
-                ) : null}
-              </CardActions>
-            </Card>
-          </Grid>
-          <Grid item xs={9}>
-            {/* Progress Chart */}
-            <Typography variant="h4" className={classes.progressHeader}>
-              Your Progress
+              </a>
+            ) : null}
+          </div>
+        </div>
+        {/* End Jumbotron */}
+
+
+
+        {/* Progress Chart */}
+        <Typography variant="h4" className={classes.progressHeader}>
+          This Week's Progress
             </Typography>
-            <div className={classes.exerciseContainer}>
-              <Row>
-                {exerciseSets.length !== 0 ? (
-                  <React.Fragment>
-                    <Col>Exercise Name</Col>
-                    {exerciseSets[0].exerciseList.map((ex) => (
-                      <Col className={classes.centeredCol}>{ex}</Col>
-                    ))}
-                  </React.Fragment>
-                ) : null}
-                {exerciseSets.length === 0 ? (
-                  <Col>
-                    You have no exercises yet - please check with your PT!
+        <div className={classes.exerciseContainer}>
+          <Row>
+            {exerciseSets.length !== 0 ? (
+              <React.Fragment>
+                <Col>Exercise Name</Col>
+                {exerciseSets[0].exerciseList.map((ex) => (
+                  <Col className={classes.centeredCol}>{ex}</Col>
+                ))}
+              </React.Fragment>
+            ) : null}
+            {exerciseSets.length === 0 ? (
+              <Col>
+                You have no exercises yet - please check with your PT!
                   </Col>
-                ) : null}
+            ) : null}
+          </Row>
+          <Divider />
+          {exerciseSets.map((s, i) => {
+            return (
+              <Row key={i}>
+                <Col>{s["day"]}</Col>
+                {/* Map through each column */ console.log(s["day"])}
+                {s.exerciseList.map((name, j) => {
+                  // if s
+                  return (
+                    <Col className={classes.centeredCol} key={j}>
+                      {checkComplete(s.exercise, name)}
+                    </Col>
+                  );
+                })}
               </Row>
-              <Divider />
-              {exerciseSets.map((s, i) => {
-                return (
-                  <Row key={i}>
-                    <Col>{s["day"]}</Col>
-                    {/* Map through each column */ console.log(s["day"])}
-                    {s.exerciseList.map((name, j) => {
-                      // if s
-                      return (
-                        <Col className={classes.centeredCol} key={j}>
-                          {checkComplete(s.exercise, name)}
-                        </Col>
-                      );
-                    })}
-                  </Row>
-                );
-              })}
-              {/* End Progress Chart */}
-            </div>
-          </Grid>
-        </Grid>
+            );
+          })}
+          {/* End Progress Chart */}
+        </div>
+
+        <div className={classes.centerBlock}>
+          <div className={classes.accentDivider}></div>
+        </div>
+        {/* <div class="container-fluid" className={classes.gradientContainer}>
+        </div> */}
 
         <div className={classes.exercises}>
           {exerciseSets.map((s, i) => {
             return (
-              <div className={classes.exerciseContainer} key={i}>
-                <Typography variant="h4" className={classes.header}>
-                  {s.day} Exercises ({calculateTotalTime(s)} minutes)
+              (s.exercise.length === 0 ? null :
+                <div className={classes.exerciseContainer} key={i}>
+                  {console.log('my s', s.exercise.length)}
+                  <Typography variant="h4" className={classes.header}>
+                    {s.day} Exercises ({calculateTotalTime(s)} minutes)
                 </Typography>
-                <Row>
-                  <Col>Exercise</Col>
-                  <Col>Reps</Col>
-                  <Col>Duration</Col>
-                </Row>
-                <Divider />
-                {Object.values(s.exercise).map((ex, k) => {
-                  return (
-                    <div>
-                      <Row key={i} className={classes.rows}>
-                        <Col>{formatExerciseName(ex.name)}</Col>
-                        <Col>{ex.reps}</Col>
-                        <Col>{ex.duration}</Col>
-                      </Row>
-                    </div>
-                  );
-                })}
-                <Link
-                  to={{
-                    pathname: `/workout/${s.day}`,
-                    exerciseProps: s,
-                    setInd: i,
-                  }}
-                >
-                  <Button variant="light" className={classes.startButton}>
-                    Start
+                  <Row>
+                    <Col>Exercise</Col>
+                    <Col>Reps</Col>
+                    <Col>Duration</Col>
+                  </Row>
+                  <Divider />
+                  {Object.values(s.exercise).map((ex, k) => {
+                    return (
+                      <div>
+                        <Row key={i} className={classes.rows}>
+                          <Col>{formatExerciseName(ex.name)}</Col>
+                          <Col>{ex.reps}</Col>
+                          <Col>{ex.duration}</Col>
+                        </Row>
+                      </div>
+                    );
+                  })}
+                  <Link
+                    to={{
+                      pathname: `/workout/${s.day}`,
+                      exerciseProps: s,
+                      setInd: i,
+                    }}
+                  >
+                    <Button variant="light" className={classes.startButton}>
+                      Start
                   </Button>
-                </Link>
-              </div>
+                  </Link>
+                </div>
+              )
             );
           })}
         </div>
 
-        <footer className={classes.footer}>
+
+        {/* <footer className={classes.footer}>
           <img
             src={"/img/StretchGraphic2.png"}
             className={classes.stretchGraphic2}
@@ -446,7 +455,7 @@ const PatientExerciseMain = (props) => {
               <br />- Carol Welch
             </Typography>
           </Typography>
-        </footer>
+        </footer> */}
       </div>
     );
   };
