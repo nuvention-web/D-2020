@@ -132,6 +132,8 @@ export const compareSets = (a, b) => {
   return comparison;
 };
 
+
+
 const IndividualPatientView = (props) => {
   const classes = useStyles();
   // exerciseSets stores the "exercisesets" of the patient we are looking at
@@ -238,15 +240,6 @@ const IndividualPatientView = (props) => {
     }
   }, [exerciseSets]);
   // End loading data
-
-  // const findExercise = (exercise) => {
-  //     const exercises = Object.values(PresetExercisesData);
-  //     for (var i = 0; i < exercises.length; i++) {
-  //         if (exercises[i].name === exercise) {
-  //             return exercises[i];
-  //         }
-  //     }
-  // }
 
   // Fetch exercise type of this therapist
   useEffect(() => {
@@ -426,6 +419,19 @@ const IndividualPatientView = (props) => {
     return t;
   };
 
+  const getMonday = (d) => {
+    d = new Date(d);
+    var day = d.getDay(),
+        diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+        d.setDate(diff)
+    var date = d.getDate();
+    var month = d.getMonth() + 1;
+    var year = d.getFullYear();
+    var dateStr = month + "/" + date + "/" + year;
+    return dateStr;
+  }
+  const weekBeginning = getMonday(new Date());
+
   const formatExerciseName = (n) => {
     var splitStr = n.toLowerCase().split(" ");
     for (var i = 0; i < splitStr.length; i++) {
@@ -536,9 +542,8 @@ const IndividualPatientView = (props) => {
           <Container>
             <header className={classes.progressHeader}>
               <Typography variant="h4" className={classes.header}>
-                {/* {location.patientInfo.name} */}
-                Week of 4/13 - Progress
-              </Typography>
+                Week of {weekBeginning} Progress
+            </Typography>
               <Link
                 to={{
                   pathname: `/PT/patient/${id}/history`,
