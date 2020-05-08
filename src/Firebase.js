@@ -38,7 +38,7 @@ const SignIn = () => (
   <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
 );
 const LogOut = () => {
-  localStorage.setItem("type", "");
+  localStorage.clear();
   firebase.auth().signOut();
 };
 

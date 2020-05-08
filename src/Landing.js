@@ -170,16 +170,18 @@ const Landing = ({ haveLoggedIn, setHaveLoggedIn }) => {
         if (isPatient === true) localStorage.setItem("type", "patients");
 
         const temp = !isPT && !isPatient;
-        console.log("is New User?: ", temp);
         // If the new user was set
         // Initial login
-        if (haveLoggedIn === true && temp === true) {
+        if (temp === true) {
           // Name might be deceiving but this means that it's a new user.
+          console.log("is New User?: ", temp);
           history.push("/newUser");
         } else {
           if (localStorage.getItem("type") !== null) {
             console.log("happening");
-            setHaveLoggedIn(temp);
+            localStorage.getItem("type") == "therapists"
+              ? history.push("/PT")
+              : history.push("/workout");
           }
         }
       }
