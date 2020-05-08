@@ -39,12 +39,18 @@ const useStyles = makeStyles((theme) => ({
   meter: {
     marginTop: 25,
   },
-  exerciseContainer: {
-    marginTop: 10,
+  progressContainer: {
+    marginTop: 15,
     marginBottom: 40,
     width: "80%",
     margin: "0 auto",
     overflowX: "scroll",
+  },
+  exerciseContainer: {
+    marginTop: 20,
+    marginBottom: 40,
+    width: "80%",
+    margin: "0 auto",
   },
   link: {
     textDecoration: "none",
@@ -287,6 +293,19 @@ const PatientExerciseMain = (props) => {
     }
   }, [exerciseSets]);
 
+  const getMonday = (d) => {
+    d = new Date(d);
+    var day = d.getDay(),
+        diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+        d.setDate(diff)
+    var date = d.getDate();
+    var month = d.getMonth() + 1;
+    var year = d.getFullYear();
+    var dateStr = month + "/" + date + "/" + year;
+    return dateStr;
+  }
+  const weekBeginning = getMonday(new Date());
+
   const renderItems = () => {
     // Return true, false, or - (not an exercise for this day)
     const checkComplete = (exercises, exname) => {
@@ -349,9 +368,9 @@ const PatientExerciseMain = (props) => {
 
         {/* Progress Chart */}
         <Typography variant="h4" className={classes.progressHeader}>
-          This Week's Progress
+          Week of {weekBeginning} Progress
             </Typography>
-        <div className={classes.exerciseContainer}>
+        <div className={classes.progressContainer}>
           <Row>
             {exerciseSets.length !== 0 ? (
               <React.Fragment>
@@ -390,8 +409,6 @@ const PatientExerciseMain = (props) => {
         <div className={classes.centerBlock}>
           <div className={classes.accentDivider}></div>
         </div>
-        {/* <div class="container-fluid" className={classes.gradientContainer}>
-        </div> */}
 
         <div className={classes.exercises}>
           {exerciseSets.map((s, i) => {
