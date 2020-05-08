@@ -173,7 +173,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   const [userProfile, setUserProfile] = useState();
   const blankImg = "/img/blankProfile.png";
   const type = localStorage.getItem("type");
-
+  console.log("TYpe: ", type);
   //user id used to load correct user exercises (taken from landing page)
   const currUser = useContext(UserContext).user;
   const history = useHistory();
@@ -277,6 +277,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   }, [currUser]);
 
   useEffect(() => {
+    console.log(type, currUser);
     if (Object.entries(currUser).length > 0 && type) {
       db.collection(type)
         .doc(currUser.uid)
@@ -327,9 +328,9 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         {/* Start Jumbotron */}
         <div class="jumbotron jumbotron-fluid">
           <div class="container">
-            <h1 class="display-4">Hi, {userProfile.name}!</h1>
-            {console.log("userprofile", userProfile)}
-
+            {userProfile ? (
+              <h1 class="display-4">Hi, {userProfile.name}!</h1>
+            ) : null}
             {therapistInfo ? (
               <p class="lead">Launch Zoom call with {therapistInfo.name} now</p>
             ) : (

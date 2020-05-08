@@ -34,7 +34,9 @@ const useStyles = makeStyles((theme) => ({
 
 const App = () => {
   const classes = useStyles();
-  const [haveLoggedIn, setHaveLoggedIn] = useState(null);
+
+  //set haveLoggedIn acts as a variable that triggers rerendering of navBar
+  const [haveLoggedIn, setHaveLoggedIn] = useState(false);
 
   return (
     <UserProvider>
@@ -117,7 +119,12 @@ const App = () => {
             ></Route>
             <Route
               path="/profile"
-              component={(...props) => <Profile />}
+              component={() => (
+                <Profile
+                  haveLoggedIn={haveLoggedIn}
+                  setHaveLoggedIn={setHaveLoggedIn}
+                ></Profile>
+              )}
             ></Route>
           </Switch>
         </div>

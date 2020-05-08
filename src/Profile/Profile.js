@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import { Button } from "react-bootstrap";
 
-const Profile = (props) => {
+const Profile = ({ setHaveLoggedIn }) => {
   const useStyles = makeStyles((theme) => ({
     root: {
       textAlign: "center",
@@ -59,6 +59,10 @@ const Profile = (props) => {
         });
     }
   }, [type, currUser, location]);
+
+  useEffect(() => {
+    if (location.notNewUser) setHaveLoggedIn(true);
+  }, []);
 
   return (
     <div>
