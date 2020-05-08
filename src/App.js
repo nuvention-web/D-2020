@@ -11,7 +11,7 @@ import UserProvider from "./contexts/UserContext";
 import Profile from "./Profile/Profile";
 import ProfileEdit from "./Profile/ProfileEdit";
 import NewUserForm from "./NewUserForm";
-import NavBar from "./NavBar";
+import NavBar from "./NavBar/NavBar";
 import Exercises from "./DoctorComponents/Exercises/Exercises";
 import Exercise from "./DoctorComponents/Exercises/Exercise";
 import ExerciseEdit from "./DoctorComponents/Exercises/ExerciseEdit";
