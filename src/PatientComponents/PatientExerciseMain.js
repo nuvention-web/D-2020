@@ -188,10 +188,10 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
 
   // Load correct NavBar for patient
   useEffect(() => {
-    if (localStorage.getItem("type") !== null) {
+    if (type !== "") {
       setHaveLoggedIn(true);
     }
-  }, []);
+  }, [type]);
 
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {
@@ -237,8 +237,6 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {
-      console.log("going");
-
       // Newly added to load Firestore data
       var patientRef = db
         .collection("patients")
@@ -303,14 +301,14 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   const getMonday = (d) => {
     d = new Date(d);
     var day = d.getDay(),
-        diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
-        d.setDate(diff)
+      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+    d.setDate(diff);
     var date = d.getDate();
     var month = d.getMonth() + 1;
     var year = d.getFullYear();
     var dateStr = month + "/" + date + "/" + year;
     return dateStr;
-  }
+  };
   const weekBeginning = getMonday(new Date());
 
   const renderItems = () => {
@@ -387,7 +385,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         {/* Progress Chart */}
         <Typography variant="h4" className={classes.progressHeader}>
           Week of {weekBeginning} Progress
-            </Typography>
+        </Typography>
         <div className={classes.progressContainer}>
           <Row>
             {exerciseSets.length !== 0 ? (
