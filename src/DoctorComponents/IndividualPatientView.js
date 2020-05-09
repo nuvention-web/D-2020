@@ -105,6 +105,10 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  cols: {
+    // marginRight: 100,
+    textAlign: "center",
+  },
 }));
 
 export const dayToNumIdMap = new Map([
@@ -629,12 +633,24 @@ const IndividualPatientView = (props) => {
                       <div>
                         <Row key={k} className={classes.rows}>
                           <Col>{formatExerciseName(ex.name)}</Col>
-                          <Col>{ex.reps ? ex.reps : "-"}</Col>
-                          <Col>{ex.duration ? ex.duration : "-"}</Col>
-                          <Col>{ex.sets ? ex.sets : "-"}</Col>
-                          <Col>{ex.hold ? ex.hold : "-"}</Col>
-                          <Col>{ex.resistance ? ex.resistance : "-"}</Col>
-                          <Col>{ex.rest ? ex.rest : "-"}</Col>
+                          <Col className={classes.cols}>
+                            {ex.reps ? ex.reps : "-"}
+                          </Col>
+                          <Col className={classes.cols}>
+                            {ex.duration ? ex.duration : "-"}
+                          </Col>
+                          <Col className={classes.cols}>
+                            {ex.sets ? ex.sets : "-"}
+                          </Col>
+                          <Col className={classes.cols}>
+                            {ex.hold ? ex.hold : "-"}
+                          </Col>
+                          <Col className={classes.cols}>
+                            {ex.resistance ? ex.resistance : "-"}
+                          </Col>
+                          <Col className={classes.cols}>
+                            {ex.rest ? ex.rest : "-"}
+                          </Col>
 
                           <Col className={classes.centeredCol}>
                             <FontAwesomeIcon
