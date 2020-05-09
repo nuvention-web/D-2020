@@ -177,11 +177,15 @@ const Landing = ({ haveLoggedIn, setHaveLoggedIn }) => {
           console.log("is New User?: ", temp);
           history.push("/newUser");
         } else {
-          if (localStorage.getItem("type") !== null) {
+          if (localStorage.getItem("type") !== "") {
             console.log("happening");
-            localStorage.getItem("type") == "therapists"
-              ? history.push("/PT")
-              : history.push("/workout");
+            if (localStorage.getItem("type") == "therapists") {
+              history.push("/PT");
+              setHaveLoggedIn(true);
+            } else {
+              history.push("/workout");
+              setHaveLoggedIn(true);
+            }
           }
         }
       }
@@ -199,11 +203,14 @@ const Landing = ({ haveLoggedIn, setHaveLoggedIn }) => {
           We believe that quality care begins with a strong relationship between
           physical therapist and patient.
         </p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSem81vEEEARYMe0w7_udpZLUySGaGVJ3lb80Mkjgi9lxO6Q2A/viewform" target="_blank">
-        <button className={classes.joinButton}>
-          Join us &nbsp;&nbsp;
-          <FontAwesomeIcon icon={faLongArrowAltRight} color="white" />{" "}
-        </button>
+        <a
+          href="https://docs.google.com/forms/d/e/1FAIpQLSem81vEEEARYMe0w7_udpZLUySGaGVJ3lb80Mkjgi9lxO6Q2A/viewform"
+          target="_blank"
+        >
+          <button className={classes.joinButton}>
+            Join us &nbsp;&nbsp;
+            <FontAwesomeIcon icon={faLongArrowAltRight} color="white" />{" "}
+          </button>
         </a>
       </div>
     </div>

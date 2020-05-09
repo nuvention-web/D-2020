@@ -93,13 +93,14 @@ const DoctorView = ({ setHaveLoggedIn }) => {
   const [loaded, setLoaded] = useState(false);
   const currUser = useContext(UserContext).user;
   const [therapistInfo, setTherapistInfo] = useState({});
+  const type = localStorage.getItem("type");
 
   // Load correct NavBar for PT
   useEffect(() => {
-    if (localStorage.getItem("type") !== null) {
+    if (type !== "") {
       setHaveLoggedIn(true);
     }
-  }, []);
+  }, [type]);
 
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {

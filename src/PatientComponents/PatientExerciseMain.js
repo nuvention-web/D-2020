@@ -152,6 +152,10 @@ const useStyles = makeStyles((theme) => ({
   //   background: 'linear-gradient(#fff 100%,#f6f6f6 0%)',
   //   height: 50,
   // }
+  cols: {
+    // marginRight: 100,
+    textAlign: "center",
+  },
 }));
 
 const calculateTotalTime = (s) => {
@@ -188,10 +192,10 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
 
   // Load correct NavBar for patient
   useEffect(() => {
-    if (localStorage.getItem("type") !== null) {
+    if (type !== "") {
       setHaveLoggedIn(true);
     }
-  }, []);
+  }, [type]);
 
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {
@@ -237,8 +241,6 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {
-      console.log("going");
-
       // Newly added to load Firestore data
       var patientRef = db
         .collection("patients")
@@ -303,14 +305,14 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   const getMonday = (d) => {
     d = new Date(d);
     var day = d.getDay(),
-        diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
-        d.setDate(diff)
+      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+    d.setDate(diff);
     var date = d.getDate();
     var month = d.getMonth() + 1;
     var year = d.getFullYear();
     var dateStr = month + "/" + date + "/" + year;
     return dateStr;
-  }
+  };
   const weekBeginning = getMonday(new Date());
 
   const renderItems = () => {
@@ -387,7 +389,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         {/* Progress Chart */}
         <Typography variant="h4" className={classes.progressHeader}>
           Week of {weekBeginning} Progress
-            </Typography>
+        </Typography>
         <div className={classes.progressContainer}>
           <Row>
             {exerciseSets.length !== 0 ? (
@@ -444,9 +446,24 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                   return (
                     <div>
                       <Row key={i} className={classes.rows}>
-                        <Col>{formatExerciseName(ex.name)}</Col>
-                        <Col>{ex.reps}</Col>
-                        <Col>{ex.duration}</Col>
+                        <Col className={classes.cols}>
+                          {ex.reps ? ex.reps : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.duration ? ex.duration : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.sets ? ex.sets : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.hold ? ex.hold : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.resistance ? ex.resistance : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.rest ? ex.rest : "-"}
+                        </Col>
                       </Row>
                     </div>
                   );

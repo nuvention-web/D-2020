@@ -146,7 +146,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NavBar = ({ haveLoggedIn }) => {
+const NavBar = ({ haveLoggedIn, setHaveLoggedIn }) => {
   const ButtonAppBar = () => {
     const classes = useStyles();
     const [anchorEl, setAnchorEL] = useState(null);
@@ -286,17 +286,17 @@ const NavBar = ({ haveLoggedIn }) => {
   const currUser = useContext(UserContext).user;
   const setCurrUser = useContext(UserContext).setUser;
   const history = useHistory();
-  const [type, setType] = useState(localStorage.getItem("type"));
+  const type = localStorage.getItem("type");
 
   useEffect(() => {
     console.log("have changed");
-    console.log("local storage in Navbar: ", localStorage.getItem("type"));
+    console.log("local storage in Navbar: ", type);
     if (localStorage.getItem("type") !== "") {
-      setType(localStorage.getItem("type"));
+      setHaveLoggedIn(true);
       // console.log("THis is the userType from navBar: ", type);
       // setDummyState(true);
     }
-  }, [currUser, haveLoggedIn]);
+  }, [currUser, type]);
 
   return (
     <nav>

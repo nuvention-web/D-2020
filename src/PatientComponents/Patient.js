@@ -27,23 +27,21 @@ const Patient = ({ p, therapist }) => {
   console.log(therapist, therapist.zoom);
   return (
     <Card className={classes.root}>
-      <CardActionArea>
-        <CardMedia
-          component="img"
-          //   alt="Contemplative Reptile"
-          height="230"
-          src={img}
-          //   title="Contemplative Reptile"
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            {name}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {bio}
-          </Typography>
-        </CardContent>
-      </CardActionArea>{" "}
+      <CardMedia
+        component="img"
+        //   alt="Contemplative Reptile"
+        height="230"
+        src={img}
+        //   title="Contemplative Reptile"
+      />
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="h2">
+          {name}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
+          {bio}
+        </Typography>
+      </CardContent>
       {therapist && therapist.zoom ? (
         <a href={therapist.zoom} target="_blank">
           <Button size="small" color="primary">
