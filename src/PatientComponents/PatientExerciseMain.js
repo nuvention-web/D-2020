@@ -152,6 +152,10 @@ const useStyles = makeStyles((theme) => ({
   //   background: 'linear-gradient(#fff 100%,#f6f6f6 0%)',
   //   height: 50,
   // }
+  cols: {
+    // marginRight: 100,
+    textAlign: "center",
+  },
 }));
 
 const calculateTotalTime = (s) => {
@@ -442,9 +446,24 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                   return (
                     <div>
                       <Row key={i} className={classes.rows}>
-                        <Col>{formatExerciseName(ex.name)}</Col>
-                        <Col>{ex.reps}</Col>
-                        <Col>{ex.duration}</Col>
+                        <Col className={classes.cols}>
+                          {ex.reps ? ex.reps : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.duration ? ex.duration : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.sets ? ex.sets : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.hold ? ex.hold : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.resistance ? ex.resistance : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.rest ? ex.rest : "-"}
+                        </Col>
                       </Row>
                     </div>
                   );
