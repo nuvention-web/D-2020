@@ -17,9 +17,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundImage: "none",
     },
     backgroundImage: `url(${landing_background})`,
-    height: "100vh",
+    height: "125vh",
     backgroundRepeat: "no-repeat",
-    marginTop: "-8vh",
+    marginTop: "-25vh",
     paddingTop: "2vh",
   },
   appBar: {
@@ -67,12 +67,13 @@ const useStyles = makeStyles((theme) => ({
   },
   landingLeftText: {
     [theme.breakpoints.down("xs")]: {
-      fontSize: "32px",
+      fontSize: "29px",
       width: "80%",
       marginLeft: "13vw",
+      marginBottom: "3vh",
     },
-    marginTop: "20vh",
-    marginLeft: "3vw",
+    marginTop: "35vh",
+    marginLeft: "5vw",
     color: "#3358C4",
     fontSize: "64px",
     fontWeight: "700",
@@ -205,8 +206,9 @@ const Landing = ({ haveLoggedIn, setHaveLoggedIn }) => {
     <div className={classes.background}>
       <div className={classes.landingLeftText}>
         <p>
-          PT <FontAwesomeIcon icon={faArrowsAltH} color="#9DB4FF" />{" "}
-          &nbsp;patient relationships first.
+          PT &nbsp;
+          <FontAwesomeIcon icon={faArrowsAltH} color="#9DB4FF" /> &nbsp;patient
+          relationships first.
         </p>
         <p className={classes.subtitle}>
           We believe that quality care begins with a strong relationship between
