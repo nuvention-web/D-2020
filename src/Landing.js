@@ -13,10 +13,13 @@ import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   background: {
+    [theme.breakpoints.down("xs")]: {
+      backgroundImage: "none",
+    },
     backgroundImage: `url(${landing_background})`,
-    height: "100vh",
+    height: "125vh",
     backgroundRepeat: "no-repeat",
-    marginTop: "-8vh",
+    marginTop: "-25vh",
     paddingTop: "2vh",
   },
   appBar: {
@@ -63,8 +66,14 @@ const useStyles = makeStyles((theme) => ({
     background: "#9DB4FF",
   },
   landingLeftText: {
-    marginTop: "20vh",
-    marginLeft: "3vw",
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "29px",
+      width: "80%",
+      marginLeft: "13vw",
+      marginBottom: "3vh",
+    },
+    marginTop: "35vh",
+    marginLeft: "5vw",
     color: "#3358C4",
     fontSize: "64px",
     fontWeight: "700",
@@ -76,6 +85,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "500",
     marginTop: "3vh",
   },
+
   joinButton: {
     borderRadius: "15px",
     backgroundColor: "#9DB4FF",
@@ -83,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "24px",
     padding: "12px",
     border: "none",
-    width: "9vw",
+    width: "50%",
   },
   rightButtons: {
     display: "flex",
@@ -196,8 +206,9 @@ const Landing = ({ haveLoggedIn, setHaveLoggedIn }) => {
     <div className={classes.background}>
       <div className={classes.landingLeftText}>
         <p>
-          PT <FontAwesomeIcon icon={faArrowsAltH} color="#9DB4FF" />{" "}
-          &nbsp;patient relationships first.
+          PT &nbsp;
+          <FontAwesomeIcon icon={faArrowsAltH} color="#9DB4FF" /> &nbsp;patient
+          relationships first.
         </p>
         <p className={classes.subtitle}>
           We believe that quality care begins with a strong relationship between
