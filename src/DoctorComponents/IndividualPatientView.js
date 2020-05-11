@@ -398,7 +398,9 @@ const IndividualPatientView = (props) => {
     console.log("historyId", historyId)
     console.log('id in deleteExercise', id);
     // Check if we should delete history first
-    await db.collection("patients")
+
+    const checkHistory = () => {
+      db.collection("patients")
       .doc(id)
       .collection("history")
       .doc(historyId)
@@ -414,9 +416,10 @@ const IndividualPatientView = (props) => {
           // Monday of this week
           var mon = new Date();
           mon.setDate(diff);
-          var nextMon = new Date(mon.getTime() + 7 * 24 * 60 * 60 * 1000);
-          console.log('next Monday', nextMon);
-          console.log('nextMon.getTime()', nextMon.getTime())
+          // var nextMon = new Date(mon.getTime() + 7 * 24 * 60 * 60 * 1000);
+          var thisMon = new Date(mon.getTime());
+          console.log('this Monday', thisMon);
+          console.log('thisMon.getTime()', thisMon.getTime())
 
           // Timestamp of history document, in milliseconds
           const historyTime = doc.data().date.seconds * 1000;
@@ -424,7 +427,7 @@ const IndividualPatientView = (props) => {
           console.log('historyTime date', Date(historyTime))
 
           // Exercise being deleted within same week, delete history
-          if (historyTime < nextMon) {
+          if (historyTime > thisMon) {
             console.log("same week!");
 
             // Delete history
@@ -435,11 +438,15 @@ const IndividualPatientView = (props) => {
               .delete()
               .then(function () {
                 console.log("History doc deleted");
+                return true;
               })
               .catch(function (error) {
                 console.error("Error deleting document: ", error);
               });
             // End Delete history
+          }
+          else {
+            return true;
           }
           // If different week, do nothing
         } else {
@@ -449,7 +456,12 @@ const IndividualPatientView = (props) => {
       }).catch(function (error) {
         console.log("Error getting document:", error);
       });
+    }
+    // end checkHistory function
 
+    const done = await checkHistory();
+    console.log('done', done);
+   
     // Now delete exercise document
     var exerciseRef = db
       .collection("patients")
@@ -471,7 +483,7 @@ const IndividualPatientView = (props) => {
     // End delete exercise doc
     
     // Should only reload if previous chunk of code has run..
-    // window.location.reload(false);
+    window.location.reload(false);
 
   };
 
