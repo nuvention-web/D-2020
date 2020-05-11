@@ -33,9 +33,6 @@ const useStyles = makeStyles((theme) => ({
   meter: {
     marginTop: 25,
   },
-  exerciseContainer: {
-    marginTop: 30,
-  },
   link: {
     //gets rid of underline
     textDecoration: "none !important",
@@ -98,11 +95,14 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     width: 120,
+    // marginRight: 30,
   },
   progressHeader: {
+    width: "90%",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    marginLeft: "5%",
   },
   firstCol: {
     minWidth: "200px",
@@ -111,11 +111,35 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     minWidth: "100px",
   },
-   rows: {
+  rows: {
     marginTop: 10,
-    // whiteSpace: "nowrap",
-    // overflow: "hidden",
     minwidth: "830px",
+  },
+  progressContainer: {
+    // when screen is small
+    [theme.breakpoints.down("xs")]: {
+      overflowX: "scroll",
+    },
+    marginTop: 15,
+    marginBottom: 40,
+    width: "90%",
+    margin: "0 auto",
+  },
+  progressDiv: {
+    minWidth: "1000px",
+  },
+  exerciseContainer: {
+    // when screen is small
+    [theme.breakpoints.down("xs")]: {
+      overflowX: "scroll",
+    },
+    marginTop: 30,
+    marginBottom: 40,
+    width: "90%",
+    margin: "0 auto",
+  },
+  exerciseSetDiv: {
+    minWidth: "1000px",
   },
 }));
 
@@ -409,67 +433,67 @@ const IndividualPatientView = (props) => {
 
     const checkHistory = () => {
       db.collection("patients")
-      .doc(id)
-      .collection("history")
-      .doc(historyId)
-      .get().then(function (doc) {
-        if (doc.exists) {
-          console.log("Document data:", doc.data());
-          // If same week, delete history doc
-          // Same week if before next Monday 3 am 
-          var today = new Date();
-          var day = today.getDay(); // day of the week 0-6
-          const diff = today.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+        .doc(id)
+        .collection("history")
+        .doc(historyId)
+        .get().then(function (doc) {
+          if (doc.exists) {
+            console.log("Document data:", doc.data());
+            // If same week, delete history doc
+            // Same week if before next Monday 3 am 
+            var today = new Date();
+            var day = today.getDay(); // day of the week 0-6
+            const diff = today.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
 
-          // Monday of this week
-          var mon = new Date();
-          mon.setDate(diff);
-          // var nextMon = new Date(mon.getTime() + 7 * 24 * 60 * 60 * 1000);
-          var thisMon = new Date(mon.getTime());
-          console.log('this Monday', thisMon);
-          console.log('thisMon.getTime()', thisMon.getTime())
+            // Monday of this week
+            var mon = new Date();
+            mon.setDate(diff);
+            // var nextMon = new Date(mon.getTime() + 7 * 24 * 60 * 60 * 1000);
+            var thisMon = new Date(mon.getTime());
+            console.log('this Monday', thisMon);
+            console.log('thisMon.getTime()', thisMon.getTime())
 
-          // Timestamp of history document, in milliseconds
-          const historyTime = doc.data().date.seconds * 1000;
-          console.log('historyTime', historyTime)
-          console.log('historyTime date', Date(historyTime))
+            // Timestamp of history document, in milliseconds
+            const historyTime = doc.data().date.seconds * 1000;
+            console.log('historyTime', historyTime)
+            console.log('historyTime date', Date(historyTime))
 
-          // Exercise being deleted within same week, delete history
-          if (historyTime > thisMon) {
-            console.log("same week!");
+            // Exercise being deleted within same week, delete history
+            if (historyTime > thisMon) {
+              console.log("same week!");
 
-            // Delete history
-            db.collection("patients")
-              .doc(id)
-              .collection("history")
-              .doc(historyId)
-              .delete()
-              .then(function () {
-                console.log("History doc deleted");
-                return true;
-              })
-              .catch(function (error) {
-                console.error("Error deleting document: ", error);
-              });
-            // End Delete history
+              // Delete history
+              db.collection("patients")
+                .doc(id)
+                .collection("history")
+                .doc(historyId)
+                .delete()
+                .then(function () {
+                  console.log("History doc deleted");
+                  return true;
+                })
+                .catch(function (error) {
+                  console.error("Error deleting document: ", error);
+                });
+              // End Delete history
+            }
+            else {
+              return true;
+            }
+            // If different week, do nothing
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such history document!");
           }
-          else {
-            return true;
-          }
-          // If different week, do nothing
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such history document!");
-        }
-      }).catch(function (error) {
-        console.log("Error getting document:", error);
-      });
+        }).catch(function (error) {
+          console.log("Error getting document:", error);
+        });
     }
     // end checkHistory function
 
     const done = await checkHistory();
     console.log('done', done);
-   
+
     // Now delete exercise document
     var exerciseRef = db
       .collection("patients")
@@ -489,7 +513,7 @@ const IndividualPatientView = (props) => {
         console.error("Error removing document: ", error);
       });
     // End delete exercise doc
-    
+
     // Should only reload if previous chunk of code has run..
     window.location.reload(false);
 
@@ -625,24 +649,27 @@ const IndividualPatientView = (props) => {
     return (
       <div>
         <div>
-          <Container>
-            <header className={classes.progressHeader}>
-              <Typography variant="h4" className={classes.header}>
-                Week of {weekBeginning} Progress
+          <header className={classes.progressHeader}>
+            <Typography variant="h4" className={classes.header}>
+              Week of {weekBeginning} Progress
               </Typography>
-              <Link
-                to={{
-                  pathname: `/PT/patient/${id}/history`,
-                }}
-                className={classes.link}
-              >
-                <Button variant="light" className={classes.viewHistory}>
-                  View History
-                </Button>
-              </Link>
-            </header>
 
-            {/* Progress Chart */}
+            <Link
+              to={{
+                pathname: `/PT/patient/${id}/history`,
+              }}
+              className={classes.link}
+            >
+              <Button variant="light" className={classes.viewHistory}>
+                View History
+                </Button>
+            </Link>
+          </header>
+
+          {/* Progress Chart */}
+          <div className={classes.progressContainer}>
+          <div className={classes.progressDiv}>
+
             <Row>
               {exerciseSets.length !== 0 ? (
                 <React.Fragment>
@@ -658,307 +685,307 @@ const IndividualPatientView = (props) => {
               ) : null}
             </Row>
             <Divider />
-          </Container>
 
-          {exerciseSets.map((s, i) => {
-            return (
-              <Container>
-                <Row key={i}>
-                  <Col>{s["day"]}</Col>
-                  {/* Map through each column */}
-                  {s.exerciseList.map((name, i) => {
-                    return (
-                      <Col className={classes.cols}>
-                        {checkExComplete(s.exercise, name)}
-                      </Col>
-                    );
-                  })}
-                </Row>
-              </Container>
-            );
-          })}
+            {exerciseSets.map((s, i) => {
+              return (
+                  <Row key={i}>
+                    <Col>{s["day"]}</Col>
+                    {/* Map through each column */}
+                    {s.exerciseList.map((name, i) => {
+                      return (
+                        <Col className={classes.cols}>
+                          {checkExComplete(s.exercise, name)}
+                        </Col>
+                      );
+                    })}
+                  </Row>
+              );
+            })}
+            </div>
+          </div>
           {/* End Progress Chart */}
 
           {dotw.map((day, ind) => {
             return (
-              <div>
-                <Container className={classes.exerciseContainer} key={ind}>
-                  <Typography variant="h4" className={classes.header}>
-                    {day} Exercises
+              <div className={classes.exerciseContainer} key={ind}>
+                <div className={classes.exerciseSetDiv} key={ind}>
+
+                <Typography variant="h4" className={classes.header}>
+                  {day} Exercises
                   </Typography>
-                  <div>
-                    <Row className={classes.rows}>
-                      <Col className={classes.firstCol}>Exercise</Col>
-                      <Col className={classes.cols}>Reps</Col>
-                      <Col className={classes.cols}>Duration(min)</Col>
-                      <Col className={classes.cols}>Sets</Col>
-                      <Col className={classes.cols}>Hold(min)</Col>
-                      <Col className={classes.cols}>Resistance</Col>
-                      <Col className={classes.cols}>Rest(min)</Col>
-                      {/* Keep extra column for add/delete button */}
-                      <Col></Col>
-                    </Row>
-                  </div>
+                <div>
+                  <Row className={classes.rows}>
+                    <Col className={classes.firstCol}>Exercise</Col>
+                    <Col className={classes.cols}>Reps</Col>
+                    <Col className={classes.cols}>Duration(min)</Col>
+                    <Col className={classes.cols}>Sets</Col>
+                    <Col className={classes.cols}>Hold(min)</Col>
+                    <Col className={classes.cols}>Resistance</Col>
+                    <Col className={classes.cols}>Rest(min)</Col>
+                    {/* Keep extra column for add/delete button */}
+                    <Col></Col>
+                  </Row>
+                </div>
 
-                  <Divider />
+                <Divider />
 
-                  {console.log("checkMatch:", day, checkMatch(day))}
-                  {checkMatch(day).map((ex, k) => {
-                    return (
-                      <div>
-                        <Row key={k} className={classes.rows}>
-                          <Col className={classes.firstCol}>{formatExerciseName(ex.name)}</Col>
-                          <Col className={classes.cols}>
-                            {ex.reps ? ex.reps : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.duration ? ex.duration : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.sets ? ex.sets : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.hold ? ex.hold : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.resistance ? ex.resistance : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.rest ? ex.rest : "-"}
-                          </Col>
-                          {console.log('ex', ex)}
-                          {console.log('??historyId', ex.historyId)}
+                {console.log("checkMatch:", day, checkMatch(day))}
+                {checkMatch(day).map((ex, k) => {
+                  return (
+                    <div>
+                      <Row key={k} className={classes.rows}>
+                        <Col className={classes.firstCol}>{formatExerciseName(ex.name)}</Col>
+                        <Col className={classes.cols}>
+                          {ex.reps ? ex.reps : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.duration ? ex.duration : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.sets ? ex.sets : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.hold ? ex.hold : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.resistance ? ex.resistance : "-"}
+                        </Col>
+                        <Col className={classes.cols}>
+                          {ex.rest ? ex.rest : "-"}
+                        </Col>
+                        {console.log('ex', ex)}
+                        {console.log('??historyId', ex.historyId)}
 
-                          <Col className={classes.cols}>
-                            <FontAwesomeIcon
-                              icon={faTimes}
-                              color="#9DB4FF"
-                              size="2x"
-                              className={classes.deleteIcon}
-                              onClick={(e) => {
-                                deleteExercise(e, day, ex.docId, ex.historyId);
-                              }}
-                            />
-                          </Col>
-                        </Row>
-                      </div>
-                    );
-                  })}
-                  {console.log(day == validatedDay)}
-                  <Form
-                    noValidate
-                    validated={day == validatedDay}
-                    // onSubmit={handleSubmit}
-                    id={`form1-${day}`}
-                    className={classes.newExercise}
-                  >
-                    <Row>
-                      <Col className={classes.firstCol}>
-                        <Form.Group controlId={`exampleForm${day}`}>
-                          <Form.Control
-                            as="select"
-                            className={classes.exerciseBox}
-                            onChange={(event) => {
-                              setNewExercise(event.target.value);
+                        <Col className={classes.cols}>
+                          <FontAwesomeIcon
+                            icon={faTimes}
+                            color="#9DB4FF"
+                            size="2x"
+                            className={classes.deleteIcon}
+                            onClick={(e) => {
+                              deleteExercise(e, day, ex.docId, ex.historyId);
                             }}
-                          >
-                            {console.log(
-                              "exampleForm1",
-                              document.getElementById("reps-Monday")
-                            )}
-                            {exerciseType.map((exercise, i) => {
-                              return (
-                                <option value={exercise.name}>
-                                  {exercise.name}
-                                </option>
-                              );
-                            })}
-                          </Form.Control>
-                        </Form.Group>
-                      </Col>
-                      <Col className={classes.cols}>
-                        <Form.Group>
-                          <Form.Control
-                            type="number"
-                            min="0"
-                            className={classes.inputBox}
-                            id={`reps-${day}`}
-                            onChange={(event) => {
-                              let r = newReps;
-                              const d = day;
-                              r[d] = event.target.value;
-                              setNewReps(r);
-                            }}
-                            required
                           />
-                          {console.log("new reps??", newReps)}
-                          <Form.Control.Feedback type="invalid">
-                            Reps are required.
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col className={classes.cols}>
+                        </Col>
+                      </Row>
+                    </div>
+                  );
+                })}
+                {console.log(day == validatedDay)}
+                <Form
+                  noValidate
+                  validated={day == validatedDay}
+                  // onSubmit={handleSubmit}
+                  id={`form1-${day}`}
+                  className={classes.newExercise}
+                >
+                  <Row>
+                    <Col className={classes.firstCol}>
+                      <Form.Group controlId={`exampleForm${day}`}>
                         <Form.Control
-                          as="input"
-                          type="number"
-                          min="1"
-                          step="0.5"
-                          className={classes.inputBox}
-                          id={`dur-${day}`}
+                          as="select"
+                          className={classes.exerciseBox}
                           onChange={(event) => {
-                            let dur = newDuration;
+                            setNewExercise(event.target.value);
+                          }}
+                        >
+                          {console.log(
+                            "exampleForm1",
+                            document.getElementById("reps-Monday")
+                          )}
+                          {exerciseType.map((exercise, i) => {
+                            return (
+                              <option value={exercise.name}>
+                                {exercise.name}
+                              </option>
+                            );
+                          })}
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                    <Col className={classes.cols}>
+                      <Form.Group>
+                        <Form.Control
+                          type="number"
+                          min="0"
+                          className={classes.inputBox}
+                          id={`reps-${day}`}
+                          onChange={(event) => {
+                            let r = newReps;
                             const d = day;
-                            dur[d] = event.target.value;
-                            setNewDuration(dur);
+                            r[d] = event.target.value;
+                            setNewReps(r);
                           }}
                           required
                         />
+                        {console.log("new reps??", newReps)}
                         <Form.Control.Feedback type="invalid">
-                          Duration is required.
+                          Reps are required.
+                          </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col className={classes.cols}>
+                      <Form.Control
+                        as="input"
+                        type="number"
+                        min="1"
+                        step="0.5"
+                        className={classes.inputBox}
+                        id={`dur-${day}`}
+                        onChange={(event) => {
+                          let dur = newDuration;
+                          const d = day;
+                          dur[d] = event.target.value;
+                          setNewDuration(dur);
+                        }}
+                        required
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        Duration is required.
                         </Form.Control.Feedback>
-                      </Col>
-                      <Col className={classes.cols}>
-                        <Form.Group>
-                          <Form.Control
-                            type="number"
-                            min="0"
-                            className={classes.inputBox}
-                            id={`sets-${day}`}
-                            onChange={(event) => {
-                              let s = newSets;
-                              const d = day;
-                              s[d] = event.target.value;
-                              setNewSets(s);
-                            }}
-                            required
-                          />
-                          {console.log("new sets??", newSets)}
-                          <Form.Control.Feedback type="invalid">
-                            Sets are required.
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col className={classes.cols}>
-                        <Form.Group>
-                          <Form.Control
-                            type="number"
-                            min="0"
-                            className={classes.inputBox}
-                            id={`holds-${day}`}
-                            onChange={(event) => {
-                              let h = newHold;
-                              const d = day;
-                              h[d] = event.target.value;
-                              setNewHold(h);
-                            }}
-                            required
-                          />
-                          {console.log("new reps??", newReps)}
-                          <Form.Control.Feedback type="invalid">
-                            Hold is required.
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col className={classes.cols}>
-                        <Form.Group>
-                          <Form.Control
-                            type="text"
-                            className={classes.inputBox}
-                            id={`resistance-${day}`}
-                            onChange={(event) => {
-                              let resistance = newResistance;
-                              const d = day;
-                              resistance[d] = event.target.value;
-                              setNewResistance(resistance);
-                            }}
-                            required
-                          />
-                          {console.log("new resistance??", newResistance)}
-                          <Form.Control.Feedback type="invalid">
-                            Resistance are required.
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col className={classes.cols}>
-                        <Form.Group>
-                          <Form.Control
-                            type="number"
-                            min="0"
-                            className={classes.inputBox}
-                            id={`rest-${day}`}
-                            onChange={(event) => {
-                              let rest = newRest;
-                              const d = day;
-                              rest[d] = event.target.value;
-                              setNewRest(rest);
-                            }}
-                            required
-                          />
-                          {console.log("new rest??", newRest)}
-                          <Form.Control.Feedback type="invalid">
-                            Sets are required.
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-
-                      <Col className={classes.cols}>
-                        <Button
-                          variant="light"
-                          type="submit"
-                          className={classes.addButton}
-                          // disabled={(typeof newReps === 'undefined' || typeof newDuration === 'undefined')}
-                          onClick={(e) => {
-                            canClick(day)
-                              ? addExercise(e, day, checkMatch(day).length)
-                              : doNothing(e, day);
+                    </Col>
+                    <Col className={classes.cols}>
+                      <Form.Group>
+                        <Form.Control
+                          type="number"
+                          min="0"
+                          className={classes.inputBox}
+                          id={`sets-${day}`}
+                          onChange={(event) => {
+                            let s = newSets;
+                            const d = day;
+                            s[d] = event.target.value;
+                            setNewSets(s);
                           }}
-                        >
-                          <FontAwesomeIcon
-                            icon={faPlus}
-                            color="#3358C4"
-                            size="2x"
-                            type="submit"
-                          />
-                        </Button>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Container>
+                          required
+                        />
+                        {console.log("new sets??", newSets)}
+                        <Form.Control.Feedback type="invalid">
+                          Sets are required.
+                          </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col className={classes.cols}>
+                      <Form.Group>
+                        <Form.Control
+                          type="number"
+                          min="0"
+                          className={classes.inputBox}
+                          id={`holds-${day}`}
+                          onChange={(event) => {
+                            let h = newHold;
+                            const d = day;
+                            h[d] = event.target.value;
+                            setNewHold(h);
+                          }}
+                          required
+                        />
+                        {console.log("new reps??", newReps)}
+                        <Form.Control.Feedback type="invalid">
+                          Hold is required.
+                          </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col className={classes.cols}>
+                      <Form.Group>
+                        <Form.Control
+                          type="text"
+                          className={classes.inputBox}
+                          id={`resistance-${day}`}
+                          onChange={(event) => {
+                            let resistance = newResistance;
+                            const d = day;
+                            resistance[d] = event.target.value;
+                            setNewResistance(resistance);
+                          }}
+                          required
+                        />
+                        {console.log("new resistance??", newResistance)}
+                        <Form.Control.Feedback type="invalid">
+                          Resistance are required.
+                          </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col className={classes.cols}>
+                      <Form.Group>
+                        <Form.Control
+                          type="number"
+                          min="0"
+                          className={classes.inputBox}
+                          id={`rest-${day}`}
+                          onChange={(event) => {
+                            let rest = newRest;
+                            const d = day;
+                            rest[d] = event.target.value;
+                            setNewRest(rest);
+                          }}
+                          required
+                        />
+                        {console.log("new rest??", newRest)}
+                        <Form.Control.Feedback type="invalid">
+                          Sets are required.
+                          </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+
+                    <Col className={classes.cols}>
+                      <Button
+                        variant="light"
+                        type="submit"
+                        className={classes.addButton}
+                        // disabled={(typeof newReps === 'undefined' || typeof newDuration === 'undefined')}
+                        onClick={(e) => {
+                          canClick(day)
+                            ? addExercise(e, day, checkMatch(day).length)
+                            : doNothing(e, day);
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faPlus}
+                          color="#3358C4"
+                          size="2x"
+                          type="submit"
+                        />
+                      </Button>
+                    </Col>
+                  </Row>
+                </Form>
+                </div>
               </div>
-            );
-          })}
+        );
+      })}
         </div>
-        {/* })} */}
-      </div>
+        {/* })} */ }
+      </div >
     );
   };
 
-  const renderTable = () => {
-    return (
-      <div>
-        <Container>
-          {/* <Link to="/PT" className={classes.link}>
+const renderTable = () => {
+  return (
+    <div>
+      <Container>
+        {/* <Link to="/PT" className={classes.link}>
             <Button className={classes.blueButton} variant="outline-primary"> */}
-          {/* <img className={classes.arrowIcon} src="/img/arrowleft.png"></img> */}
-          {/* Back
+        {/* <img className={classes.arrowIcon} src="/img/arrowleft.png"></img> */}
+        {/* Back
             </Button>
           </Link> */}
-        </Container>
-
-        {renderItems()}
-      </div>
-    );
-  };
-
-  const renderLoading = () => {
-    return (
-      <Container className={classes.loadingContainer}>
-        <CircularProgress />
       </Container>
-    );
-  };
 
-  return <div>{loaded ? renderTable() : renderLoading()}</div>;
+      {renderItems()}
+    </div>
+  );
+};
+
+const renderLoading = () => {
+  return (
+    <Container className={classes.loadingContainer}>
+      <CircularProgress />
+    </Container>
+  );
+};
+
+return <div>{loaded ? renderTable() : renderLoading()}</div>;
 };
 
 export default IndividualPatientView;
