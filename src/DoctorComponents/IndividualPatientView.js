@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 55,
   },
   exerciseBox: {
-    width: 100,
+    width: 150,
   },
   blueButton: {
     backgroundColor: "#9DB4FF",
@@ -75,9 +75,8 @@ const useStyles = makeStyles((theme) => ({
     height: "calc(1.5em + .75rem + 2px)",
     borderRadius: 5,
     border: "1px solid #ccc",
-  },
-  centeredCol: {
-    textAlign: "center",
+    display: 'block',
+    margin: '0 auto',
   },
   loadingContainer: {
     textAlign: "center",
@@ -105,9 +104,18 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  firstCol: {
+    minWidth: "200px",
+  },
   cols: {
-    // marginRight: 100,
     textAlign: "center",
+    minWidth: "100px",
+  },
+   rows: {
+    marginTop: 10,
+    // whiteSpace: "nowrap",
+    // overflow: "hidden",
+    minwidth: "830px",
   },
 }));
 
@@ -641,7 +649,7 @@ const IndividualPatientView = (props) => {
                   <Col>Exercise Name</Col>
 
                   {exerciseSets[0].exerciseList.map((ex) => (
-                    <Col className={classes.centeredCol}>{ex}</Col>
+                    <Col className={classes.cols}>{ex}</Col>
                   ))}
                 </React.Fragment>
               ) : null}
@@ -660,7 +668,7 @@ const IndividualPatientView = (props) => {
                   {/* Map through each column */}
                   {s.exerciseList.map((name, i) => {
                     return (
-                      <Col className={classes.centeredCol}>
+                      <Col className={classes.cols}>
                         {checkExComplete(s.exercise, name)}
                       </Col>
                     );
@@ -680,13 +688,13 @@ const IndividualPatientView = (props) => {
                   </Typography>
                   <div>
                     <Row className={classes.rows}>
-                      <Col>Exercise</Col>
-                      <Col>Reps</Col>
-                      <Col>Duration(min)</Col>
-                      <Col>Sets</Col>
-                      <Col>Hold(min)</Col>
-                      <Col>Resistance</Col>
-                      <Col>Rest(min)</Col>
+                      <Col className={classes.firstCol}>Exercise</Col>
+                      <Col className={classes.cols}>Reps</Col>
+                      <Col className={classes.cols}>Duration(min)</Col>
+                      <Col className={classes.cols}>Sets</Col>
+                      <Col className={classes.cols}>Hold(min)</Col>
+                      <Col className={classes.cols}>Resistance</Col>
+                      <Col className={classes.cols}>Rest(min)</Col>
                       {/* Keep extra column for add/delete button */}
                       <Col></Col>
                     </Row>
@@ -699,7 +707,7 @@ const IndividualPatientView = (props) => {
                     return (
                       <div>
                         <Row key={k} className={classes.rows}>
-                          <Col>{formatExerciseName(ex.name)}</Col>
+                          <Col className={classes.firstCol}>{formatExerciseName(ex.name)}</Col>
                           <Col className={classes.cols}>
                             {ex.reps ? ex.reps : "-"}
                           </Col>
@@ -721,7 +729,7 @@ const IndividualPatientView = (props) => {
                           {console.log('ex', ex)}
                           {console.log('??historyId', ex.historyId)}
 
-                          <Col className={classes.centeredCol}>
+                          <Col className={classes.cols}>
                             <FontAwesomeIcon
                               icon={faTimes}
                               color="#9DB4FF"
@@ -745,7 +753,7 @@ const IndividualPatientView = (props) => {
                     className={classes.newExercise}
                   >
                     <Row>
-                      <Col>
+                      <Col className={classes.firstCol}>
                         <Form.Group controlId={`exampleForm${day}`}>
                           <Form.Control
                             as="select"
@@ -768,7 +776,7 @@ const IndividualPatientView = (props) => {
                           </Form.Control>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className={classes.cols}>
                         <Form.Group>
                           <Form.Control
                             type="number"
@@ -789,7 +797,7 @@ const IndividualPatientView = (props) => {
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className={classes.cols}>
                         <Form.Control
                           as="input"
                           type="number"
@@ -809,7 +817,7 @@ const IndividualPatientView = (props) => {
                           Duration is required.
                         </Form.Control.Feedback>
                       </Col>
-                      <Col>
+                      <Col className={classes.cols}>
                         <Form.Group>
                           <Form.Control
                             type="number"
@@ -830,7 +838,7 @@ const IndividualPatientView = (props) => {
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className={classes.cols}>
                         <Form.Group>
                           <Form.Control
                             type="number"
@@ -851,7 +859,7 @@ const IndividualPatientView = (props) => {
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className={classes.cols}>
                         <Form.Group>
                           <Form.Control
                             type="text"
@@ -871,7 +879,7 @@ const IndividualPatientView = (props) => {
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className={classes.cols}>
                         <Form.Group>
                           <Form.Control
                             type="number"
@@ -893,7 +901,7 @@ const IndividualPatientView = (props) => {
                         </Form.Group>
                       </Col>
 
-                      <Col className={classes.centeredCol}>
+                      <Col className={classes.cols}>
                         <Button
                           variant="light"
                           type="submit"
