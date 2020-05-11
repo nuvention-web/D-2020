@@ -9,6 +9,6 @@ To run the app:
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-A link to the deployed version: https://nuvention-team-d.firebaseapp.com
+A link to the deployed version: https://tendon.firebaseapp.com/
 
 Designated contact person: vanessachu2020@u.northwestern.edu
