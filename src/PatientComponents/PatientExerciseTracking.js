@@ -46,10 +46,13 @@ const useStyles = makeStyles((theme) => ({
     color: "#80858a",
   },
   video: {
-    flexGrow: 1,
+    [theme.breakpoints.down('sm')]: {
+      marginTop: "6%",
+      minHeight: "45vh"
+    },
     minHeight: "65vh",
     width: "70%",
-    marginTop: "2%",
+    marginTop: "4%",
   },
   appBar: {
     backgroundColor: "#bfd9ff",
@@ -62,14 +65,13 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     marginTop: -20,
   },
-  carousel: {
-    // display: "flex",
-    // height: "100%",
-    // width: "100%",
-  },
   arrows: {
+    [theme.breakpoints.down('sm')]: {
+      marginBottom: "90%",
+      fontSize: 40
+    },
     display: "inline-block",
-    marginBottom: "50%",
+    marginBottom: "35%",
     fontSize: 70,
     background: "no-repeat 50%/100% 100%",
   },
@@ -119,12 +121,16 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 10,
   },
   completionAlert: {
+    [theme.breakpoints.down('sm')]: {
+      marginTop: "4%"
+    },
     width: "70%",
     height: "30%",
     display: "flex",
     justifyContent: "center",
     alignContent: "center",
     margin: "0 auto",
+    marginTop: "2%"
   },
   loadingContainer: {
     textAlign: "center",
@@ -202,7 +208,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
   };
 
   const FeedbackPopUp = ({ info }) => {
-    const painScale = Array.from({ length: 6 }, (v, k) => k);
+    const painScale = Array.from({ length: 11 }, (v, k) => k);
     const [feedback, setFeedback] = useState({});
 
     const setFeedbackField = (field, data) => {
@@ -476,33 +482,9 @@ const ExerciseTracking = (props) => {
 
   const renderExerciseTracking = () => {
     return (
-      // <Sidebar
-      //   open={sidebar}
-      //   sidebar={<SideBar />}
-      //   pullRight={true}
-      //   onSetOpen={() => setSidebar(false)}
-      //   styles={{
-      //     sidebar: { background: "white" },
-      //     content: { position: "relative"},
-      //     root: { marginTop: "8%" },
-      //     overlay: { marginTop: "8%", height: "100%"},
-      //   }}
-      // >
       <div className={classes.exerciseContainer}>
         <Typography variant="h4" className={classes.header}>
-          <Link to="/workout" className={classes.link}>
-            <Button variant="light" className={classes.backButton}>
-              <FontAwesomeIcon icon={faArrowLeft} color="#9DB4FF" />
-            </Button>
-          </Link>
           {day}'s Exercises
-          <Button
-            variant="light"
-            onClick={() => setSidebar(true)}
-            className={classes.tasksBtn}
-          >
-            <FontAwesomeIcon icon={faTasks} color="#9DB4FF" />
-          </Button>
         </Typography>
         <Divider />
         {console.log("set in RET", currentSet)}
@@ -512,7 +494,6 @@ const ExerciseTracking = (props) => {
           setExerciseDone={setExerciseDone}
         />
       </div>
-      // </Sidebar>
     );
   };
 
