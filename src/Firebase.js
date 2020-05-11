@@ -35,7 +35,9 @@ const db = firebase.firestore();
 const storageRef = firebase.storage().ref();
 
 const SignIn = () => (
-  <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+  <div style={{ marginTop: "90px" }}>
+    <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+  </div>
 );
 const LogOut = () => {
   localStorage.setItem("type", "");

@@ -13,6 +13,9 @@ import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   background: {
+    [theme.breakpoints.down("xs")]: {
+      backgroundImage: "none",
+    },
     backgroundImage: `url(${landing_background})`,
     height: "100vh",
     backgroundRepeat: "no-repeat",
@@ -63,6 +66,11 @@ const useStyles = makeStyles((theme) => ({
     background: "#9DB4FF",
   },
   landingLeftText: {
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "32px",
+      width: "80%",
+      marginLeft: "13vw",
+    },
     marginTop: "20vh",
     marginLeft: "3vw",
     color: "#3358C4",
@@ -76,6 +84,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "500",
     marginTop: "3vh",
   },
+
   joinButton: {
     borderRadius: "15px",
     backgroundColor: "#9DB4FF",
@@ -83,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "24px",
     padding: "12px",
     border: "none",
-    width: "9vw",
+    width: "50%",
   },
   rightButtons: {
     display: "flex",
