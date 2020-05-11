@@ -48,6 +48,8 @@ const useStyles = makeStyles((theme) => ({
       borderBottom: "2px solid #3358C4",
       paddingBottom: 3,
     },
+    // padding: "30px 0px",
+    paddingTop: "30px",
   },
   navLogout: {
     color: "black",
