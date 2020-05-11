@@ -130,9 +130,9 @@ const useStyles = makeStyles((theme) => ({
   },
   rows: {
     marginTop: 10,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    minwidth: "830px",
+    // whiteSpace: "nowrap",
+    // overflow: "hidden",
+    minwidth: "900px",
   },
   card: {
     maxWidth: 345,
@@ -168,7 +168,6 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
   },
   cols: {
-    // marginRight: 100,
     textAlign: "center",
     minWidth: "100px",
   },
