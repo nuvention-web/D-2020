@@ -168,6 +168,21 @@ export const compareSets = (a, b) => {
   return comparison;
 };
 
+const compareDate = (a, b) => {
+  const dateA = a.date == undefined ? 0 : a.date;
+  const dateB = b.date == undefined ? -1 : b.date;
+
+  let comparison = 0;
+  if (dateA > dateB) {
+    comparison = 1;
+  } else if (dateA < dateB) {
+    comparison = -1;
+  }
+
+  return comparison;
+
+};
+
 const IndividualPatientView = (props) => {
   const classes = useStyles();
   // exerciseSets stores the "exercisesets" of the patient we are looking at
@@ -317,6 +332,7 @@ const IndividualPatientView = (props) => {
       (ex) => ex.name === newEx
     );
 
+
     console.log("Selected ExerciseType: ", selectedExerciseType);
     // Generate new exercise
     const exerciseObjectData = {
@@ -330,6 +346,7 @@ const IndividualPatientView = (props) => {
       rest: parseInt(newRest[day]),
       videoId: selectedExerciseType[0].videoId,
       complete: false,
+      date: new Date()
     };
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
@@ -602,7 +619,8 @@ const IndividualPatientView = (props) => {
       if (s === undefined) {
         return [];
       }
-      return s.exercise;
+      var sortedExercises = s.exercise.sort(compareDate);
+      return sortedExercises;
     };
 
     const canClick = (day) => {
@@ -645,6 +663,7 @@ const IndividualPatientView = (props) => {
 
       setValidatedDay(day);
     };
+
 
     return (
       <div>
