@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 250,
   },
   header: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 24
+    },
     marginTop: 10,
     marginBottom: 8,
     color: "#80858a",
@@ -91,13 +94,19 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   viewHistory: {
+    [theme.breakpoints.down("sm")]: {
+      width: 80, 
+      fontSize: 16
+    },
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     width: 120,
-    // marginRight: 30,
   },
   progressHeader: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 24
+    },
     width: "90%",
     display: "flex",
     justifyContent: "space-between",

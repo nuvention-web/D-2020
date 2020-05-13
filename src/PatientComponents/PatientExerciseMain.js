@@ -25,11 +25,17 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
   },
   header: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 24
+    },
     marginTop: 10,
     marginBottom: 8,
     color: "#80858a",
   },
   progressHeader: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 24
+    },
     marginTop: 30,
     marginBottom: 8,
     color: "#80858a",
@@ -130,8 +136,6 @@ const useStyles = makeStyles((theme) => ({
   },
   rows: {
     marginTop: 10,
-    // whiteSpace: "nowrap",
-    // overflow: "hidden",
     minwidth: "900px",
   },
   card: {
