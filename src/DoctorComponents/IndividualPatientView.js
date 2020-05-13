@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 250,
   },
   header: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 24
+    },
     marginTop: 10,
     marginBottom: 8,
     color: "#80858a",
@@ -91,13 +94,19 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   viewHistory: {
+    [theme.breakpoints.down("sm")]: {
+      width: 80, 
+      fontSize: 16
+    },
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     width: 120,
-    // marginRight: 30,
   },
   progressHeader: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 24
+    },
     width: "90%",
     display: "flex",
     justifyContent: "space-between",
@@ -166,6 +175,21 @@ export const compareSets = (a, b) => {
   }
 
   return comparison;
+};
+
+const compareDate = (a, b) => {
+  const dateA = a.date == undefined ? 0 : a.date;
+  const dateB = b.date == undefined ? -1 : b.date;
+
+  let comparison = 0;
+  if (dateA > dateB) {
+    comparison = 1;
+  } else if (dateA < dateB) {
+    comparison = -1;
+  }
+
+  return comparison;
+
 };
 
 const IndividualPatientView = (props) => {
@@ -317,6 +341,7 @@ const IndividualPatientView = (props) => {
       (ex) => ex.name === newEx
     );
 
+
     console.log("Selected ExerciseType: ", selectedExerciseType);
     // Generate new exercise
     const exerciseObjectData = {
@@ -330,6 +355,7 @@ const IndividualPatientView = (props) => {
       rest: parseInt(newRest[day]),
       videoId: selectedExerciseType[0].videoId,
       complete: false,
+      date: new Date()
     };
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
@@ -602,7 +628,8 @@ const IndividualPatientView = (props) => {
       if (s === undefined) {
         return [];
       }
-      return s.exercise;
+      var sortedExercises = s.exercise.sort(compareDate);
+      return sortedExercises;
     };
 
     const canClick = (day) => {
@@ -645,6 +672,7 @@ const IndividualPatientView = (props) => {
 
       setValidatedDay(day);
     };
+
 
     return (
       <div>

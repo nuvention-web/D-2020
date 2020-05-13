@@ -26,6 +26,11 @@ const useStyles = makeStyles((theme) => ({
   root: {
     color: "#80858a",
   },
+  header: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 28
+    },
+  },
   accentDivider: {
     content: "",
     display: "block",
@@ -121,7 +126,7 @@ const ProgressHistory = (props) => {
     return (
       <div className={classes.root}>
         <Container>
-          <Typography variant="h3">Progress Overview</Typography>
+          <Typography variant="h3" className={classes.header}>Progress Overview</Typography>
           <div className={classes.accentDivider}></div>
 
           <div>
