@@ -40,10 +40,18 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 250,
   },
   header: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 28
+    },
     display: "inline-block",
     marginTop: 10,
     marginBottom: 8,
     color: "#80858a",
+  },
+  exerciseName: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 20
+    }
   },
   video: {
     [theme.breakpoints.down('sm')]: {
@@ -90,6 +98,9 @@ const useStyles = makeStyles((theme) => ({
     bottom: -125,
   },
   time: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 18
+    },
     fontSize: 20,
   },
   tasksBtn: {
@@ -341,7 +352,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
 
           <YouTube videoId={exercise.videoId} className={classes.video} />
           <Carousel.Caption>
-            <Typography variant="h5">{exercise.name}</Typography>
+            <Typography variant="h5" className={classes.exerciseName}>{exercise.name}</Typography>
           </Carousel.Caption>
           <div className={classes.timer}>
             {console.log(currUser)}
