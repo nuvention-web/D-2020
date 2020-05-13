@@ -308,7 +308,7 @@ const IndividualPatientView = (props) => {
 
     var n = new Date();
     // Today's index - setDay's index
-    console.log('n.getDay()', n.getDay())
+    console.log("n.getDay()", n.getDay());
 
     const diff = n.getDay() - dayToNumIdMap.get(day);
     console.log("diff", diff);
@@ -364,8 +364,9 @@ const IndividualPatientView = (props) => {
             console.log("History document sucessfully written!", historyRef.id);
 
             // Now, in new exercise, set historyId to historyRef.id
-            console.log('docRef here', docRef.id);
-            patientRef.doc(docRef.id)
+            console.log("docRef here", docRef.id);
+            patientRef
+              .doc(docRef.id)
               .set({ historyId: historyRef.id }, { merge: true })
               .then(function () {
                 console.log("historyId added to exercise!");
@@ -375,13 +376,11 @@ const IndividualPatientView = (props) => {
                 console.error("Error writing document: ", error);
               });
             // End setting historyId to new exercise
-
           })
           .catch(function (error) {
             console.error("Error writing document: ", error);
           });
         // End add to history
-
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
@@ -395,73 +394,74 @@ const IndividualPatientView = (props) => {
 
     console.log("Deleting!");
     console.log("docId", docId);
-    console.log("historyId", historyId)
-    console.log('id in deleteExercise', id);
+    console.log("historyId", historyId);
+    console.log("id in deleteExercise", id);
     // Check if we should delete history first
 
     const checkHistory = () => {
       db.collection("patients")
-      .doc(id)
-      .collection("history")
-      .doc(historyId)
-      .get().then(function (doc) {
-        if (doc.exists) {
-          console.log("Document data:", doc.data());
-          // If same week, delete history doc
-          // Same week if before next Monday 3 am 
-          var today = new Date();
-          var day = today.getDay(); // day of the week 0-6
-          const diff = today.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+        .doc(id)
+        .collection("history")
+        .doc(historyId)
+        .get()
+        .then(function (doc) {
+          if (doc.exists) {
+            console.log("Document data:", doc.data());
+            // If same week, delete history doc
+            // Same week if before next Monday 3 am
+            var today = new Date();
+            var day = today.getDay(); // day of the week 0-6
+            const diff = today.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
 
-          // Monday of this week
-          var mon = new Date();
-          mon.setDate(diff);
-          // var nextMon = new Date(mon.getTime() + 7 * 24 * 60 * 60 * 1000);
-          var thisMon = new Date(mon.getTime());
-          console.log('this Monday', thisMon);
-          console.log('thisMon.getTime()', thisMon.getTime())
+            // Monday of this week
+            var mon = new Date();
+            mon.setDate(diff);
+            // var nextMon = new Date(mon.getTime() + 7 * 24 * 60 * 60 * 1000);
+            var thisMon = new Date(mon.getTime());
+            console.log("this Monday", thisMon);
+            console.log("thisMon.getTime()", thisMon.getTime());
 
-          // Timestamp of history document, in milliseconds
-          const historyTime = doc.data().date.seconds * 1000;
-          console.log('historyTime', historyTime)
-          console.log('historyTime date', Date(historyTime))
+            // Timestamp of history document, in milliseconds
+            const historyTime = doc.data().date.seconds * 1000;
+            console.log("historyTime", historyTime);
+            console.log("historyTime date", Date(historyTime));
 
-          // Exercise being deleted within same week, delete history
-          if (historyTime > thisMon) {
-            console.log("same week!");
+            // Exercise being deleted within same week, delete history
+            if (historyTime > thisMon) {
+              console.log("same week!");
 
-            // Delete history
-            db.collection("patients")
-              .doc(id)
-              .collection("history")
-              .doc(historyId)
-              .delete()
-              .then(function () {
-                console.log("History doc deleted");
-                return true;
-              })
-              .catch(function (error) {
-                console.error("Error deleting document: ", error);
-              });
-            // End Delete history
+              // Delete history
+              db.collection("patients")
+                .doc(id)
+                .collection("history")
+                .doc(historyId)
+                .delete()
+                .then(function () {
+                  console.log("History doc deleted");
+                  return true;
+                })
+                .catch(function (error) {
+                  console.error("Error deleting document: ", error);
+                });
+              // End Delete history
+            } else {
+              return true;
+            }
+            // If different week, do nothing
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such history document!");
           }
-          else {
-            return true;
-          }
-          // If different week, do nothing
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such history document!");
-        }
-      }).catch(function (error) {
-        console.log("Error getting document:", error);
-      });
-    }
+        })
+        .catch(function (error) {
+          console.log("Error getting document:", error);
+        });
+    };
     // end checkHistory function
 
     const done = await checkHistory();
-    console.log('done', done);
-   
+    console.log("done", done);
+
     // Now delete exercise document
     var exerciseRef = db
       .collection("patients")
@@ -475,16 +475,14 @@ const IndividualPatientView = (props) => {
       .delete()
       .then(function () {
         console.log("Document successfuly deleted!");
-
       })
       .catch(function (error) {
         console.error("Error removing document: ", error);
       });
     // End delete exercise doc
-    
+
     // Should only reload if previous chunk of code has run..
     window.location.reload(false);
-
   };
 
   // Repeat function from PatientExerciseMain
@@ -532,6 +530,7 @@ const IndividualPatientView = (props) => {
     const checkExComplete = (exercises, exname) => {
       // Iterate through set for the day
       for (let i = 0; i < exercises.length; i++) {
+        console.log("Exercises: ", exercises[i]);
         if (exercises[i].name === exname) {
           // Return bool
           if (exercises[i].complete) {
@@ -545,8 +544,12 @@ const IndividualPatientView = (props) => {
                   data-for={`${uuid}`}
                 ></img>
                 <ReactTooltip effect="solid" id={`${uuid}`}>
-                  <div> Pain Level: {String(exercises[i].painLevel)} </div>
-                  <div> Note: {String(exercises[i].note)} </div>
+                  {exercises[i].painLevel ? (
+                    <div> Pain Level: {String(exercises[i].painLevel)} </div>
+                  ) : null}
+                  {exercises[i].note ? (
+                    <div> Note: {String(exercises[i].note)} </div>
+                  ) : null}
                 </ReactTooltip>
               </div>
             );
@@ -718,8 +721,8 @@ const IndividualPatientView = (props) => {
                           <Col className={classes.cols}>
                             {ex.rest ? ex.rest : "-"}
                           </Col>
-                          {console.log('ex', ex)}
-                          {console.log('??historyId', ex.historyId)}
+                          {console.log("ex", ex)}
+                          {console.log("??historyId", ex.historyId)}
 
                           <Col className={classes.centeredCol}>
                             <FontAwesomeIcon
