@@ -321,7 +321,7 @@ const IndividualPatientView = (props) => {
     // For history object
     const historyObjectData = {
       date: n,
-      exercise: newEx,
+      ...exerciseObjectData,
     };
 
     return [exerciseObjectData, historyObjectData];
@@ -412,24 +412,25 @@ const IndividualPatientView = (props) => {
             var today = new Date();
             var day = today.getDay(); // day of the week 0-6
             const diff = today.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-
             // Monday of this week
             var mon = new Date();
             mon.setDate(diff);
+            mon.setHours(0);
+            mon.setMinutes(0);
+            mon.setSeconds(0);
             // var nextMon = new Date(mon.getTime() + 7 * 24 * 60 * 60 * 1000);
             var thisMon = new Date(mon.getTime());
             console.log("this Monday", thisMon);
-            console.log("thisMon.getTime()", thisMon.getTime());
 
             // Timestamp of history document, in milliseconds
-            const historyTime = doc.data().date.seconds * 1000;
+            console.log(doc.data(), doc.data().date);
+            const historyTime = doc.data().date.seconds;
             console.log("historyTime", historyTime);
-            console.log("historyTime date", Date(historyTime));
-
+            console.log("historyTime date", new Date(historyTime));
+            console.log("thisMon: ", thisMon.getTime() / 1000);
+            console.log(historyTime - thisMon.getTime() / 1000);
             // Exercise being deleted within same week, delete history
-            if (historyTime > thisMon) {
-              console.log("same week!");
-
+            if (historyTime > thisMon.getTime() / 1000) {
               // Delete history
               db.collection("patients")
                 .doc(id)

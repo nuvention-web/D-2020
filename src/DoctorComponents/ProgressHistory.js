@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
     color: "#80858a",
   },
   header: {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 28
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 28,
     },
   },
   accentDivider: {
@@ -97,12 +97,12 @@ const ProgressHistory = (props) => {
             entry.pain = data.painLevel;
 
             // If key does not exist yet
-            if (tempHistoryData[data.exercise] === undefined) {
-              tempHistoryData[data.exercise] = [entry];
+            if (tempHistoryData[data.name] === undefined) {
+              tempHistoryData[data.name] = [entry];
             }
             // Append to existing array
             else {
-              tempHistoryData[data.exercise].push(entry);
+              tempHistoryData[data.name].push(entry);
             }
             // const id = doc.id;
             // exerciseArr.push({ ...data, id });
@@ -126,7 +126,9 @@ const ProgressHistory = (props) => {
     return (
       <div className={classes.root}>
         <Container>
-          <Typography variant="h3" className={classes.header}>Progress Overview</Typography>
+          <Typography variant="h3" className={classes.header}>
+            Progress Overview
+          </Typography>
           <div className={classes.accentDivider}></div>
 
           <div>
