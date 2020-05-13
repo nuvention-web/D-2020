@@ -40,8 +40,8 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 250,
   },
   header: {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 28
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 28,
     },
     display: "inline-block",
     marginTop: 10,
@@ -49,14 +49,14 @@ const useStyles = makeStyles((theme) => ({
     color: "#80858a",
   },
   exerciseName: {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 20
-    }
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 20,
+    },
   },
   video: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       marginTop: "6%",
-      minHeight: "45vh"
+      minHeight: "45vh",
     },
     minHeight: "65vh",
     width: "70%",
@@ -74,9 +74,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -20,
   },
   arrows: {
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       marginBottom: "90%",
-      fontSize: 40
+      fontSize: 40,
     },
     display: "inline-block",
     marginBottom: "35%",
@@ -98,8 +98,8 @@ const useStyles = makeStyles((theme) => ({
     bottom: -125,
   },
   time: {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 18
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 18,
     },
     fontSize: 20,
   },
@@ -132,8 +132,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 10,
   },
   completionAlert: {
-    [theme.breakpoints.down('sm')]: {
-      marginTop: "4%"
+    [theme.breakpoints.down("sm")]: {
+      marginTop: "4%",
     },
     width: "70%",
     height: "30%",
@@ -141,7 +141,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignContent: "center",
     margin: "0 auto",
-    marginTop: "2%"
+    marginTop: "2%",
   },
   loadingContainer: {
     textAlign: "center",
@@ -202,16 +202,26 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
       .collection("exercisesets")
       .doc(day)
       .collection("exercises");
-
+    let ex;
     exerciseRef
-      .where("name", "==", info.exerciseName)
+      .doc(info.exercise.doc_id)
       .get()
-      .then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-          console.log(doc.id, " => ", doc.data());
-          exerciseRef.doc(doc.id).update(feedback);
-          setDrawer(false);
-        });
+      .then((doc) => {
+        console.log(doc.id, " => ", doc.data());
+        ex = doc.data();
+        exerciseRef.doc(doc.id).update(feedback);
+        console.log("ex: ", ex);
+        console.log("info: ", info);
+        console.log("feedback: ", feedback);
+        setDrawer(false);
+      })
+      .then(() => {
+        // Update History with feedback to notify it's completed
+        db.collection("patients")
+          .doc(info.currUser.uid)
+          .collection("history")
+          .doc(ex.historyId)
+          .update({ ...ex, ...feedback });
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
@@ -345,14 +355,16 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                 Nice! You've completed this exercise.{" "}
                 <strong>Keep it up!</strong>
               </Alert>
-              <FeedbackPopUp info={{ currUser, exerciseName: exercise.name }} />
+              <FeedbackPopUp info={{ currUser, exercise }} />
             </div>
           ) : null}
           {/* End Alert */}
 
           <YouTube videoId={exercise.videoId} className={classes.video} />
           <Carousel.Caption>
-            <Typography variant="h5" className={classes.exerciseName}>{exercise.name}</Typography>
+            <Typography variant="h5" className={classes.exerciseName}>
+              {exercise.name}
+            </Typography>
           </Carousel.Caption>
           <div className={classes.timer}>
             {console.log(currUser)}
@@ -438,7 +450,7 @@ const ExerciseTracking = (props) => {
         var l = [];
         querySnapshot.forEach(function (doc) {
           console.log("Got data again via snapshot", doc.data());
-          l.push(doc.data());
+          l.push({ doc_id: doc.id, ...doc.data() });
         });
         setCurrentSet(l);
       });
