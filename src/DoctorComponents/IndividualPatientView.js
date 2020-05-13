@@ -26,15 +26,15 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 250,
   },
   header: {
-    [theme.breakpoints.down("sm")]: {
-      fontSize: 24
-    },
     marginTop: 10,
     marginBottom: 8,
     color: "#80858a",
   },
   meter: {
     marginTop: 25,
+  },
+  exerciseContainer: {
+    marginTop: 30,
   },
   link: {
     //gets rid of underline
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 55,
   },
   exerciseBox: {
-    width: 150,
+    width: 100,
   },
   blueButton: {
     backgroundColor: "#9DB4FF",
@@ -75,8 +75,9 @@ const useStyles = makeStyles((theme) => ({
     height: "calc(1.5em + .75rem + 2px)",
     borderRadius: 5,
     border: "1px solid #ccc",
-    display: 'block',
-    margin: '0 auto',
+  },
+  centeredCol: {
+    textAlign: "center",
   },
   loadingContainer: {
     textAlign: "center",
@@ -94,61 +95,19 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   viewHistory: {
-    [theme.breakpoints.down("sm")]: {
-      width: 80, 
-      fontSize: 16
-    },
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     width: 120,
   },
   progressHeader: {
-    [theme.breakpoints.down("sm")]: {
-      fontSize: 24
-    },
-    width: "90%",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginLeft: "5%",
-  },
-  firstCol: {
-    minWidth: "200px",
   },
   cols: {
+    // marginRight: 100,
     textAlign: "center",
-    minWidth: "100px",
-  },
-  rows: {
-    marginTop: 10,
-    minwidth: "830px",
-  },
-  progressContainer: {
-    // when screen is small
-    [theme.breakpoints.down("xs")]: {
-      overflowX: "scroll",
-    },
-    marginTop: 15,
-    marginBottom: 40,
-    width: "90%",
-    margin: "0 auto",
-  },
-  progressDiv: {
-    minWidth: "1000px",
-  },
-  exerciseContainer: {
-    // when screen is small
-    [theme.breakpoints.down("xs")]: {
-      overflowX: "scroll",
-    },
-    marginTop: 30,
-    marginBottom: 40,
-    width: "90%",
-    margin: "0 auto",
-  },
-  exerciseSetDiv: {
-    minWidth: "1000px",
   },
 }));
 
@@ -175,21 +134,6 @@ export const compareSets = (a, b) => {
   }
 
   return comparison;
-};
-
-const compareDate = (a, b) => {
-  const dateA = a.date == undefined ? 0 : a.date;
-  const dateB = b.date == undefined ? -1 : b.date;
-
-  let comparison = 0;
-  if (dateA > dateB) {
-    comparison = 1;
-  } else if (dateA < dateB) {
-    comparison = -1;
-  }
-
-  return comparison;
-
 };
 
 const IndividualPatientView = (props) => {
@@ -341,7 +285,6 @@ const IndividualPatientView = (props) => {
       (ex) => ex.name === newEx
     );
 
-
     console.log("Selected ExerciseType: ", selectedExerciseType);
     // Generate new exercise
     const exerciseObjectData = {
@@ -355,7 +298,6 @@ const IndividualPatientView = (props) => {
       rest: parseInt(newRest[day]),
       videoId: selectedExerciseType[0].videoId,
       complete: false,
-      date: new Date()
     };
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
@@ -366,7 +308,7 @@ const IndividualPatientView = (props) => {
 
     var n = new Date();
     // Today's index - setDay's index
-    console.log('n.getDay()', n.getDay())
+    console.log("n.getDay()", n.getDay());
 
     const diff = n.getDay() - dayToNumIdMap.get(day);
     console.log("diff", diff);
@@ -422,8 +364,9 @@ const IndividualPatientView = (props) => {
             console.log("History document sucessfully written!", historyRef.id);
 
             // Now, in new exercise, set historyId to historyRef.id
-            console.log('docRef here', docRef.id);
-            patientRef.doc(docRef.id)
+            console.log("docRef here", docRef.id);
+            patientRef
+              .doc(docRef.id)
               .set({ historyId: historyRef.id }, { merge: true })
               .then(function () {
                 console.log("historyId added to exercise!");
@@ -433,13 +376,11 @@ const IndividualPatientView = (props) => {
                 console.error("Error writing document: ", error);
               });
             // End setting historyId to new exercise
-
           })
           .catch(function (error) {
             console.error("Error writing document: ", error);
           });
         // End add to history
-
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
@@ -453,8 +394,8 @@ const IndividualPatientView = (props) => {
 
     console.log("Deleting!");
     console.log("docId", docId);
-    console.log("historyId", historyId)
-    console.log('id in deleteExercise', id);
+    console.log("historyId", historyId);
+    console.log("id in deleteExercise", id);
     // Check if we should delete history first
 
     const checkHistory = () => {
@@ -462,11 +403,12 @@ const IndividualPatientView = (props) => {
         .doc(id)
         .collection("history")
         .doc(historyId)
-        .get().then(function (doc) {
+        .get()
+        .then(function (doc) {
           if (doc.exists) {
             console.log("Document data:", doc.data());
             // If same week, delete history doc
-            // Same week if before next Monday 3 am 
+            // Same week if before next Monday 3 am
             var today = new Date();
             var day = today.getDay(); // day of the week 0-6
             const diff = today.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
@@ -476,13 +418,13 @@ const IndividualPatientView = (props) => {
             mon.setDate(diff);
             // var nextMon = new Date(mon.getTime() + 7 * 24 * 60 * 60 * 1000);
             var thisMon = new Date(mon.getTime());
-            console.log('this Monday', thisMon);
-            console.log('thisMon.getTime()', thisMon.getTime())
+            console.log("this Monday", thisMon);
+            console.log("thisMon.getTime()", thisMon.getTime());
 
             // Timestamp of history document, in milliseconds
             const historyTime = doc.data().date.seconds * 1000;
-            console.log('historyTime', historyTime)
-            console.log('historyTime date', Date(historyTime))
+            console.log("historyTime", historyTime);
+            console.log("historyTime date", Date(historyTime));
 
             // Exercise being deleted within same week, delete history
             if (historyTime > thisMon) {
@@ -502,8 +444,7 @@ const IndividualPatientView = (props) => {
                   console.error("Error deleting document: ", error);
                 });
               // End Delete history
-            }
-            else {
+            } else {
               return true;
             }
             // If different week, do nothing
@@ -511,14 +452,15 @@ const IndividualPatientView = (props) => {
             // doc.data() will be undefined in this case
             console.log("No such history document!");
           }
-        }).catch(function (error) {
+        })
+        .catch(function (error) {
           console.log("Error getting document:", error);
         });
-    }
+    };
     // end checkHistory function
 
     const done = await checkHistory();
-    console.log('done', done);
+    console.log("done", done);
 
     // Now delete exercise document
     var exerciseRef = db
@@ -533,7 +475,6 @@ const IndividualPatientView = (props) => {
       .delete()
       .then(function () {
         console.log("Document successfuly deleted!");
-
       })
       .catch(function (error) {
         console.error("Error removing document: ", error);
@@ -542,7 +483,6 @@ const IndividualPatientView = (props) => {
 
     // Should only reload if previous chunk of code has run..
     window.location.reload(false);
-
   };
 
   // Repeat function from PatientExerciseMain
@@ -590,6 +530,7 @@ const IndividualPatientView = (props) => {
     const checkExComplete = (exercises, exname) => {
       // Iterate through set for the day
       for (let i = 0; i < exercises.length; i++) {
+        console.log("Exercises: ", exercises[i]);
         if (exercises[i].name === exname) {
           // Return bool
           if (exercises[i].complete) {
@@ -603,8 +544,12 @@ const IndividualPatientView = (props) => {
                   data-for={`${uuid}`}
                 ></img>
                 <ReactTooltip effect="solid" id={`${uuid}`}>
-                  <div> Pain Level: {String(exercises[i].painLevel)} </div>
-                  <div> Note: {String(exercises[i].note)} </div>
+                  {exercises[i].painLevel ? (
+                    <div> Pain Level: {String(exercises[i].painLevel)} </div>
+                  ) : null}
+                  {exercises[i].note ? (
+                    <div> Note: {String(exercises[i].note)} </div>
+                  ) : null}
                 </ReactTooltip>
               </div>
             );
@@ -628,8 +573,7 @@ const IndividualPatientView = (props) => {
       if (s === undefined) {
         return [];
       }
-      var sortedExercises = s.exercise.sort(compareDate);
-      return sortedExercises;
+      return s.exercise;
     };
 
     const canClick = (day) => {
@@ -673,38 +617,34 @@ const IndividualPatientView = (props) => {
       setValidatedDay(day);
     };
 
-
     return (
       <div>
         <div>
-          <header className={classes.progressHeader}>
-            <Typography variant="h4" className={classes.header}>
-              Week of {weekBeginning} Progress
+          <Container>
+            <header className={classes.progressHeader}>
+              <Typography variant="h4" className={classes.header}>
+                Week of {weekBeginning} Progress
               </Typography>
-
-            <Link
-              to={{
-                pathname: `/PT/patient/${id}/history`,
-              }}
-              className={classes.link}
-            >
-              <Button variant="light" className={classes.viewHistory}>
-                View History
+              <Link
+                to={{
+                  pathname: `/PT/patient/${id}/history`,
+                }}
+                className={classes.link}
+              >
+                <Button variant="light" className={classes.viewHistory}>
+                  View History
                 </Button>
-            </Link>
-          </header>
+              </Link>
+            </header>
 
-          {/* Progress Chart */}
-          <div className={classes.progressContainer}>
-          <div className={classes.progressDiv}>
-
+            {/* Progress Chart */}
             <Row>
               {exerciseSets.length !== 0 ? (
                 <React.Fragment>
                   <Col>Exercise Name</Col>
 
                   {exerciseSets[0].exerciseList.map((ex) => (
-                    <Col className={classes.cols}>{ex}</Col>
+                    <Col className={classes.centeredCol}>{ex}</Col>
                   ))}
                 </React.Fragment>
               ) : null}
@@ -713,307 +653,307 @@ const IndividualPatientView = (props) => {
               ) : null}
             </Row>
             <Divider />
+          </Container>
 
-            {exerciseSets.map((s, i) => {
-              return (
-                  <Row key={i}>
-                    <Col>{s["day"]}</Col>
-                    {/* Map through each column */}
-                    {s.exerciseList.map((name, i) => {
-                      return (
-                        <Col className={classes.cols}>
-                          {checkExComplete(s.exercise, name)}
-                        </Col>
-                      );
-                    })}
-                  </Row>
-              );
-            })}
-            </div>
-          </div>
+          {exerciseSets.map((s, i) => {
+            return (
+              <Container>
+                <Row key={i}>
+                  <Col>{s["day"]}</Col>
+                  {/* Map through each column */}
+                  {s.exerciseList.map((name, i) => {
+                    return (
+                      <Col className={classes.centeredCol}>
+                        {checkExComplete(s.exercise, name)}
+                      </Col>
+                    );
+                  })}
+                </Row>
+              </Container>
+            );
+          })}
           {/* End Progress Chart */}
 
           {dotw.map((day, ind) => {
             return (
-              <div className={classes.exerciseContainer} key={ind}>
-                <div className={classes.exerciseSetDiv} key={ind}>
-
-                <Typography variant="h4" className={classes.header}>
-                  {day} Exercises
+              <div>
+                <Container className={classes.exerciseContainer} key={ind}>
+                  <Typography variant="h4" className={classes.header}>
+                    {day} Exercises
                   </Typography>
-                <div>
-                  <Row className={classes.rows}>
-                    <Col className={classes.firstCol}>Exercise</Col>
-                    <Col className={classes.cols}>Reps</Col>
-                    <Col className={classes.cols}>Duration(min)</Col>
-                    <Col className={classes.cols}>Sets</Col>
-                    <Col className={classes.cols}>Hold(min)</Col>
-                    <Col className={classes.cols}>Resistance</Col>
-                    <Col className={classes.cols}>Rest(min)</Col>
-                    {/* Keep extra column for add/delete button */}
-                    <Col></Col>
-                  </Row>
-                </div>
+                  <div>
+                    <Row className={classes.rows}>
+                      <Col>Exercise</Col>
+                      <Col>Reps</Col>
+                      <Col>Duration(min)</Col>
+                      <Col>Sets</Col>
+                      <Col>Hold(min)</Col>
+                      <Col>Resistance</Col>
+                      <Col>Rest(min)</Col>
+                      {/* Keep extra column for add/delete button */}
+                      <Col></Col>
+                    </Row>
+                  </div>
 
-                <Divider />
+                  <Divider />
 
-                {console.log("checkMatch:", day, checkMatch(day))}
-                {checkMatch(day).map((ex, k) => {
-                  return (
-                    <div>
-                      <Row key={k} className={classes.rows}>
-                        <Col className={classes.firstCol}>{formatExerciseName(ex.name)}</Col>
-                        <Col className={classes.cols}>
-                          {ex.reps ? ex.reps : "-"}
-                        </Col>
-                        <Col className={classes.cols}>
-                          {ex.duration ? ex.duration : "-"}
-                        </Col>
-                        <Col className={classes.cols}>
-                          {ex.sets ? ex.sets : "-"}
-                        </Col>
-                        <Col className={classes.cols}>
-                          {ex.hold ? ex.hold : "-"}
-                        </Col>
-                        <Col className={classes.cols}>
-                          {ex.resistance ? ex.resistance : "-"}
-                        </Col>
-                        <Col className={classes.cols}>
-                          {ex.rest ? ex.rest : "-"}
-                        </Col>
-                        {console.log('ex', ex)}
-                        {console.log('??historyId', ex.historyId)}
+                  {console.log("checkMatch:", day, checkMatch(day))}
+                  {checkMatch(day).map((ex, k) => {
+                    return (
+                      <div>
+                        <Row key={k} className={classes.rows}>
+                          <Col>{formatExerciseName(ex.name)}</Col>
+                          <Col className={classes.cols}>
+                            {ex.reps ? ex.reps : "-"}
+                          </Col>
+                          <Col className={classes.cols}>
+                            {ex.duration ? ex.duration : "-"}
+                          </Col>
+                          <Col className={classes.cols}>
+                            {ex.sets ? ex.sets : "-"}
+                          </Col>
+                          <Col className={classes.cols}>
+                            {ex.hold ? ex.hold : "-"}
+                          </Col>
+                          <Col className={classes.cols}>
+                            {ex.resistance ? ex.resistance : "-"}
+                          </Col>
+                          <Col className={classes.cols}>
+                            {ex.rest ? ex.rest : "-"}
+                          </Col>
+                          {console.log("ex", ex)}
+                          {console.log("??historyId", ex.historyId)}
 
-                        <Col className={classes.cols}>
-                          <FontAwesomeIcon
-                            icon={faTimes}
-                            color="#9DB4FF"
-                            size="2x"
-                            className={classes.deleteIcon}
-                            onClick={(e) => {
-                              deleteExercise(e, day, ex.docId, ex.historyId);
+                          <Col className={classes.centeredCol}>
+                            <FontAwesomeIcon
+                              icon={faTimes}
+                              color="#9DB4FF"
+                              size="2x"
+                              className={classes.deleteIcon}
+                              onClick={(e) => {
+                                deleteExercise(e, day, ex.docId, ex.historyId);
+                              }}
+                            />
+                          </Col>
+                        </Row>
+                      </div>
+                    );
+                  })}
+                  {console.log(day == validatedDay)}
+                  <Form
+                    noValidate
+                    validated={day == validatedDay}
+                    // onSubmit={handleSubmit}
+                    id={`form1-${day}`}
+                    className={classes.newExercise}
+                  >
+                    <Row>
+                      <Col>
+                        <Form.Group controlId={`exampleForm${day}`}>
+                          <Form.Control
+                            as="select"
+                            className={classes.exerciseBox}
+                            onChange={(event) => {
+                              setNewExercise(event.target.value);
                             }}
+                          >
+                            {console.log(
+                              "exampleForm1",
+                              document.getElementById("reps-Monday")
+                            )}
+                            {exerciseType.map((exercise, i) => {
+                              return (
+                                <option value={exercise.name}>
+                                  {exercise.name}
+                                </option>
+                              );
+                            })}
+                          </Form.Control>
+                        </Form.Group>
+                      </Col>
+                      <Col>
+                        <Form.Group>
+                          <Form.Control
+                            type="number"
+                            min="0"
+                            className={classes.inputBox}
+                            id={`reps-${day}`}
+                            onChange={(event) => {
+                              let r = newReps;
+                              const d = day;
+                              r[d] = event.target.value;
+                              setNewReps(r);
+                            }}
+                            required
                           />
-                        </Col>
-                      </Row>
-                    </div>
-                  );
-                })}
-                {console.log(day == validatedDay)}
-                <Form
-                  noValidate
-                  validated={day == validatedDay}
-                  // onSubmit={handleSubmit}
-                  id={`form1-${day}`}
-                  className={classes.newExercise}
-                >
-                  <Row>
-                    <Col className={classes.firstCol}>
-                      <Form.Group controlId={`exampleForm${day}`}>
+                          {console.log("new reps??", newReps)}
+                          <Form.Control.Feedback type="invalid">
+                            Reps are required.
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+                      <Col>
                         <Form.Control
-                          as="select"
-                          className={classes.exerciseBox}
+                          as="input"
+                          type="number"
+                          min="1"
+                          step="0.5"
+                          className={classes.inputBox}
+                          id={`dur-${day}`}
                           onChange={(event) => {
-                            setNewExercise(event.target.value);
+                            let dur = newDuration;
+                            const d = day;
+                            dur[d] = event.target.value;
+                            setNewDuration(dur);
+                          }}
+                          required
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          Duration is required.
+                        </Form.Control.Feedback>
+                      </Col>
+                      <Col>
+                        <Form.Group>
+                          <Form.Control
+                            type="number"
+                            min="0"
+                            className={classes.inputBox}
+                            id={`sets-${day}`}
+                            onChange={(event) => {
+                              let s = newSets;
+                              const d = day;
+                              s[d] = event.target.value;
+                              setNewSets(s);
+                            }}
+                            required
+                          />
+                          {console.log("new sets??", newSets)}
+                          <Form.Control.Feedback type="invalid">
+                            Sets are required.
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+                      <Col>
+                        <Form.Group>
+                          <Form.Control
+                            type="number"
+                            min="0"
+                            className={classes.inputBox}
+                            id={`holds-${day}`}
+                            onChange={(event) => {
+                              let h = newHold;
+                              const d = day;
+                              h[d] = event.target.value;
+                              setNewHold(h);
+                            }}
+                            required
+                          />
+                          {console.log("new reps??", newReps)}
+                          <Form.Control.Feedback type="invalid">
+                            Hold is required.
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+                      <Col>
+                        <Form.Group>
+                          <Form.Control
+                            type="text"
+                            className={classes.inputBox}
+                            id={`resistance-${day}`}
+                            onChange={(event) => {
+                              let resistance = newResistance;
+                              const d = day;
+                              resistance[d] = event.target.value;
+                              setNewResistance(resistance);
+                            }}
+                            required
+                          />
+                          {console.log("new resistance??", newResistance)}
+                          <Form.Control.Feedback type="invalid">
+                            Resistance are required.
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+                      <Col>
+                        <Form.Group>
+                          <Form.Control
+                            type="number"
+                            min="0"
+                            className={classes.inputBox}
+                            id={`rest-${day}`}
+                            onChange={(event) => {
+                              let rest = newRest;
+                              const d = day;
+                              rest[d] = event.target.value;
+                              setNewRest(rest);
+                            }}
+                            required
+                          />
+                          {console.log("new rest??", newRest)}
+                          <Form.Control.Feedback type="invalid">
+                            Sets are required.
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+
+                      <Col className={classes.centeredCol}>
+                        <Button
+                          variant="light"
+                          type="submit"
+                          className={classes.addButton}
+                          // disabled={(typeof newReps === 'undefined' || typeof newDuration === 'undefined')}
+                          onClick={(e) => {
+                            canClick(day)
+                              ? addExercise(e, day, checkMatch(day).length)
+                              : doNothing(e, day);
                           }}
                         >
-                          {console.log(
-                            "exampleForm1",
-                            document.getElementById("reps-Monday")
-                          )}
-                          {exerciseType.map((exercise, i) => {
-                            return (
-                              <option value={exercise.name}>
-                                {exercise.name}
-                              </option>
-                            );
-                          })}
-                        </Form.Control>
-                      </Form.Group>
-                    </Col>
-                    <Col className={classes.cols}>
-                      <Form.Group>
-                        <Form.Control
-                          type="number"
-                          min="0"
-                          className={classes.inputBox}
-                          id={`reps-${day}`}
-                          onChange={(event) => {
-                            let r = newReps;
-                            const d = day;
-                            r[d] = event.target.value;
-                            setNewReps(r);
-                          }}
-                          required
-                        />
-                        {console.log("new reps??", newReps)}
-                        <Form.Control.Feedback type="invalid">
-                          Reps are required.
-                          </Form.Control.Feedback>
-                      </Form.Group>
-                    </Col>
-                    <Col className={classes.cols}>
-                      <Form.Control
-                        as="input"
-                        type="number"
-                        min="1"
-                        step="0.5"
-                        className={classes.inputBox}
-                        id={`dur-${day}`}
-                        onChange={(event) => {
-                          let dur = newDuration;
-                          const d = day;
-                          dur[d] = event.target.value;
-                          setNewDuration(dur);
-                        }}
-                        required
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        Duration is required.
-                        </Form.Control.Feedback>
-                    </Col>
-                    <Col className={classes.cols}>
-                      <Form.Group>
-                        <Form.Control
-                          type="number"
-                          min="0"
-                          className={classes.inputBox}
-                          id={`sets-${day}`}
-                          onChange={(event) => {
-                            let s = newSets;
-                            const d = day;
-                            s[d] = event.target.value;
-                            setNewSets(s);
-                          }}
-                          required
-                        />
-                        {console.log("new sets??", newSets)}
-                        <Form.Control.Feedback type="invalid">
-                          Sets are required.
-                          </Form.Control.Feedback>
-                      </Form.Group>
-                    </Col>
-                    <Col className={classes.cols}>
-                      <Form.Group>
-                        <Form.Control
-                          type="number"
-                          min="0"
-                          className={classes.inputBox}
-                          id={`holds-${day}`}
-                          onChange={(event) => {
-                            let h = newHold;
-                            const d = day;
-                            h[d] = event.target.value;
-                            setNewHold(h);
-                          }}
-                          required
-                        />
-                        {console.log("new reps??", newReps)}
-                        <Form.Control.Feedback type="invalid">
-                          Hold is required.
-                          </Form.Control.Feedback>
-                      </Form.Group>
-                    </Col>
-                    <Col className={classes.cols}>
-                      <Form.Group>
-                        <Form.Control
-                          type="text"
-                          className={classes.inputBox}
-                          id={`resistance-${day}`}
-                          onChange={(event) => {
-                            let resistance = newResistance;
-                            const d = day;
-                            resistance[d] = event.target.value;
-                            setNewResistance(resistance);
-                          }}
-                          required
-                        />
-                        {console.log("new resistance??", newResistance)}
-                        <Form.Control.Feedback type="invalid">
-                          Resistance are required.
-                          </Form.Control.Feedback>
-                      </Form.Group>
-                    </Col>
-                    <Col className={classes.cols}>
-                      <Form.Group>
-                        <Form.Control
-                          type="number"
-                          min="0"
-                          className={classes.inputBox}
-                          id={`rest-${day}`}
-                          onChange={(event) => {
-                            let rest = newRest;
-                            const d = day;
-                            rest[d] = event.target.value;
-                            setNewRest(rest);
-                          }}
-                          required
-                        />
-                        {console.log("new rest??", newRest)}
-                        <Form.Control.Feedback type="invalid">
-                          Sets are required.
-                          </Form.Control.Feedback>
-                      </Form.Group>
-                    </Col>
-
-                    <Col className={classes.cols}>
-                      <Button
-                        variant="light"
-                        type="submit"
-                        className={classes.addButton}
-                        // disabled={(typeof newReps === 'undefined' || typeof newDuration === 'undefined')}
-                        onClick={(e) => {
-                          canClick(day)
-                            ? addExercise(e, day, checkMatch(day).length)
-                            : doNothing(e, day);
-                        }}
-                      >
-                        <FontAwesomeIcon
-                          icon={faPlus}
-                          color="#3358C4"
-                          size="2x"
-                          type="submit"
-                        />
-                      </Button>
-                    </Col>
-                  </Row>
-                </Form>
-                </div>
+                          <FontAwesomeIcon
+                            icon={faPlus}
+                            color="#3358C4"
+                            size="2x"
+                            type="submit"
+                          />
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Container>
               </div>
-        );
-      })}
+            );
+          })}
         </div>
-        {/* })} */ }
-      </div >
+        {/* })} */}
+      </div>
     );
   };
 
-const renderTable = () => {
-  return (
-    <div>
-      <Container>
-        {/* <Link to="/PT" className={classes.link}>
+  const renderTable = () => {
+    return (
+      <div>
+        <Container>
+          {/* <Link to="/PT" className={classes.link}>
             <Button className={classes.blueButton} variant="outline-primary"> */}
-        {/* <img className={classes.arrowIcon} src="/img/arrowleft.png"></img> */}
-        {/* Back
+          {/* <img className={classes.arrowIcon} src="/img/arrowleft.png"></img> */}
+          {/* Back
             </Button>
           </Link> */}
+        </Container>
+
+        {renderItems()}
+      </div>
+    );
+  };
+
+  const renderLoading = () => {
+    return (
+      <Container className={classes.loadingContainer}>
+        <CircularProgress />
       </Container>
+    );
+  };
 
-      {renderItems()}
-    </div>
-  );
-};
-
-const renderLoading = () => {
-  return (
-    <Container className={classes.loadingContainer}>
-      <CircularProgress />
-    </Container>
-  );
-};
-
-return <div>{loaded ? renderTable() : renderLoading()}</div>;
+  return <div>{loaded ? renderTable() : renderLoading()}</div>;
 };
 
 export default IndividualPatientView;
