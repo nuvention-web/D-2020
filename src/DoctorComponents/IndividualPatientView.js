@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 250,
   },
   header: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 24
+    },
     marginTop: 10,
     marginBottom: 8,
     color: "#80858a",
@@ -95,19 +98,54 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   viewHistory: {
+    [theme.breakpoints.down("sm")]: {
+      width: 80, 
+      fontSize: 16
+    },
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     width: 120,
   },
   progressHeader: {
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 24
+    },
+    width: "90%",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    marginLeft: "5%",
   },
   cols: {
     // marginRight: 100,
     textAlign: "center",
+  },
+  progressContainer: {
+    // when screen is small
+    [theme.breakpoints.down("xs")]: {
+      overflowX: "scroll",
+    },
+    marginTop: 15,
+    marginBottom: 40,
+    width: "90%",
+    margin: "0 auto",
+  },
+  progressDiv: {
+    minWidth: "1000px",
+  },
+  exerciseContainer: {
+    // when screen is small
+    [theme.breakpoints.down("xs")]: {
+      overflowX: "scroll",
+    },
+    marginTop: 30,
+    marginBottom: 40,
+    width: "90%",
+    margin: "0 auto",
+  },
+  exerciseSetDiv: {
+    minWidth: "1000px",
   },
 }));
 
@@ -134,6 +172,21 @@ export const compareSets = (a, b) => {
   }
 
   return comparison;
+};
+
+const compareDate = (a, b) => {
+  const dateA = a.date == undefined ? 0 : a.date;
+  const dateB = b.date == undefined ? -1 : b.date;
+
+  let comparison = 0;
+  if (dateA > dateB) {
+    comparison = 1;
+  } else if (dateA < dateB) {
+    comparison = -1;
+  }
+
+  return comparison;
+
 };
 
 const IndividualPatientView = (props) => {
@@ -298,6 +351,7 @@ const IndividualPatientView = (props) => {
       rest: parseInt(newRest[day]),
       videoId: selectedExerciseType[0].videoId,
       complete: false,
+      date: new Date()
     };
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
@@ -574,7 +628,8 @@ const IndividualPatientView = (props) => {
       if (s === undefined) {
         return [];
       }
-      return s.exercise;
+      var sortedExercises = s.exercise.sort(compareDate);
+      return sortedExercises;
     };
 
     const canClick = (day) => {
@@ -621,7 +676,6 @@ const IndividualPatientView = (props) => {
     return (
       <div>
         <div>
-          <Container>
             <header className={classes.progressHeader}>
               <Typography variant="h4" className={classes.header}>
                 Week of {weekBeginning} Progress
@@ -637,7 +691,9 @@ const IndividualPatientView = (props) => {
                 </Button>
               </Link>
             </header>
-
+            
+            <div className={classes.progressContainer}>
+            <div className={classes.progressDiv}>
             {/* Progress Chart */}
             <Row>
               {exerciseSets.length !== 0 ? (
@@ -654,11 +710,9 @@ const IndividualPatientView = (props) => {
               ) : null}
             </Row>
             <Divider />
-          </Container>
 
           {exerciseSets.map((s, i) => {
             return (
-              <Container>
                 <Row key={i}>
                   <Col>{s["day"]}</Col>
                   {/* Map through each column */}
@@ -670,15 +724,16 @@ const IndividualPatientView = (props) => {
                     );
                   })}
                 </Row>
-              </Container>
             );
           })}
+          </div>
+          </div>
           {/* End Progress Chart */}
 
           {dotw.map((day, ind) => {
             return (
-              <div>
-                <Container className={classes.exerciseContainer} key={ind}>
+                <div className={classes.exerciseContainer} key={ind}>
+                  <div className={classes.exerciseSetDiv} key={ind}>
                   <Typography variant="h4" className={classes.header}>
                     {day} Exercises
                   </Typography>
@@ -919,7 +974,7 @@ const IndividualPatientView = (props) => {
                       </Col>
                     </Row>
                   </Form>
-                </Container>
+              </div>
               </div>
             );
           })}
