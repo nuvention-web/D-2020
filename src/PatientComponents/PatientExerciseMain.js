@@ -17,6 +17,8 @@ import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
 import { useHistory } from "react-router-dom";
 import { compareSets } from "../DoctorComponents/IndividualPatientView.js";
+import { useLocation, useParams } from "react-router-dom";
+
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -36,10 +38,11 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down('sm')]: {
       fontSize: 24
     },
-    marginTop: 30,
-    marginBottom: 8,
-    color: "#80858a",
-    marginLeft: "9.75%",
+    width: "90%",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginLeft: "5%",
   },
   meter: {
     marginTop: 25,
@@ -181,7 +184,17 @@ const useStyles = makeStyles((theme) => ({
   timeIcon: {
     width: 20,
     marginRight: 5,
-  }
+  },
+  viewHistory: {
+    [theme.breakpoints.down("sm")]: {
+      width: 80, 
+      fontSize: 16
+    },
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    width: 120,
+  },
 }));
 
 const calculateTotalTime = (s) => {
@@ -215,6 +228,8 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   const history = useHistory();
 
   const classes = useStyles();
+  const { id } = useParams();
+
 
   // Load correct NavBar for patient
   useEffect(() => {
@@ -413,9 +428,22 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         {/* End Jumbotron */}
 
         {/* Progress Chart */}
+        <header className={classes.progressHeader}>
         <Typography variant="h4" className={classes.progressHeader}>
           Week of {weekBeginning} Progress
         </Typography>
+        <Link
+          to={{
+            pathname: `/PT/patient/${id}/history`,
+          }}
+          className={classes.link}
+        >
+          <Button variant="light" className={classes.viewHistory}>
+            View History
+                </Button>
+        </Link>
+        </header>
+
         <div className={classes.progressContainer}>
           <div className={classes.progressDiv}>
             <Row>
@@ -466,7 +494,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                   </Typography>
                   <Typography variant="subtitle1" display="block" gutterBottom>
                     <i class="far fa-clock"></i>
-                    <img src={"/img/timeicon.png"} className={classes.timeIcon} alt="timeicon"/>
+                    <img src={"/img/timeicon.png"} className={classes.timeIcon} alt="timeicon" />
                     {calculateTotalTime(s)} minutes
                   </Typography>
                   <Row className={classes.rows}>
