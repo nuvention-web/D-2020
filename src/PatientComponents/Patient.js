@@ -16,8 +16,11 @@ import { Link } from "react-router-dom";
 const useStyles = makeStyles({
   root: {
     maxWidth: 300,
-    minHeight: 250,
+    minHeight: 390,
   },
+  content: {
+    minHeight: 130,
+  }
 });
 
 const Patient = ({ p, therapist }) => {
@@ -34,7 +37,7 @@ const Patient = ({ p, therapist }) => {
         src={img}
         //   title="Contemplative Reptile"
       />
-      <CardContent>
+      <CardContent className={classes.content}>
         <Typography gutterBottom variant="h5" component="h2">
           {name}
         </Typography>

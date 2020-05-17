@@ -48,6 +48,10 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "auto",
     marginTop: 40,
   },
+  stats: {
+    textAlign: 'center',
+    marginTop: '30px',
+  }
 }));
 
 // const data01 = [
@@ -93,6 +97,7 @@ const ProgressHistory = (props) => {
             console.log("doc.data()", data);
             console.log("data.date", data.date);
             entry.time = data.date.toDate().getTime();
+            // entry.time = new Date(data.date).toLocaleString();
             console.log("entry w time", entry);
             entry.pain = data.painLevel;
 
@@ -122,6 +127,19 @@ const ProgressHistory = (props) => {
     }
   }, [historyData]);
 
+  // To count how many of assigned exercises have pain values
+  const countComplete = (d1) => {
+    console.log('d1', d1)
+    var ct = 0;
+    for (let index = 0; index < d1.length; index++) {
+      console.log(d1[index]);
+      if (typeof d1[index].pain !== 'undefined') {
+        ct += 1;
+      }
+    }
+    return ct;
+  }
+
   const renderTable = () => {
     return (
       <div className={classes.root}>
@@ -139,44 +157,54 @@ const ProgressHistory = (props) => {
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
             >
               <CartesianGrid />
-              {/* tickFormatter={timeStr => moment(timeStr).format('HH:mm')} */}
               <XAxis
-                scale="time"
                 type="number"
                 domain={["dataMin", "dataMax"]}
-                dataKey={"time"}
+                dataKey="time"
                 name="time"
                 tickFormatter={(timeStr) =>
-                  new Date(timeStr).toString().slice(0, 15)
+                  // console.log(new Date(timeStr).toLocaleString().slice(0, 9))
+                  new Date(timeStr).toLocaleString().slice(0, 9)
+                  // new Date(timeStr).toString().slice(0, 15)
                 }
-                label="Day"
+              // label="Day"
               />
               <YAxis
                 type="number"
                 domain={[0, 10]}
+                tickCount={10}
                 interval="0"
                 dataKey={"pain"}
                 name="pain"
-                label="Pain Level"
+                label="Pain"
               />
               <ZAxis range={[100]} />
-              <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+              <Tooltip
+                cursor={{ strokeDasharray: "3 3" }}
+                formatter={(value) => new Date(value).toLocaleString()} />
               <Legend />
               {console.log("map", Object.entries(historyData))}
               {Object.entries(historyData).map((d, i) => (
-                // console.log('d',d,'d[1',d[1],'i',i)
                 <Scatter
                   name={d[0]}
                   data={d[1]}
                   fill={"#" + Math.random().toString(16).substr(-6)}
                   line
-                  shape="cross"
                 />
               ))}
               {/* <Scatter name='A school' data={data01} fill='#8884d8' line shape="cross" /> */}
               {/* <Scatter name='B school' data={data02} fill='#82ca9d' line shape="diamond" /> */}
             </ScatterChart>
           </div>
+
+          <div className={classes.stats}>
+          <Typography variant="h4">Exercise Completion Statistics</Typography>
+          ---
+          {Object.entries(historyData).map((d, i) => (
+            <Typography>{d[0]}: {countComplete(d[1])}/{d[1].length}</Typography>
+          ))}
+          </div>
+
         </Container>
       </div>
     );
