@@ -10,9 +10,36 @@ const admin = require("firebase-admin");
 
 admin.initializeApp();
 
+const fetchAllExericses = (week, userId) => {
+  return Promise.all(week.map((day) => fetchExerciseSets(day, userId))).then(
+    (userExercisesSets) => ({
+      userId: userId,
+      exercises: userExercisesSets,
+    })
+  );
+};
+const fetchExerciseSets = (day, userId) => {
+  let exercises = [];
+  let weekEx = [];
+  return admin
+    .firestore()
+    .collection("patients")
+    .doc(userId)
+    .collection("exercisesets")
+    .doc(day)
+    .collection("exercises")
+    .get()
+    .then((setSnapshot) => {
+      return {
+        day: day,
+        exercises: setSnapshot.docs.map((doc) => doc.data()),
+      };
+    });
+};
+
 exports.scheduledFunctionCrontab = functions.pubsub
   // .schedule("0 3 * * mon")
-  .schedule("16 19 * * *")
+  .schedule("37 20 * * *")
   .timeZone("America/Chicago")
   .onRun(async (context) => {
     console.log("This will be run every Monday at 3:00 AM Central Time!");
@@ -31,32 +58,12 @@ exports.scheduledFunctionCrontab = functions.pubsub
     snapshot.forEach((doc) => {
       allUser.push(doc.id);
     });
-    console.log("All users: ", allUser);
 
-    allUser.forEach((userId) => {
-      const exercises = [];
-      let weekEx = [];
-      week.forEach(async (day) => {
-        admin
-          .firestore()
-          .collection("patients")
-          .doc(userId)
-          .collection("exercisesets")
-          .doc(day)
-          .collection("exercises")
-          .get()
-          .then((setSnapshot) => {
-            setSnapshot.forEach(async (ex) => {
-              exercises.push(ex.data());
-            });
-          })
-          .then(() => {
-            weekEx.push({ day: day, exercises: exercises });
-            console.log("Week's exercises: ", weekEx);
-          });
-      });
-      userWeekEx.push({ userId, weekEx });
-      console.log("This week's exercises 1: ", userWeekEx);
-    });
-    console.log("This week's exercises 2: ", userWeekEx);
+    Promise.all(allUser.map((userId) => fetchAllExericses(week, userId))).then(
+      (allUsersWeekExercises) => {
+        userWeekEx = allUsersWeekExercises;
+        console.log("All user's exercises: ", userWeekEx);
+        // write to database
+      }
+    );
   });
