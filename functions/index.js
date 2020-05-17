@@ -19,8 +19,6 @@ const fetchAllExericses = (week, userId) => {
   );
 };
 const fetchExerciseSets = (day, userId) => {
-  let exercises = [];
-  let weekEx = [];
   return admin
     .firestore()
     .collection("patients")
@@ -37,9 +35,9 @@ const fetchExerciseSets = (day, userId) => {
     });
 };
 
-exports.scheduledFunctionCrontab = functions.pubsub
+exports.updateHistoryWeekly = functions.pubsub
   // .schedule("0 3 * * mon")
-  .schedule("37 20 * * *")
+  .schedule("0 21 * * *")
   .timeZone("America/Chicago")
   .onRun(async (context) => {
     console.log("This will be run every Monday at 3:00 AM Central Time!");
@@ -64,6 +62,22 @@ exports.scheduledFunctionCrontab = functions.pubsub
         userWeekEx = allUsersWeekExercises;
         console.log("All user's exercises: ", userWeekEx);
         // write to database
+        // userWeekEx.map((user) =>
+        //   admin
+        //     .firestore()
+        //     .collection("patients")
+        //     .doc(user.userId)
+        //     .collection("history").add(...user.exercises)
+        // );
+        const userWeekFilter = userWeekEx.filter(
+          (e) => e.userId === "MHFydb3wliavhRuzaEs074Fnl3n2"
+        );
+        admin
+          .firestore()
+          .collection("patients")
+          .doc("MHFydb3wliavhRuzaEs074Fnl3n2")
+          .collection("history")
+          .add(...userWeekFilter.exercises);
       }
     );
   });
