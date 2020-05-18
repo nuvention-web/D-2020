@@ -176,6 +176,7 @@ const ProfileEdit = () => {
           if (code && code !== "") {
             // Update the patient
             const PTRef = db.collection("therapists").doc(code);
+            console.log("therapist", code);
 
             // Atomically add a new patient to the "patients" array field.
             PTRef.update({

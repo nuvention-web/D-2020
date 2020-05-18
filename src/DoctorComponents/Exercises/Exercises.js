@@ -128,7 +128,7 @@ const Exercises = () => {
     <div>
       <Container>
         <Typography variant="h3" className={classes.header}>
-          Your Patients
+          Your Exercises
         </Typography>
 
         <div className={classes.accentDivider}></div>

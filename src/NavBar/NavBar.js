@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
   linkBox: {
     paddingTop: 10,
     border: "none",
+    backgroundColor: "white"
   },
   navLogout: {
     color: "black",
