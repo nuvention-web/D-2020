@@ -10,6 +10,34 @@ const admin = require("firebase-admin");
 
 admin.initializeApp();
 
+const calcDate = (day) => {
+  let dayNum;
+  switch (day) {
+    case "Monday":
+      dayNum = 0;
+      break;
+    case "Tuesday":
+      dayNum = 1;
+      break;
+    case "Wednesday":
+      dayNum = 2;
+      break;
+    case "Thursday":
+      dayNum = 3;
+      break;
+    case "Friday":
+      dayNum = 4;
+      break;
+    case "Saturday":
+      dayNum = 5;
+      break;
+    case "Sunday":
+      dayNum = 6;
+  }
+  let newDate = new Date();
+  newDate.setDate(newDate.getDate() + dayNum);
+  return newDate;
+};
 const fetchAllExericses = (week, userId) => {
   return Promise.all(week.map((day) => fetchExerciseSets(day, userId))).then(
     (userExercisesSets) => ({
@@ -36,8 +64,7 @@ const fetchExerciseSets = (day, userId) => {
 };
 
 exports.updateHistoryWeekly = functions.pubsub
-  // .schedule("0 3 * * mon")
-  .schedule("0 21 * * *")
+  .schedule("0 3 * * mon")
   .timeZone("America/Chicago")
   .onRun(async (context) => {
     console.log("This will be run every Monday at 3:00 AM Central Time!");
@@ -51,7 +78,7 @@ exports.updateHistoryWeekly = functions.pubsub
       "Sunday",
     ];
     let allUser = [];
-    let userWeekEx = [];
+    let returnObjArr;
     let snapshot = await admin.firestore().collection("patients").get();
     snapshot.forEach((doc) => {
       allUser.push(doc.id);
@@ -59,25 +86,56 @@ exports.updateHistoryWeekly = functions.pubsub
 
     Promise.all(allUser.map((userId) => fetchAllExericses(week, userId))).then(
       (allUsersWeekExercises) => {
-        userWeekEx = allUsersWeekExercises;
-        console.log("All user's exercises: ", userWeekEx);
-        // write to database
-        // userWeekEx.map((user) =>
-        //   admin
-        //     .firestore()
-        //     .collection("patients")
-        //     .doc(user.userId)
-        //     .collection("history").add(...user.exercises)
-        // );
-        const userWeekFilter = userWeekEx.filter(
-          (e) => e.userId === "MHFydb3wliavhRuzaEs074Fnl3n2"
+        console.log("All user's exercises: ", allUsersWeekExercises);
+
+        returnObjArr = allUsersWeekExercises.map((uEx) =>
+          uEx.exercises.map((ex) => {
+            if (ex !== undefined)
+              return ex.exercises.map((e) => {
+                if (e !== undefined)
+                  return {
+                    day: ex.day,
+                    complete: false,
+                    date: calcDate(ex.day),
+                    duration: e.duration,
+                    hold: e.hold,
+                    name: e.name,
+                    reps: e.reps,
+                    resistance: e.resistance,
+                    rest: e.rest,
+                    sets: e.sets,
+                    videoId: e.videoId,
+                  };
+              });
+          })
         );
-        admin
-          .firestore()
-          .collection("patients")
-          .doc("MHFydb3wliavhRuzaEs074Fnl3n2")
-          .collection("history")
-          .add(...userWeekFilter.exercises);
+
+        console.log("Return Obj Arr: ", returnObjArr);
+
+        let batch = admin.firestore().batch();
+
+        // Set up Batch
+        for (let i = 0; i < allUser.length; i++) {
+          const tempRef = admin
+            .firestore()
+            .collection("patients")
+            .doc(allUser[i])
+            .collection("history");
+
+          // Make batch of user(i)
+          returnObjArr[i].map((weekEx) => {
+            if (weekEx !== undefined) {
+              weekEx.forEach((obj) => {
+                batch.set(tempRef.doc(), obj);
+              });
+            }
+          });
+        }
+
+        console.log("This is Batch: ", batch);
+
+        // write to db
+        batch.commit();
       }
     );
   });
