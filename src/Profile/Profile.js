@@ -9,6 +9,7 @@ import {
   CardMedia,
   Typography,
   Container,
+  CircularProgress
 } from "@material-ui/core";
 import { Button } from "react-bootstrap";
 
@@ -35,13 +36,20 @@ const Profile = ({ setHaveLoggedIn }) => {
       textAlign: "justify",
       textJustify: "inter-word",
     },
+    loadingContainer: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: "40vh",
+    }
   }));
   const currUser = useContext(UserContext).user;
   const type = localStorage.getItem("type");
-  const [userProfile, setUserProfile] = useState();
+  const [userProfile, setUserProfile] = useState({});
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
+  const [loaded, setLoaded] = useState(false);
 
   //if profile pic is not uploaded use blank
   const [profilePic, setProfilePic] = useState("/img/blankProfile.png");
@@ -56,7 +64,8 @@ const Profile = ({ setHaveLoggedIn }) => {
           if (doc.data().img !== "") {
             setProfilePic(`${doc.data().img}`);
           }
-        });
+        })
+        .then(setLoaded(true));
     }
   }, [type, currUser, location]);
 
@@ -64,14 +73,15 @@ const Profile = ({ setHaveLoggedIn }) => {
     if (location.notNewUser) setHaveLoggedIn(true);
   }, []);
 
-  return (
+  if (loaded) {
+    return (
     <div>
       <Container className={classes.root}>
         <Typography gutterBottom variant="h3">
           Your Profile
         </Typography>{" "}
         {console.log(profilePic)}
-        {userProfile ? (
+        {userProfile != {} ? (
           <div className={classes.root}>
             <Card className={classes.card}>
               <CardMedia
@@ -138,6 +148,14 @@ const Profile = ({ setHaveLoggedIn }) => {
       </Container>
     </div>
   );
+  }
+  else {
+    return(
+      <div className={classes.loadingContainer}>
+        <CircularProgress />
+      </div>
+    );
+  }
 };
 
 export default Profile;
