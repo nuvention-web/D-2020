@@ -58,13 +58,17 @@ const fetchExerciseSets = (day, userId) => {
     .then((setSnapshot) => {
       return {
         day: day,
-        exercises: setSnapshot.docs.map((doc) => doc.data()),
+        exercises: setSnapshot.docs.map((doc) => ({
+          exId: doc.id,
+          ...doc.data(),
+        })),
       };
     });
 };
 
 exports.updateHistoryWeekly = functions.pubsub
-  .schedule("0 3 * * mon")
+  // .schedule("0 3 * * mon")
+  .schedule("40 12 * * *")
   .timeZone("America/Chicago")
   .onRun(async (context) => {
     console.log("This will be run every Monday at 3:00 AM Central Time!");
@@ -85,7 +89,7 @@ exports.updateHistoryWeekly = functions.pubsub
     });
 
     Promise.all(allUser.map((userId) => fetchAllExericses(week, userId))).then(
-      (allUsersWeekExercises) => {
+      async (allUsersWeekExercises) => {
         console.log("All user's exercises: ", allUsersWeekExercises);
 
         returnObjArr = allUsersWeekExercises.map((uEx) =>
@@ -94,6 +98,7 @@ exports.updateHistoryWeekly = functions.pubsub
               return ex.exercises.map((e) => {
                 if (e !== undefined)
                   return {
+                    exId: e.exId,
                     day: ex.day,
                     complete: false,
                     date: calcDate(ex.day),
@@ -116,17 +121,30 @@ exports.updateHistoryWeekly = functions.pubsub
 
         // Set up Batch
         for (let i = 0; i < allUser.length; i++) {
-          const tempRef = admin
+          // Add to History
+          const historyRef = admin
             .firestore()
             .collection("patients")
             .doc(allUser[i])
             .collection("history");
 
-          // Make batch of user(i)
           returnObjArr[i].map((weekEx) => {
             if (weekEx !== undefined) {
               weekEx.forEach((obj) => {
-                batch.set(tempRef.doc(), obj);
+                console.log("obj: ", obj);
+                // Write to historyRef
+                historyRef.add(obj).then((docRef) => {
+                  // Update historyId of the updated exercises
+                  admin
+                    .firestore()
+                    .collection("patients")
+                    .doc(allUser[i])
+                    .collection("exercisesets")
+                    .doc(obj.day) // day
+                    .collection("exercises")
+                    .doc(obj.exId) // id
+                    .update({ historyId: docRef.id });
+                });
               });
             }
           });
@@ -135,7 +153,8 @@ exports.updateHistoryWeekly = functions.pubsub
         console.log("This is Batch: ", batch);
 
         // write to db
-        batch.commit();
+        // await batch.commit();
+        // Change historyId of the carry-over exercises
       }
     );
   });
