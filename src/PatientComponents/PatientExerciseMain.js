@@ -187,7 +187,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewHistory: {
     [theme.breakpoints.down("sm")]: {
-      width: 80, 
+      width: 80,
       fontSize: 16
     },
     display: "flex",
@@ -200,9 +200,13 @@ const useStyles = makeStyles((theme) => ({
 const calculateTotalTime = (s) => {
   var t = 0;
   for (const [i, entry] of Object.entries(s.exercise)) {
-    t += entry.duration;
+    // t += entry.duration;
+    t += entry.sets * entry.reps * entry.duration + (entry.sets - 1) * entry.rest;
   }
-  return t;
+  // Minutes and seconds
+  var m = Math.floor(t / 60);
+  var s = t % 60;
+  return m.toString() + ' min ' + s.toString() + ' seconds';
 };
 
 const formatExerciseName = (n) => {
@@ -429,19 +433,19 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
 
         {/* Progress Chart */}
         <header className={classes.progressHeader}>
-        <Typography variant="h4" className={classes.progressHeader}>
-          Week of {weekBeginning} Progress
+          <Typography variant="h4" className={classes.progressHeader}>
+            Week of {weekBeginning} Progress
         </Typography>
-        <Link
-          to={{
-            pathname: `/PT/patient/${id}/history`,
-          }}
-          className={classes.link}
-        >
-          <Button variant="light" className={classes.viewHistory}>
-            View History
+          <Link
+            to={{
+              pathname: `/PT/patient/${id}/history`,
+            }}
+            className={classes.link}
+          >
+            <Button variant="light" className={classes.viewHistory}>
+              View History
                 </Button>
-        </Link>
+          </Link>
         </header>
 
         <div className={classes.progressContainer}>
@@ -495,7 +499,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                   <Typography variant="subtitle1" display="block" gutterBottom>
                     <i class="far fa-clock"></i>
                     <img src={"/img/timeicon.png"} className={classes.timeIcon} alt="timeicon" />
-                    {calculateTotalTime(s)} minutes
+                    {calculateTotalTime(s)}
                   </Typography>
                   <Row className={classes.rows}>
                     <Col className={classes.firstCol}>Exercise</Col>
