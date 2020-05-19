@@ -763,11 +763,11 @@ const IndividualPatientView = (props) => {
                     <Row className={classes.rows}>
                       <Col>Exercise</Col>
                       <Col>Reps</Col>
-                      <Col>Duration(min)</Col>
                       <Col>Sets</Col>
+                      <Col>Duration(min)</Col>
                       <Col>Hold(min)</Col>
-                      <Col>Resistance</Col>
                       <Col>Rest(min)</Col>
+                      <Col>Resistance</Col>
                       {/* Keep extra column for add/delete button */}
                       <Col></Col>
                     </Row>
@@ -871,6 +871,27 @@ const IndividualPatientView = (props) => {
                         </Form.Group>
                       </Col>
                       <Col>
+                        <Form.Group>
+                          <Form.Control
+                            type="number"
+                            min="0"
+                            className={classes.inputBox}
+                            id={`sets-${day}`}
+                            onChange={(event) => {
+                              let s = newSets;
+                              const d = day;
+                              s[d] = event.target.value;
+                              setNewSets(s);
+                            }}
+                            required
+                          />
+                          {console.log("new sets??", newSets)}
+                          <Form.Control.Feedback type="invalid">
+                            Sets are required.
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+                      <Col>
                         <Form.Control
                           as="input"
                           type="number"
@@ -896,27 +917,6 @@ const IndividualPatientView = (props) => {
                             type="number"
                             min="0"
                             className={classes.inputBox}
-                            id={`sets-${day}`}
-                            onChange={(event) => {
-                              let s = newSets;
-                              const d = day;
-                              s[d] = event.target.value;
-                              setNewSets(s);
-                            }}
-                            required
-                          />
-                          {console.log("new sets??", newSets)}
-                          <Form.Control.Feedback type="invalid">
-                            Sets are required.
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col>
-                        <Form.Group>
-                          <Form.Control
-                            type="number"
-                            min="0"
-                            className={classes.inputBox}
                             id={`holds-${day}`}
                             onChange={(event) => {
                               let h = newHold;
@@ -929,26 +929,6 @@ const IndividualPatientView = (props) => {
                           {console.log("new reps??", newReps)}
                           <Form.Control.Feedback type="invalid">
                             Hold is required.
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col>
-                        <Form.Group>
-                          <Form.Control
-                            type="text"
-                            className={classes.inputBox}
-                            id={`resistance-${day}`}
-                            onChange={(event) => {
-                              let resistance = newResistance;
-                              const d = day;
-                              resistance[d] = event.target.value;
-                              setNewResistance(resistance);
-                            }}
-                            required
-                          />
-                          {console.log("new resistance??", newResistance)}
-                          <Form.Control.Feedback type="invalid">
-                            Resistance are required.
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
@@ -973,6 +953,27 @@ const IndividualPatientView = (props) => {
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
+                      <Col>
+                        <Form.Group>
+                          <Form.Control
+                            type="text"
+                            className={classes.inputBox}
+                            id={`resistance-${day}`}
+                            onChange={(event) => {
+                              let resistance = newResistance;
+                              const d = day;
+                              resistance[d] = event.target.value;
+                              setNewResistance(resistance);
+                            }}
+                            required
+                          />
+                          {console.log("new resistance??", newResistance)}
+                          <Form.Control.Feedback type="invalid">
+                            Resistance are required.
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+                    
 
                       <Col className={classes.centeredCol}>
                         <Button
