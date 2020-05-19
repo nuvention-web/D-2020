@@ -764,9 +764,9 @@ const IndividualPatientView = (props) => {
                       <Col>Exercise</Col>
                       <Col>Reps</Col>
                       <Col>Sets</Col>
-                      <Col>Duration(min)</Col>
-                      <Col>Hold(min)</Col>
-                      <Col>Rest(min)</Col>
+                      <Col>Duration(s)</Col>
+                      <Col>Hold(s)</Col>
+                      <Col>Rest(s)</Col>
                       <Col>Resistance</Col>
                       {/* Keep extra column for add/delete button */}
                       <Col></Col>
