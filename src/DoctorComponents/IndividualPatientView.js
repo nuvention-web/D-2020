@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewHistory: {
     [theme.breakpoints.down("sm")]: {
-      width: 80, 
+      width: 80,
       fontSize: 16
     },
     display: "flex",
@@ -146,6 +146,10 @@ const useStyles = makeStyles((theme) => ({
   },
   exerciseSetDiv: {
     minWidth: "1000px",
+  },
+  emphasis: {
+    color: '#3358C4',
+    fontWeight: 600,
   },
 }));
 
@@ -345,7 +349,7 @@ const IndividualPatientView = (props) => {
       name: newEx,
       reps: parseInt(newReps[day]),
       duration: parseFloat(newDuration[day]),
-      sets: newSets[day],
+      sets: parseInt(newSets[day]),
       hold: parseInt(newHold[day]),
       resistance: newResistance[day],
       rest: parseInt(newRest[day]),
@@ -676,64 +680,82 @@ const IndividualPatientView = (props) => {
     return (
       <div>
         <div>
-            <header className={classes.progressHeader}>
-              <Typography variant="h4" className={classes.header}>
-                Week of {weekBeginning} Progress
+          <header className={classes.progressHeader}>
+            <Typography variant="h4" className={classes.header}>
+              Week of {weekBeginning} Progress
               </Typography>
-              <Link
-                to={{
-                  pathname: `/PT/patient/${id}/history`,
-                }}
-                className={classes.link}
-              >
-                <Button variant="light" className={classes.viewHistory}>
-                  View History
+            <Link
+              to={{
+                pathname: `/PT/patient/${id}/history`,
+              }}
+              className={classes.link}
+            >
+              <Button variant="light" className={classes.viewHistory}>
+                View History
                 </Button>
-              </Link>
-            </header>
-            
-            <div className={classes.progressContainer}>
+            </Link>
+          </header>
+
+          <div className={classes.progressContainer}>
             <div className={classes.progressDiv}>
-            {/* Progress Chart */}
-            <Row>
-              {exerciseSets.length !== 0 ? (
-                <React.Fragment>
-                  <Col>Exercise Name</Col>
+              {/* Progress Chart */}
+              <Row>
+                {exerciseSets.length !== 0 ? (
+                  <React.Fragment>
+                    <Col>Exercise Name</Col>
 
-                  {exerciseSets[0].exerciseList.map((ex) => (
-                    <Col className={classes.centeredCol}>{ex}</Col>
-                  ))}
-                </React.Fragment>
-              ) : null}
-              {exerciseSets.length === 0 ? (
-                <Col>A new patient - add exercises below!</Col>
-              ) : null}
-            </Row>
-            <Divider />
+                    {exerciseSets[0].exerciseList.map((ex) => (
+                      <Col className={classes.centeredCol}>{ex}</Col>
+                    ))}
+                  </React.Fragment>
+                ) : null}
+                {exerciseSets.length === 0 ? (
+                  <Col>A new patient - add exercises below!</Col>
+                ) : null}
+              </Row>
+              <Divider />
 
-          {exerciseSets.map((s, i) => {
-            return (
-                <Row key={i}>
-                  <Col>{s["day"]}</Col>
-                  {/* Map through each column */}
-                  {s.exerciseList.map((name, i) => {
-                    return (
-                      <Col className={classes.centeredCol}>
-                        {checkExComplete(s.exercise, name)}
-                      </Col>
-                    );
-                  })}
-                </Row>
-            );
-          })}
-          </div>
+              {exerciseSets.map((s, i) => {
+                return (
+                  <Row key={i}>
+                    <Col>{s["day"]}</Col>
+                    {/* Map through each column */}
+                    {s.exerciseList.map((name, i) => {
+                      return (
+                        <Col className={classes.centeredCol}>
+                          {checkExComplete(s.exercise, name)}
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                );
+              })}
+
+            </div>
           </div>
           {/* End Progress Chart */}
 
+          {/* Description */}
+          <div className={classes.progressContainer}>
+            <div className={classes.progressDiv}>
+              <Typography variant="h4" className={classes.header}>
+                How to Assign Exercises:
+            </Typography>
+              <li><span className={classes.emphasis}>Reps:</span> How many repetitions of the exercise the patient should complete per set?</li>
+              <li><span className={classes.emphasis}>Sets:</span> How many sets of the exercise should be completed?</li>
+              <li><span className={classes.emphasis}>Duration (seconds):</span> How long one repetition should take?</li>
+              <li><span className={classes.emphasis}>Hold (seconds):</span> How long the patient should hold their position? (default of 0)</li>
+              <li><span className={classes.emphasis}>Rest (seconds):</span> How long patients should rest between sets?</li>
+            </div>
+          </div>
+          {/* End Description */}
+
+
+
           {dotw.map((day, ind) => {
             return (
-                <div className={classes.exerciseContainer} key={ind}>
-                  <div className={classes.exerciseSetDiv} key={ind}>
+              <div className={classes.exerciseContainer} key={ind}>
+                <div className={classes.exerciseSetDiv} key={ind}>
                   <Typography variant="h4" className={classes.header}>
                     {day} Exercises
                   </Typography>
@@ -741,11 +763,11 @@ const IndividualPatientView = (props) => {
                     <Row className={classes.rows}>
                       <Col>Exercise</Col>
                       <Col>Reps</Col>
-                      <Col>Duration(min)</Col>
                       <Col>Sets</Col>
+                      <Col>Duration(min)</Col>
                       <Col>Hold(min)</Col>
-                      <Col>Resistance</Col>
                       <Col>Rest(min)</Col>
+                      <Col>Resistance</Col>
                       {/* Keep extra column for add/delete button */}
                       <Col></Col>
                     </Row>
@@ -849,6 +871,27 @@ const IndividualPatientView = (props) => {
                         </Form.Group>
                       </Col>
                       <Col>
+                        <Form.Group>
+                          <Form.Control
+                            type="number"
+                            min="0"
+                            className={classes.inputBox}
+                            id={`sets-${day}`}
+                            onChange={(event) => {
+                              let s = newSets;
+                              const d = day;
+                              s[d] = event.target.value;
+                              setNewSets(s);
+                            }}
+                            required
+                          />
+                          {console.log("new sets??", newSets)}
+                          <Form.Control.Feedback type="invalid">
+                            Sets are required.
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+                      <Col>
                         <Form.Control
                           as="input"
                           type="number"
@@ -874,27 +917,6 @@ const IndividualPatientView = (props) => {
                             type="number"
                             min="0"
                             className={classes.inputBox}
-                            id={`sets-${day}`}
-                            onChange={(event) => {
-                              let s = newSets;
-                              const d = day;
-                              s[d] = event.target.value;
-                              setNewSets(s);
-                            }}
-                            required
-                          />
-                          {console.log("new sets??", newSets)}
-                          <Form.Control.Feedback type="invalid">
-                            Sets are required.
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col>
-                        <Form.Group>
-                          <Form.Control
-                            type="number"
-                            min="0"
-                            className={classes.inputBox}
                             id={`holds-${day}`}
                             onChange={(event) => {
                               let h = newHold;
@@ -907,26 +929,6 @@ const IndividualPatientView = (props) => {
                           {console.log("new reps??", newReps)}
                           <Form.Control.Feedback type="invalid">
                             Hold is required.
-                          </Form.Control.Feedback>
-                        </Form.Group>
-                      </Col>
-                      <Col>
-                        <Form.Group>
-                          <Form.Control
-                            type="text"
-                            className={classes.inputBox}
-                            id={`resistance-${day}`}
-                            onChange={(event) => {
-                              let resistance = newResistance;
-                              const d = day;
-                              resistance[d] = event.target.value;
-                              setNewResistance(resistance);
-                            }}
-                            required
-                          />
-                          {console.log("new resistance??", newResistance)}
-                          <Form.Control.Feedback type="invalid">
-                            Resistance are required.
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
@@ -951,6 +953,27 @@ const IndividualPatientView = (props) => {
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
+                      <Col>
+                        <Form.Group>
+                          <Form.Control
+                            type="text"
+                            className={classes.inputBox}
+                            id={`resistance-${day}`}
+                            onChange={(event) => {
+                              let resistance = newResistance;
+                              const d = day;
+                              resistance[d] = event.target.value;
+                              setNewResistance(resistance);
+                            }}
+                            required
+                          />
+                          {console.log("new resistance??", newResistance)}
+                          <Form.Control.Feedback type="invalid">
+                            Resistance are required.
+                          </Form.Control.Feedback>
+                        </Form.Group>
+                      </Col>
+                    
 
                       <Col className={classes.centeredCol}>
                         <Button
@@ -974,7 +997,7 @@ const IndividualPatientView = (props) => {
                       </Col>
                     </Row>
                   </Form>
-              </div>
+                </div>
               </div>
             );
           })}

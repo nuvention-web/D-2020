@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       fontSize: 20,
     },
+    marginTop: 30,
   },
   video: {
     [theme.breakpoints.down("sm")]: {
@@ -91,11 +92,12 @@ const useStyles = makeStyles((theme) => ({
     height: 54,
   },
   timer: {
-    position: "absolute",
+    // position: "absolute",
     textAlign: "center",
     right: "15%",
     left: "15%",
-    bottom: -125,
+    minHeight: "20vh",
+    // bottom: -125,
   },
   time: {
     [theme.breakpoints.down("sm")]: {
@@ -173,6 +175,17 @@ const useStyles = makeStyles((theme) => ({
   },
   resize: {
     fontSize: 18,
+  },
+  emphasis: {
+    color: '#3358C4',
+    fontWeight: 600,
+  },
+  carouselItem: {
+    overflowY: "scroll",
+  },
+  taskList: {
+    paddingLeft: '42%',
+    textAlign: 'left',
   },
 }));
 
@@ -346,7 +359,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
       wrap={false}
     >
       {set.map((exercise) => (
-        <Carousel.Item key={exercise.id}>
+        <Carousel.Item key={exercise.id} className={classes.carouselItem}>
           {/* Success Alert When Exercise is Completed*/}
           {exercise.complete ? (
             <div>
@@ -361,49 +374,58 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
           {/* End Alert */}
 
           <YouTube videoId={exercise.videoId} className={classes.video} />
-          <Carousel.Caption>
-            <Typography variant="h5" className={classes.exerciseName}>
-              {exercise.name}
-            </Typography>
-          </Carousel.Caption>
+          <Typography variant="h5" className={classes.exerciseName}>
+            {exercise.name}
+          </Typography>
           <div className={classes.timer}>
             {console.log(currUser)}
             {Object.entries(currUser).length > 0 ? (
-              <Timer
-                initialTime={exercise.duration * 60000}
-                direction="backward"
-                startImmediately={false}
-                checkpoints={[
-                  {
-                    time: 0,
-                    callback: () => {
-                      updateCompleted(exercise.name, currUser);
+              <React.Fragment>
+                <Timer
+                  initialTime={[exercise.sets * exercise.reps * exercise.duration + (exercise.sets-1) * exercise.rest] * 1000}
+                  direction="backward"
+                  startImmediately={false}
+                  checkpoints={[
+                    {
+                      time: 0,
+                      callback: () => {
+                        updateCompleted(exercise.name, currUser);
+                      },
                     },
-                  },
-                ]}
-              >
-                {({ start, stop, reset, timerState }) => (
-                  <React.Fragment>
-                    <div className={classes.time}>
-                      <Timer.Minutes />:
+                  ]}
+                >
+                  {({ start, stop, reset, timerState }) => (
+                    <React.Fragment>
+                      <div className={classes.time}>
+                        <Timer.Minutes />:
                       <Timer.Seconds
-                        formatValue={(value) =>
-                          `${value < 10 ? `0${value}` : value}`
-                        }
-                      />
-                    </div>
-                    <Button onClick={start} className="timer-btn">
-                      Start
+                          formatValue={(value) =>
+                            `${value < 10 ? `0${value}` : value}`
+                          }
+                        />
+                      </div>
+                      <Button onClick={start} className="timer-btn">
+                        Start
                     </Button>
-                    <Button onClick={stop} className="timer-btn">
-                      Stop
+                      <Button onClick={stop} className="timer-btn">
+                        Stop
                     </Button>
-                    <Button onClick={reset} className="timer-btn">
-                      Reset
+                      <Button onClick={reset} className="timer-btn">
+                        Reset
                     </Button>
-                  </React.Fragment>
-                )}
-              </Timer>
+                    </React.Fragment>
+                  )}
+                </Timer>
+                <Typography variant="h5" className={classes.exerciseName}>Tasklist</Typography>
+                <div className={classes.taskList}>
+                  <li><span className={classes.emphasis}>Reps:</span> {exercise.reps}</li>
+                  <li><span className={classes.emphasis}>Sets:</span> {exercise.sets}</li>
+                  <li><span className={classes.emphasis}>Duration (seconds):</span> {exercise.duration}</li>
+                  <li><span className={classes.emphasis}>Hold (seconds):</span> {exercise.hold}</li>
+                  <li><span className={classes.emphasis}>Rest (seconds):</span> {exercise.rest}</li>
+                </div>
+              </React.Fragment>
+              // End Task Stuff
             ) : null}
           </div>
         </Carousel.Item>
