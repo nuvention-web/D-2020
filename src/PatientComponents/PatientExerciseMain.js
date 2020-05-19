@@ -504,11 +504,11 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                   <Row className={classes.rows}>
                     <Col className={classes.firstCol}>Exercise</Col>
                     <Col className={classes.cols}>Reps</Col>
-                    <Col className={classes.cols}>Duration(min)</Col>
+                    <Col className={classes.cols}>Duration(s)</Col>
                     <Col className={classes.cols}>Sets</Col>
-                    <Col className={classes.cols}>Hold(min)</Col>
+                    <Col className={classes.cols}>Hold(s)</Col>
                     <Col className={classes.cols}>Resistance</Col>
-                    <Col className={classes.cols}>Rest(min)</Col>
+                    <Col className={classes.cols}>Rest(s)</Col>
                   </Row>
                   <Divider />
                   {Object.values(s.exercise).map((ex, k) => {
