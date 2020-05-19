@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewHistory: {
     [theme.breakpoints.down("sm")]: {
-      width: 80, 
+      width: 80,
       fontSize: 16
     },
     display: "flex",
@@ -146,6 +146,10 @@ const useStyles = makeStyles((theme) => ({
   },
   exerciseSetDiv: {
     minWidth: "1000px",
+  },
+  emphasis: {
+    color: '#3358C4',
+    fontWeight: 600,
   },
 }));
 
@@ -676,64 +680,82 @@ const IndividualPatientView = (props) => {
     return (
       <div>
         <div>
-            <header className={classes.progressHeader}>
-              <Typography variant="h4" className={classes.header}>
-                Week of {weekBeginning} Progress
+          <header className={classes.progressHeader}>
+            <Typography variant="h4" className={classes.header}>
+              Week of {weekBeginning} Progress
               </Typography>
-              <Link
-                to={{
-                  pathname: `/PT/patient/${id}/history`,
-                }}
-                className={classes.link}
-              >
-                <Button variant="light" className={classes.viewHistory}>
-                  View History
+            <Link
+              to={{
+                pathname: `/PT/patient/${id}/history`,
+              }}
+              className={classes.link}
+            >
+              <Button variant="light" className={classes.viewHistory}>
+                View History
                 </Button>
-              </Link>
-            </header>
-            
-            <div className={classes.progressContainer}>
+            </Link>
+          </header>
+
+          <div className={classes.progressContainer}>
             <div className={classes.progressDiv}>
-            {/* Progress Chart */}
-            <Row>
-              {exerciseSets.length !== 0 ? (
-                <React.Fragment>
-                  <Col>Exercise Name</Col>
+              {/* Progress Chart */}
+              <Row>
+                {exerciseSets.length !== 0 ? (
+                  <React.Fragment>
+                    <Col>Exercise Name</Col>
 
-                  {exerciseSets[0].exerciseList.map((ex) => (
-                    <Col className={classes.centeredCol}>{ex}</Col>
-                  ))}
-                </React.Fragment>
-              ) : null}
-              {exerciseSets.length === 0 ? (
-                <Col>A new patient - add exercises below!</Col>
-              ) : null}
-            </Row>
-            <Divider />
+                    {exerciseSets[0].exerciseList.map((ex) => (
+                      <Col className={classes.centeredCol}>{ex}</Col>
+                    ))}
+                  </React.Fragment>
+                ) : null}
+                {exerciseSets.length === 0 ? (
+                  <Col>A new patient - add exercises below!</Col>
+                ) : null}
+              </Row>
+              <Divider />
 
-          {exerciseSets.map((s, i) => {
-            return (
-                <Row key={i}>
-                  <Col>{s["day"]}</Col>
-                  {/* Map through each column */}
-                  {s.exerciseList.map((name, i) => {
-                    return (
-                      <Col className={classes.centeredCol}>
-                        {checkExComplete(s.exercise, name)}
-                      </Col>
-                    );
-                  })}
-                </Row>
-            );
-          })}
-          </div>
+              {exerciseSets.map((s, i) => {
+                return (
+                  <Row key={i}>
+                    <Col>{s["day"]}</Col>
+                    {/* Map through each column */}
+                    {s.exerciseList.map((name, i) => {
+                      return (
+                        <Col className={classes.centeredCol}>
+                          {checkExComplete(s.exercise, name)}
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                );
+              })}
+
+            </div>
           </div>
           {/* End Progress Chart */}
 
+          {/* Description */}
+          <div className={classes.progressContainer}>
+            <div className={classes.progressDiv}>
+              <Typography variant="h4" className={classes.header}>
+                How to Assign Exercises:
+            </Typography>
+              <li><span className={classes.emphasis}>Reps:</span> How many repetitions of the exercise the patient should complete per set?</li>
+              <li><span className={classes.emphasis}>Sets:</span> How many sets of the exercise should be completed?</li>
+              <li><span className={classes.emphasis}>Duration (seconds):</span> How long one repetition should take?</li>
+              <li><span className={classes.emphasis}>Hold (seconds):</span> How long the patient should hold their position? (default of 0)</li>
+              <li><span className={classes.emphasis}>Rest (seconds):</span> How long patients should rest between sets?</li>
+            </div>
+          </div>
+          {/* End Description */}
+
+
+
           {dotw.map((day, ind) => {
             return (
-                <div className={classes.exerciseContainer} key={ind}>
-                  <div className={classes.exerciseSetDiv} key={ind}>
+              <div className={classes.exerciseContainer} key={ind}>
+                <div className={classes.exerciseSetDiv} key={ind}>
                   <Typography variant="h4" className={classes.header}>
                     {day} Exercises
                   </Typography>
@@ -974,7 +996,7 @@ const IndividualPatientView = (props) => {
                       </Col>
                     </Row>
                   </Form>
-              </div>
+                </div>
               </div>
             );
           })}
