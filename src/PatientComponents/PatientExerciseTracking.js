@@ -184,7 +184,7 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
   },
   taskList: {
-    paddingLeft: '40%',
+    paddingLeft: '42%',
     textAlign: 'left',
   },
 }));
@@ -382,7 +382,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
             {Object.entries(currUser).length > 0 ? (
               <React.Fragment>
                 <Timer
-                  initialTime={exercise.duration * 60000}
+                  initialTime={[exercise.sets * exercise.reps * exercise.duration + (exercise.sets-1) * exercise.rest] * 1000}
                   direction="backward"
                   startImmediately={false}
                   checkpoints={[

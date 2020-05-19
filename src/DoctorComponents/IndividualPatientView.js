@@ -349,7 +349,7 @@ const IndividualPatientView = (props) => {
       name: newEx,
       reps: parseInt(newReps[day]),
       duration: parseFloat(newDuration[day]),
-      sets: newSets[day],
+      sets: parseInt(newSets[day]),
       hold: parseInt(newHold[day]),
       resistance: newResistance[day],
       rest: parseInt(newRest[day]),
