@@ -126,8 +126,8 @@ const ProfileEdit = () => {
     if (type === "") type = preType;
     if (name === "") name = userProfile.name;
     if (bio === "") bio = userProfile.bio;
-    if (code === "" && userProfile.code) code = userProfile.code;
-    if (zoom === "" && userProfile.zoom) zoom = userProfile.zoom;
+    if (code === "" && userProfile.code) var code = userProfile.code;
+    if (zoom === "" && userProfile.zoom) var zoom = userProfile.zoom;
 
     console.log(
       "type: ",
@@ -176,7 +176,7 @@ const ProfileEdit = () => {
           if (code && code !== "") {
             // Update the patient
             const PTRef = db.collection("therapists").doc(code);
-            console.log("therapist", code);
+            console.log("therapist ref", PTRef);
 
             // Atomically add a new patient to the "patients" array field.
             PTRef.update({
@@ -189,7 +189,8 @@ const ProfileEdit = () => {
         .catch(function (error) {
           console.error("Error writing document: ", error);
         });
-    } else {
+    } 
+    else {
       // No photo selected
       Ref.doc(currUser.uid)
         .update({
@@ -215,11 +216,9 @@ const ProfileEdit = () => {
         .then(function () {
           if (type == "patients") {
             console.log("Document successfully written!");
-            if (userProfile.code && userProfile.code !== "") {
+            if (code && code !== "") {
               // Update the patient
-              console.log(code);
-              console.log(userProfile.code);
-              const PTRef = db.collection("therapists").doc(userProfile.code);
+              const PTRef = db.collection("therapists").doc(code);
 
               // Atomically add a new patient to the "patients" array field.
               PTRef.update({
