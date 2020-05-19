@@ -68,10 +68,10 @@ const fetchExerciseSets = (day, userId) => {
 
 exports.updateHistoryWeekly = functions.pubsub
   // .schedule("0 3 * * mon")
-  .schedule("40 12 * * *")
+  .schedule("0 3 * * mon")
   .timeZone("America/Chicago")
   .onRun(async (context) => {
-    console.log("This will be run every Monday at 3:00 AM Central Time!");
+    console.log("This is being run every Monday at 3:00 AM Central Time!");
     const week = [
       "Monday",
       "Tuesday",
@@ -90,8 +90,6 @@ exports.updateHistoryWeekly = functions.pubsub
 
     Promise.all(allUser.map((userId) => fetchAllExericses(week, userId))).then(
       async (allUsersWeekExercises) => {
-        console.log("All user's exercises: ", allUsersWeekExercises);
-
         returnObjArr = allUsersWeekExercises.map((uEx) =>
           uEx.exercises.map((ex) => {
             if (ex !== undefined)
@@ -115,11 +113,6 @@ exports.updateHistoryWeekly = functions.pubsub
           })
         );
 
-        console.log("Return Obj Arr: ", returnObjArr);
-
-        let batch = admin.firestore().batch();
-
-        // Set up Batch
         for (let i = 0; i < allUser.length; i++) {
           // Add to History
           const historyRef = admin
@@ -131,7 +124,6 @@ exports.updateHistoryWeekly = functions.pubsub
           returnObjArr[i].map((weekEx) => {
             if (weekEx !== undefined) {
               weekEx.forEach((obj) => {
-                console.log("obj: ", obj);
                 // Write to historyRef
                 historyRef.add(obj).then((docRef) => {
                   // Update historyId of the updated exercises
@@ -149,12 +141,6 @@ exports.updateHistoryWeekly = functions.pubsub
             }
           });
         }
-
-        console.log("This is Batch: ", batch);
-
-        // write to db
-        // await batch.commit();
-        // Change historyId of the carry-over exercises
       }
     );
   });
