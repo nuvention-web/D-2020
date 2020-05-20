@@ -20,6 +20,9 @@ const useStyles = makeStyles({
   },
   content: {
     minHeight: 130,
+  },
+  link: {
+    marginLeft: 10
   }
 });
 
