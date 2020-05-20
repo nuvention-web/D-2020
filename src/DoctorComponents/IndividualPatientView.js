@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
   header: {
     [theme.breakpoints.down("sm")]: {
-      fontSize: 24
+      fontSize: 24,
     },
     marginTop: 10,
     marginBottom: 8,
@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
     height: "calc(1.5em + .75rem + 2px)",
     borderRadius: 5,
     border: "1px solid #ccc",
-    display: "inline-block"
+    display: "inline-block",
   },
   centeredCol: {
     textAlign: "center",
@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 10,
   },
   paramCols: {
-    textAlign: "center"
+    textAlign: "center",
   },
   newExercise: {
     marginTop: 10,
@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
   viewHistory: {
     [theme.breakpoints.down("sm")]: {
       width: 80,
-      fontSize: 16
+      fontSize: 16,
     },
     display: "flex",
     flexDirection: "row",
@@ -113,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
   },
   progressHeader: {
     [theme.breakpoints.down("sm")]: {
-      fontSize: 24
+      fontSize: 24,
     },
     width: "90%",
     display: "flex",
@@ -152,7 +152,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "1000px",
   },
   emphasis: {
-    color: '#3358C4',
+    color: "#3358C4",
     fontWeight: 600,
   },
   descripContainer: {
@@ -207,7 +207,6 @@ const compareDate = (a, b) => {
   }
 
   return comparison;
-
 };
 
 const IndividualPatientView = (props) => {
@@ -372,7 +371,7 @@ const IndividualPatientView = (props) => {
       rest: parseInt(newRest[day]),
       videoId: selectedExerciseType[0].videoId,
       complete: false,
-      date: new Date()
+      date: new Date(),
     };
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
@@ -700,7 +699,7 @@ const IndividualPatientView = (props) => {
           <header className={classes.progressHeader}>
             <Typography variant="h4" className={classes.header}>
               Week of {weekBeginning} Progress
-              </Typography>
+            </Typography>
             <Link
               to={{
                 pathname: `/PT/patient/${id}/history`,
@@ -709,7 +708,7 @@ const IndividualPatientView = (props) => {
             >
               <Button variant="light" className={classes.viewHistory}>
                 View History
-                </Button>
+              </Button>
             </Link>
           </header>
 
@@ -747,7 +746,6 @@ const IndividualPatientView = (props) => {
                   </Row>
                 );
               })}
-
             </div>
           </div>
           {/* End Progress Chart */}
@@ -757,17 +755,34 @@ const IndividualPatientView = (props) => {
             <div className={classes.descripDiv}>
               <Typography variant="h4" className={classes.header}>
                 How to Assign Exercises:
-            </Typography>
-              <li><span className={classes.emphasis}>Reps:</span> How many repetitions of the exercise the patient should complete per set?</li>
-              <li><span className={classes.emphasis}>Sets:</span> How many sets of the exercise should be completed?</li>
-              <li><span className={classes.emphasis}>Duration (seconds):</span> How long one repetition should take?</li>
-              <li><span className={classes.emphasis}>Hold (seconds):</span> How long the patient should hold their position? (default of 0)</li>
-              <li><span className={classes.emphasis}>Rest (seconds):</span> How long patients should rest between sets?</li>
+              </Typography>
+              <li>
+                <span className={classes.emphasis}>Reps:</span>
+                Repetitions of the exercise per set
+              </li>
+              <li>
+                <span className={classes.emphasis}>Sets:</span> Number of sets
+                to be completed
+              </li>
+              <li>
+                <span className={classes.emphasis}>Duration (seconds):</span>{" "}
+                Duration of one repetition (including hold time)
+              </li>
+              <li>
+                <span className={classes.emphasis}>Hold (seconds):</span> Time
+                to hold during each rep? (default of 0)
+              </li>
+              <li>
+                <span className={classes.emphasis}>Rest (seconds):</span> Rest
+                between sets (seconds)
+              </li>
+              <li>
+                <span className={classes.emphasis}>Resistance:</span>
+                Resistance during exercise (i.e. 5kg band)
+              </li>
             </div>
           </div>
           {/* End Description */}
-
-
 
           {dotw.map((day, ind) => {
             return (
@@ -990,7 +1005,6 @@ const IndividualPatientView = (props) => {
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
-                    
 
                       <Col className={classes.centeredCol}>
                         <Button
