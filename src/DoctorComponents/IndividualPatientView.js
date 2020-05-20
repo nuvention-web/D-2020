@@ -78,6 +78,7 @@ const useStyles = makeStyles((theme) => ({
     height: "calc(1.5em + .75rem + 2px)",
     borderRadius: 5,
     border: "1px solid #ccc",
+    display: "inline-block"
   },
   centeredCol: {
     textAlign: "center",
@@ -88,6 +89,9 @@ const useStyles = makeStyles((theme) => ({
   },
   rows: {
     marginTop: 10,
+  },
+  paramCols: {
+    textAlign: "center"
   },
   newExercise: {
     marginTop: 10,
@@ -150,6 +154,19 @@ const useStyles = makeStyles((theme) => ({
   emphasis: {
     color: "#3358C4",
     fontWeight: 600,
+  },
+  descripContainer: {
+    // when screen is small
+    [theme.breakpoints.down("xs")]: {
+      overflowX: "scroll",
+    },
+    marginTop: 60,
+    marginBottom: 40,
+    width: "90%",
+    margin: "0 auto",
+  },
+  descripDiv: {
+    minWidth: "700px",
   },
 }));
 
@@ -734,8 +751,8 @@ const IndividualPatientView = (props) => {
           {/* End Progress Chart */}
 
           {/* Description */}
-          <div className={classes.progressContainer}>
-            <div className={classes.progressDiv}>
+          <div className={classes.descripContainer}>
+            <div className={classes.descripDiv}>
               <Typography variant="h4" className={classes.header}>
                 How to Assign Exercises:
               </Typography>
@@ -773,12 +790,12 @@ const IndividualPatientView = (props) => {
                   <div>
                     <Row className={classes.rows}>
                       <Col>Exercise</Col>
-                      <Col>Reps</Col>
-                      <Col>Sets</Col>
-                      <Col>Duration(s)</Col>
-                      <Col>Hold(s)</Col>
-                      <Col>Rest(s)</Col>
-                      <Col>Resistance</Col>
+                      <Col className={classes.paramCols}>Reps</Col>
+                      <Col className={classes.paramCols}>Sets</Col>
+                      <Col className={classes.paramCols}>Duration (s)</Col>
+                      <Col className={classes.paramCols}>Hold (s)</Col>
+                      <Col className={classes.paramCols}>Rest (s)</Col>
+                      <Col className={classes.paramCols}>Resistance</Col>
                       {/* Keep extra column for add/delete button */}
                       <Col></Col>
                     </Row>
@@ -796,19 +813,19 @@ const IndividualPatientView = (props) => {
                             {ex.reps ? ex.reps : "-"}
                           </Col>
                           <Col className={classes.cols}>
-                            {ex.duration ? ex.duration : "-"}
+                            {ex.sets ? ex.sets : "-"}
                           </Col>
                           <Col className={classes.cols}>
-                            {ex.sets ? ex.sets : "-"}
+                            {ex.duration ? ex.duration : "-"}
                           </Col>
                           <Col className={classes.cols}>
                             {ex.hold ? ex.hold : "-"}
                           </Col>
                           <Col className={classes.cols}>
-                            {ex.resistance ? ex.resistance : "-"}
+                            {ex.rest ? ex.rest : "-"}
                           </Col>
                           <Col className={classes.cols}>
-                            {ex.rest ? ex.rest : "-"}
+                            {ex.resistance ? ex.resistance : "-"}
                           </Col>
                           {console.log("ex", ex)}
                           {console.log("??historyId", ex.historyId)}
@@ -860,7 +877,7 @@ const IndividualPatientView = (props) => {
                           </Form.Control>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className={classes.centeredCol}>
                         <Form.Group>
                           <Form.Control
                             type="number"
@@ -881,7 +898,7 @@ const IndividualPatientView = (props) => {
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className={classes.centeredCol}>
                         <Form.Group>
                           <Form.Control
                             type="number"
@@ -902,7 +919,7 @@ const IndividualPatientView = (props) => {
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className={classes.centeredCol}>
                         <Form.Control
                           as="input"
                           type="number"
@@ -922,7 +939,7 @@ const IndividualPatientView = (props) => {
                           Duration is required.
                         </Form.Control.Feedback>
                       </Col>
-                      <Col>
+                      <Col className={classes.centeredCol}>
                         <Form.Group>
                           <Form.Control
                             type="number"
@@ -943,7 +960,7 @@ const IndividualPatientView = (props) => {
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className={classes.centeredCol}>
                         <Form.Group>
                           <Form.Control
                             type="number"
@@ -960,11 +977,11 @@ const IndividualPatientView = (props) => {
                           />
                           {console.log("new rest??", newRest)}
                           <Form.Control.Feedback type="invalid">
-                            Sets are required.
+                            Rest is required.
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
-                      <Col>
+                      <Col className={classes.centeredCol}>
                         <Form.Group>
                           <Form.Control
                             type="text"

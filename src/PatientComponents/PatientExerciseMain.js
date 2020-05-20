@@ -22,6 +22,9 @@ import { useLocation, useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
+    [theme.breakpoints.down('sm')]: {
+      overflowX: "scroll"
+    },
     marginTop: "3%",
     height: "45vh",
     overflowY: "scroll",
@@ -176,7 +179,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cols: {
     textAlign: "center",
-    minWidth: "100px",
+    minWidth: "85px",
   },
   firstCol: {
     minWidth: "200px",
@@ -504,11 +507,11 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                   <Row className={classes.rows}>
                     <Col className={classes.firstCol}>Exercise</Col>
                     <Col className={classes.cols}>Reps</Col>
-                    <Col className={classes.cols}>Duration(s)</Col>
+                    <Col className={classes.cols}>Duration (s)</Col>
                     <Col className={classes.cols}>Sets</Col>
-                    <Col className={classes.cols}>Hold(s)</Col>
+                    <Col className={classes.cols}>Hold (s)</Col>
                     <Col className={classes.cols}>Resistance</Col>
-                    <Col className={classes.cols}>Rest(s)</Col>
+                    <Col className={classes.cols}>Rest (s)</Col>
                   </Row>
                   <Divider />
                   {Object.values(s.exercise).map((ex, k) => {
