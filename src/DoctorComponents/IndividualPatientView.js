@@ -802,19 +802,19 @@ const IndividualPatientView = (props) => {
                             {ex.reps ? ex.reps : "-"}
                           </Col>
                           <Col className={classes.cols}>
-                            {ex.duration ? ex.duration : "-"}
+                            {ex.sets ? ex.sets : "-"}
                           </Col>
                           <Col className={classes.cols}>
-                            {ex.sets ? ex.sets : "-"}
+                            {ex.duration ? ex.duration : "-"}
                           </Col>
                           <Col className={classes.cols}>
                             {ex.hold ? ex.hold : "-"}
                           </Col>
                           <Col className={classes.cols}>
-                            {ex.resistance ? ex.resistance : "-"}
+                            {ex.rest ? ex.rest : "-"}
                           </Col>
                           <Col className={classes.cols}>
-                            {ex.rest ? ex.rest : "-"}
+                            {ex.resistance ? ex.resistance : "-"}
                           </Col>
                           {console.log("ex", ex)}
                           {console.log("??historyId", ex.historyId)}
