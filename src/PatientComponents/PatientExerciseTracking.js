@@ -449,6 +449,10 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                     <span className={classes.emphasis}>Rest (seconds):</span>{" "}
                     {exercise.rest}
                   </li>
+                  <li>
+                    <span className={classes.emphasis}>Resitance:</span>{" "}
+                    {exercise.resistance}
+                  </li>
                 </div>
               </React.Fragment>
             ) : // End Task Stuff

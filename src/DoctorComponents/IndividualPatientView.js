@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
     height: "calc(1.5em + .75rem + 2px)",
     borderRadius: 5,
     border: "1px solid #ccc",
-    display: "inline-block"
+    display: "inline-block",
   },
   centeredCol: {
     textAlign: "center",
@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 10,
   },
   paramCols: {
-    textAlign: "center"
+    textAlign: "center",
   },
   newExercise: {
     marginTop: 10,
@@ -757,24 +757,28 @@ const IndividualPatientView = (props) => {
                 How to Assign Exercises:
               </Typography>
               <li>
-                <span className={classes.emphasis}>Reps:</span> How many
-                repetitions of the exercise should be completed per set?
+                <span className={classes.emphasis}>Reps:</span>
+                Repetitions of the exercise per set
               </li>
               <li>
-                <span className={classes.emphasis}>Sets:</span> How many sets of
-                the exercise should be completed?
+                <span className={classes.emphasis}>Sets:</span> Number of sets
+                to be completed
               </li>
               <li>
                 <span className={classes.emphasis}>Duration (seconds):</span>{" "}
-                How long one repetition should take? (including hold time)
+                Duration of one repetition (including hold time)
               </li>
               <li>
-                <span className={classes.emphasis}>Hold (seconds):</span> How
-                long should the patient hold during rep? (default of 0)
+                <span className={classes.emphasis}>Hold (seconds):</span> Time
+                to hold during each rep? (default of 0)
               </li>
               <li>
-                <span className={classes.emphasis}>Rest (seconds):</span> How
-                long should patients rest between sets?
+                <span className={classes.emphasis}>Rest (seconds):</span> Rest
+                between sets (seconds)
+              </li>
+              <li>
+                <span className={classes.emphasis}>Resistance:</span>
+                Resistance during exercise (i.e. 5kg band)
               </li>
             </div>
           </div>
