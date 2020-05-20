@@ -966,7 +966,7 @@ const IndividualPatientView = (props) => {
                           />
                           {console.log("new rest??", newRest)}
                           <Form.Control.Feedback type="invalid">
-                            Sets are required.
+                            Rest is required.
                           </Form.Control.Feedback>
                         </Form.Group>
                       </Col>
