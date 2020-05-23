@@ -706,13 +706,14 @@ const IndividualPatientView = (props) => {
     };
 
     const checkMatch = (day) => {
+      console.log('day in checkMatch', day)
       // .find returns the element that matches
-      let s = exerciseSets.find((element) => element.day == day);
+      // let s = exerciseSets[day].find((element) => element.day == day);
       // Undefined if there are no matches
-      if (s === undefined) {
-        return [];
-      }
-      var sortedExercises = s.exercise.sort(compareDate);
+      // if (s === undefined) {
+      //   return [];
+      // }
+      var sortedExercises = exerciseSets[day].sort(compareDate);
       return sortedExercises;
     };
 
@@ -800,15 +801,16 @@ const IndividualPatientView = (props) => {
               </Row>
               <Divider />
               {console.log(Object.entries(exerciseSets))}
-              {Object.entries(exerciseSets).map((entry, i) => {
+              {Object.entries(exerciseSets).filter(entry => entry[0] !== 'exerciseList').map((entry, i) => {
+                console.log('entry???', entry)
                 return (
                   <Row key={i}>
-                    <Col>{entry["day"]}</Col>
+                    <Col>{entry[0]}</Col>
                     {/* Map through each column */}
                     {exerciseSets.exerciseList.map((name, i) => {
                       return (
                         <Col className={classes.centeredCol}>
-                          {checkExComplete(entry, name)}
+                          {checkExComplete(entry[1], name)}
                         </Col>
                       );
                     })}
@@ -876,6 +878,7 @@ const IndividualPatientView = (props) => {
 
                   <Divider />
 
+                  {console.log("exerciseSets", exerciseSets)}
                   {console.log("checkMatch:", day, checkMatch(day))}
                   {checkMatch(day).map((ex, k) => {
                     return (
