@@ -425,7 +425,7 @@ const IndividualPatientView = (props) => {
     console.log("Selected ExerciseType: ", selectedExerciseType);
     // Generate new exercise
     const exerciseObjectData = {
-      id: 0,
+      day: new Date().getDay(),
       name: newEx,
       reps: parseInt(newReps[day]),
       duration: parseFloat(newDuration[day]),
@@ -462,63 +462,30 @@ const IndividualPatientView = (props) => {
       ...exerciseObjectData,
     };
 
-    return [exerciseObjectData, historyObjectData];
+    return exerciseObjectData;
   };
 
   // Submit new exercise to firebase
   const addExercise = async (e, setDay, l) => {
     // For debugging purposes - pauses refresh on submit
     e.preventDefault();
+    console.log(setDay, l);
 
-    const [newExercise, newHistory] = await getUpdatedSet(setDay);
+    const newExercise = await getUpdatedSet(setDay);
     console.log("newExercise", newExercise);
-    console.log("newHistory", newHistory);
 
-    // Firestore reference
-    var dayRef = db.collection("patients").doc(id).collection("exercisesets");
+    const patientRef = db
+      .collection("patients")
+      .doc(id)
+      .collection("exercises")
+      .doc("weekEx")
+      .collection(thisMondayStr);
 
-    if (l == 0) {
-      dayRef.doc(setDay).set({ day: setDay });
-    }
-
-    // Add to exercisesets
-    var patientRef = dayRef.doc(setDay).collection("exercises");
-
+    // Add to exercises
     patientRef
       .add(newExercise)
       .then(function (docRef) {
         console.log("Exercise document written with ID: ", docRef.id);
-
-        // Add docRef.id to history to double check
-        // newHistory.exerciseDocId = docRef.id;
-        // console.log("newHistory right before:", newHistory);
-
-        // Add history doc (w/ random generated id)
-        db.collection("patients")
-          .doc(id)
-          .collection("history")
-          .add(newHistory)
-          .then(function (historyRef) {
-            console.log("History document sucessfully written!", historyRef.id);
-
-            // Now, in new exercise, set historyId to historyRef.id
-            console.log("docRef here", docRef.id);
-            patientRef
-              .doc(docRef.id)
-              .set({ historyId: historyRef.id }, { merge: true })
-              .then(function () {
-                console.log("historyId added to exercise!");
-                window.location.reload(false);
-              })
-              .catch(function (error) {
-                console.error("Error writing document: ", error);
-              });
-            // End setting historyId to new exercise
-          })
-          .catch(function (error) {
-            console.error("Error writing document: ", error);
-          });
-        // End add to history
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
@@ -706,7 +673,7 @@ const IndividualPatientView = (props) => {
     };
 
     const checkMatch = (day) => {
-      console.log('day in checkMatch', day)
+      console.log("day in checkMatch", day);
       // .find returns the element that matches
       // let s = exerciseSets[day].find((element) => element.day == day);
       // Undefined if there are no matches
@@ -801,22 +768,24 @@ const IndividualPatientView = (props) => {
               </Row>
               <Divider />
               {console.log(Object.entries(exerciseSets))}
-              {Object.entries(exerciseSets).filter(entry => entry[0] !== 'exerciseList').map((entry, i) => {
-                console.log('entry???', entry)
-                return (
-                  <Row key={i}>
-                    <Col>{entry[0]}</Col>
-                    {/* Map through each column */}
-                    {exerciseSets.exerciseList.map((name, i) => {
-                      return (
-                        <Col className={classes.centeredCol}>
-                          {checkExComplete(entry[1], name)}
-                        </Col>
-                      );
-                    })}
-                  </Row>
-                );
-              })}
+              {Object.entries(exerciseSets)
+                .filter((entry) => entry[0] !== "exerciseList")
+                .map((entry, i) => {
+                  console.log("entry???", entry);
+                  return (
+                    <Row key={i}>
+                      <Col>{entry[0]}</Col>
+                      {/* Map through each column */}
+                      {exerciseSets.exerciseList.map((name, i) => {
+                        return (
+                          <Col className={classes.centeredCol}>
+                            {checkExComplete(entry[1], name)}
+                          </Col>
+                        );
+                      })}
+                    </Row>
+                  );
+                })}
             </div>
           </div>
           {/* End Progress Chart */}
