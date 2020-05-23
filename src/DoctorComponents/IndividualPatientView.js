@@ -698,6 +698,11 @@ const IndividualPatientView = (props) => {
         <div>
           <header className={classes.progressHeader}>
             <Typography variant="h4" className={classes.header}>
+              Patient: {location.patientInfo ? location.patientInfo.name : null}
+            </Typography>
+          </header>
+          <header className={classes.progressHeader}>
+            <Typography variant="h4" className={classes.header}>
               Week of {weekBeginning} Progress
             </Typography>
             <Link
