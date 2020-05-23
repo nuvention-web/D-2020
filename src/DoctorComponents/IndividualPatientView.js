@@ -196,8 +196,8 @@ export const compareSets = (a, b) => {
 };
 
 const compareDate = (a, b) => {
-  const dateA = a.date == undefined ? 0 : a.date;
-  const dateB = b.date == undefined ? -1 : b.date;
+  const dateA = a.dateAdded == undefined ? 0 : a.dateAdded;
+  const dateB = b.dateAdded == undefined ? -1 : b.dateAdded;
 
   let comparison = 0;
   if (dateA > dateB) {
@@ -285,6 +285,32 @@ const IndividualPatientView = (props) => {
     }
     return dayNum;
   };
+  const getNumFromDay = (num) => {
+    let dayNum;
+    switch (num) {
+      case "Sunday":
+        dayNum = 0;
+        break;
+      case "Monday":
+        dayNum = 1;
+        break;
+      case "Tuesday":
+        dayNum = 2;
+        break;
+      case "Wednesday":
+        dayNum = 3;
+        break;
+      case "Thursday":
+        dayNum = 4;
+        break;
+      case "Friday":
+        dayNum = 5;
+        break;
+      case "Saturday":
+        dayNum = 6;
+    }
+    return dayNum;
+  };
 
   // Handle new patient with no exercisesets collection yet
   useEffect(() => {
@@ -336,42 +362,42 @@ const IndividualPatientView = (props) => {
         // Newly added to load Firestore data
         patientRef.get().then((querySnapshot) => {
           console.log("QuerySnapshot: ", querySnapshot.docs);
-          Promise.all(querySnapshot.docs.map((doc) => doc.data())).then(
-            (exercises) => {
-              console.log("Exercises: ", exercises);
-              exercises.forEach((exercise) => {
-                console.log("Exercise: ", exercise);
-                switch (exercise.day) {
-                  case 0:
-                    exerciseHolder["Sunday"].push(exercise);
-                    break;
-                  case 1:
-                    exerciseHolder["Monday"].push(exercise);
-                    break;
-                  case 2:
-                    exerciseHolder["Tuesday"].push(exercise);
-                    break;
-                  case 3:
-                    exerciseHolder["Wednesday"].push(exercise);
-                    break;
-                  case 4:
-                    exerciseHolder["Thursday"].push(exercise);
-                    break;
-                  case 5:
-                    exerciseHolder["Friday"].push(exercise);
-                    break;
-                  case 0:
-                    exerciseHolder["Saturday"].push(exercise);
-                }
-                if (!exerciseHolder.exerciseList.includes(exercise.name)) {
-                  exerciseHolder.exerciseList.push(exercise.name);
-                  console.log("l now", exerciseHolder.exerciseList);
-                }
-              });
-              console.log("exerciseHolder: ", exerciseHolder);
-              setExerciseSets(exerciseHolder);
-            }
-          );
+          Promise.all(
+            querySnapshot.docs.map((doc) => ({ docId: doc.id, ...doc.data() }))
+          ).then((exercises) => {
+            console.log("Exercises: ", exercises);
+            exercises.forEach((exercise) => {
+              console.log("Exercise: ", exercise);
+              switch (exercise.day) {
+                case 0:
+                  exerciseHolder["Sunday"].push(exercise);
+                  break;
+                case 1:
+                  exerciseHolder["Monday"].push(exercise);
+                  break;
+                case 2:
+                  exerciseHolder["Tuesday"].push(exercise);
+                  break;
+                case 3:
+                  exerciseHolder["Wednesday"].push(exercise);
+                  break;
+                case 4:
+                  exerciseHolder["Thursday"].push(exercise);
+                  break;
+                case 5:
+                  exerciseHolder["Friday"].push(exercise);
+                  break;
+                case 6:
+                  exerciseHolder["Saturday"].push(exercise);
+              }
+              if (!exerciseHolder.exerciseList.includes(exercise.name)) {
+                exerciseHolder.exerciseList.push(exercise.name);
+                console.log("l now", exerciseHolder.exerciseList);
+              }
+            });
+            console.log("exerciseHolder: ", exerciseHolder);
+            setExerciseSets(exerciseHolder);
+          });
         });
       }
     };
@@ -425,7 +451,7 @@ const IndividualPatientView = (props) => {
     console.log("Selected ExerciseType: ", selectedExerciseType);
     // Generate new exercise
     const exerciseObjectData = {
-      day: new Date().getDay(),
+      day: getNumFromDay(day),
       name: newEx,
       reps: parseInt(newReps[day]),
       duration: parseFloat(newDuration[day]),
@@ -435,7 +461,7 @@ const IndividualPatientView = (props) => {
       rest: parseInt(newRest[day]),
       videoId: selectedExerciseType[0].videoId,
       complete: false,
-      date: new Date(),
+      dateAdded: new Date(),
     };
     // var exerciseObjectData = findExercise(newExercise);
     console.log("Adding this exercise to firebase! :)", newExercise);
@@ -455,12 +481,6 @@ const IndividualPatientView = (props) => {
     // Can only add exercises to future week
     n = new Date(n.setDate(n.getDate() - diff));
     console.log("n", n);
-
-    // For history object
-    const historyObjectData = {
-      date: n,
-      ...exerciseObjectData,
-    };
 
     return exerciseObjectData;
   };
@@ -482,7 +502,7 @@ const IndividualPatientView = (props) => {
       .collection(thisMondayStr);
 
     // Add to exercises
-    patientRef
+    await patientRef
       .add(newExercise)
       .then(function (docRef) {
         console.log("Exercise document written with ID: ", docRef.id);
@@ -490,91 +510,27 @@ const IndividualPatientView = (props) => {
       .catch(function (error) {
         console.error("Error writing document: ", error);
       });
+    // Should only reload if previous chunk of code has run..
+    window.location.reload(false);
   };
 
   // Delete exercise from firebase
-  const deleteExercise = async (e, setDay, docId, historyId) => {
+  const deleteExercise = async (e, setDay, docId) => {
     // For debugging purposes - pauses refresh on submit
     e.preventDefault();
 
     console.log("Deleting!");
     console.log("docId", docId);
-    console.log("historyId", historyId);
+    console.log("Set Day", setDay);
     console.log("id in deleteExercise", id);
-    // Check if we should delete history first
-
-    const checkHistory = () => {
-      db.collection("patients")
-        .doc(id)
-        .collection("history")
-        .doc(historyId)
-        .get()
-        .then(function (doc) {
-          if (doc.exists) {
-            console.log("Document data:", doc.data());
-            // If same week, delete history doc
-            // Same week if before next Monday 3 am
-            var today = new Date();
-            var day = today.getDay(); // day of the week 0-6
-            const diff = today.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-            // Monday of this week
-            var mon = new Date();
-            mon.setDate(diff);
-            mon.setHours(0);
-            mon.setMinutes(0);
-            mon.setSeconds(0);
-            // var nextMon = new Date(mon.getTime() + 7 * 24 * 60 * 60 * 1000);
-            var thisMon = new Date(mon.getTime());
-            console.log("this Monday", thisMon);
-
-            // Timestamp of history document, in milliseconds
-            console.log(doc.data(), doc.data().date);
-            const historyTime = doc.data().date.seconds;
-            console.log("historyTime", historyTime);
-            console.log("historyTime date", new Date(historyTime));
-            console.log("thisMon: ", thisMon.getTime() / 1000);
-            console.log(historyTime - thisMon.getTime() / 1000);
-            // Exercise being deleted within same week, delete history
-            if (historyTime > thisMon.getTime() / 1000) {
-              // Delete history
-              db.collection("patients")
-                .doc(id)
-                .collection("history")
-                .doc(historyId)
-                .delete()
-                .then(function () {
-                  console.log("History doc deleted");
-                  return true;
-                })
-                .catch(function (error) {
-                  console.error("Error deleting document: ", error);
-                });
-              // End Delete history
-            } else {
-              return true;
-            }
-            // If different week, do nothing
-          } else {
-            // doc.data() will be undefined in this case
-            console.log("No such history document!");
-          }
-        })
-        .catch(function (error) {
-          console.log("Error getting document:", error);
-        });
-    };
-    // end checkHistory function
-
-    const done = await checkHistory();
-    console.log("done", done);
 
     // Now delete exercise document
     var exerciseRef = db
       .collection("patients")
       .doc(id)
-      .collection("exercisesets")
-      .doc(setDay)
       .collection("exercises")
+      .doc("weekEx")
+      .collection(thisMondayStr)
       .doc(docId);
 
     await exerciseRef
@@ -873,7 +829,6 @@ const IndividualPatientView = (props) => {
                             {ex.resistance ? ex.resistance : "-"}
                           </Col>
                           {console.log("ex", ex)}
-                          {console.log("??historyId", ex.historyId)}
 
                           <Col className={classes.centeredCol}>
                             <FontAwesomeIcon
@@ -882,7 +837,7 @@ const IndividualPatientView = (props) => {
                               size="2x"
                               className={classes.deleteIcon}
                               onClick={(e) => {
-                                deleteExercise(e, day, ex.docId, ex.historyId);
+                                deleteExercise(e, day, ex.docId);
                               }}
                             />
                           </Col>
