@@ -245,14 +245,57 @@ const IndividualPatientView = (props) => {
   const [validated, setValidated] = useState(false);
   const [validatedDay, setValidatedDay] = useState("");
 
+  const [thisMondayStr, setThisMondayStr] = useState();
+
+  useEffect(() => {
+    const d = new Date();
+    let day = d.getDay(),
+      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+    d.setDate(diff);
+    const date = d.getDate();
+    const month = d.getMonth() + 1;
+    const year = d.getFullYear();
+
+    setThisMondayStr(year + "-" + month + "-" + date);
+  }, [currUser]);
+
+  const getDayFromNum = (num) => {
+    let dayNum;
+    switch (num) {
+      case "Sunday":
+        dayNum = 0;
+        break;
+      case "Monday":
+        dayNum = 1;
+        break;
+      case "Tuesday":
+        dayNum = 2;
+        break;
+      case "Wednesday":
+        dayNum = 3;
+        break;
+      case "Thursday":
+        dayNum = 4;
+        break;
+      case "Friday":
+        dayNum = 5;
+        break;
+      case "Saturday":
+        dayNum = 6;
+    }
+    return dayNum;
+  };
+
   // Handle new patient with no exercisesets collection yet
   useEffect(() => {
-    if (Object.entries(currUser).length > 0) {
+    if (Object.entries(currUser).length > 0 && thisMondayStr) {
       console.log("this runs");
       var collectionRef = db
         .collection("patients")
         .doc(currUser.uid)
-        .collection("exercisesets")
+        .collection("exercises")
+        .doc("weekEx")
+        .collection(thisMondayStr)
         .limit(1);
 
       collectionRef.get().then((query) => {
@@ -267,53 +310,74 @@ const IndividualPatientView = (props) => {
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
     const fetchPatient = () => {
-      // Newly added to load Firestore data
       console.log("location.patientInfo", location.patientInfo);
-      var patientRef = db
-        .collection("patients")
-        .doc(id)
-        .collection("exercisesets");
-
       // Newly added to load Firestore data
-      var fullset = [];
-      var l = [];
-      patientRef.get().then((querySnapshot) => {
-        // For each set
-        querySnapshot.forEach((doc) => {
-          const day = doc.data().day;
-          var ex = [];
-          // Nested inner
-          patientRef
-            .doc(doc.id)
-            .collection("exercises")
-            .get()
-            .then((snap) => {
-              snap.forEach((doc1) => {
-                const exercise = doc1.data();
-                // Append docId to each exercise to enable easy delete
-                exercise.docId = doc1.id;
-                console.log("exercise.name", exercise.name);
-                ex.push(exercise);
-                if (!l.includes(exercise.name)) {
-                  l.push(exercise.name);
-                  console.log("l now", l);
+      let exerciseHolder = {
+        Monday: [],
+        Tuesday: [],
+        Wednesday: [],
+        Thursday: [],
+        Friday: [],
+        Saturday: [],
+        Sunday: [],
+        exerciseList: [],
+      };
+      if (thisMondayStr) {
+        console.log("This Monday: ", thisMondayStr);
+        console.log("This Monday Type: ", typeof thisMondayStr);
+
+        var patientRef = db
+          .collection("patients")
+          .doc(id)
+          .collection("exercises")
+          .doc("weekEx")
+          .collection(thisMondayStr);
+
+        // Newly added to load Firestore data
+        patientRef.get().then((querySnapshot) => {
+          console.log("QuerySnapshot: ", querySnapshot.docs);
+          Promise.all(querySnapshot.docs.map((doc) => doc.data())).then(
+            (exercises) => {
+              console.log("Exercises: ", exercises);
+              exercises.forEach((exercise) => {
+                console.log("Exercise: ", exercise);
+                switch (exercise.day) {
+                  case 0:
+                    exerciseHolder["Sunday"].push(exercise);
+                    break;
+                  case 1:
+                    exerciseHolder["Monday"].push(exercise);
+                    break;
+                  case 2:
+                    exerciseHolder["Tuesday"].push(exercise);
+                    break;
+                  case 3:
+                    exerciseHolder["Wednesday"].push(exercise);
+                    break;
+                  case 4:
+                    exerciseHolder["Thursday"].push(exercise);
+                    break;
+                  case 5:
+                    exerciseHolder["Friday"].push(exercise);
+                    break;
+                  case 0:
+                    exerciseHolder["Saturday"].push(exercise);
+                }
+                if (!exerciseHolder.exerciseList.includes(exercise.name)) {
+                  exerciseHolder.exerciseList.push(exercise.name);
+                  console.log("l now", exerciseHolder.exerciseList);
                 }
               });
-            })
-            .then(() => {
-              fullset.push({ day: day, exercise: ex, exerciseList: l });
-              // When everything's fully loaded
-              if (querySnapshot.docs.length === fullset.length) {
-                fullset.sort(compareSets);
-                setExerciseSets(fullset);
-              }
-            });
+              console.log("exerciseHolder: ", exerciseHolder);
+              setExerciseSets(exerciseHolder);
+            }
+          );
         });
-      });
+      }
     };
 
     fetchPatient();
-  }, []);
+  }, [thisMondayStr]);
 
   // last line refers to how this useEffect will rerun if value of foundDID changes
   useEffect(() => {
@@ -642,13 +706,14 @@ const IndividualPatientView = (props) => {
     };
 
     const checkMatch = (day) => {
+      console.log('day in checkMatch', day)
       // .find returns the element that matches
-      let s = exerciseSets.find((element) => element.day == day);
+      // let s = exerciseSets[day].find((element) => element.day == day);
       // Undefined if there are no matches
-      if (s === undefined) {
-        return [];
-      }
-      var sortedExercises = s.exercise.sort(compareDate);
+      // if (s === undefined) {
+      //   return [];
+      // }
+      var sortedExercises = exerciseSets[day].sort(compareDate);
       return sortedExercises;
     };
 
@@ -721,11 +786,11 @@ const IndividualPatientView = (props) => {
             <div className={classes.progressDiv}>
               {/* Progress Chart */}
               <Row>
-                {exerciseSets.length !== 0 ? (
+                {Object.entries(exerciseSets).length !== 0 ? (
                   <React.Fragment>
                     <Col>Exercise Name</Col>
 
-                    {exerciseSets[0].exerciseList.map((ex) => (
+                    {exerciseSets.exerciseList.map((ex) => (
                       <Col className={classes.centeredCol}>{ex}</Col>
                     ))}
                   </React.Fragment>
@@ -735,16 +800,17 @@ const IndividualPatientView = (props) => {
                 ) : null}
               </Row>
               <Divider />
-
-              {exerciseSets.map((s, i) => {
+              {console.log(Object.entries(exerciseSets))}
+              {Object.entries(exerciseSets).filter(entry => entry[0] !== 'exerciseList').map((entry, i) => {
+                console.log('entry???', entry)
                 return (
                   <Row key={i}>
-                    <Col>{s["day"]}</Col>
+                    <Col>{entry[0]}</Col>
                     {/* Map through each column */}
-                    {s.exerciseList.map((name, i) => {
+                    {exerciseSets.exerciseList.map((name, i) => {
                       return (
                         <Col className={classes.centeredCol}>
-                          {checkExComplete(s.exercise, name)}
+                          {checkExComplete(entry[1], name)}
                         </Col>
                       );
                     })}
@@ -812,6 +878,7 @@ const IndividualPatientView = (props) => {
 
                   <Divider />
 
+                  {console.log("exerciseSets", exerciseSets)}
                   {console.log("checkMatch:", day, checkMatch(day))}
                   {checkMatch(day).map((ex, k) => {
                     return (
