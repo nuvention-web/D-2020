@@ -19,7 +19,8 @@ import {
   faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
-
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 const useStyles = makeStyles((theme) => ({
   exercises: {
     marginTop: 15,
@@ -167,6 +168,10 @@ const useStyles = makeStyles((theme) => ({
   },
   descripDiv: {
     minWidth: "700px",
+  },
+  date: {
+    textAlign: "center",
+    margin: "0 auto",
   },
 }));
 
@@ -557,18 +562,24 @@ const IndividualPatientView = (props) => {
     return t;
   };
 
-  const getMonday = (d) => {
+  const getStartEnd = (d) => {
     d = new Date(d);
-    var day = d.getDay(),
+    let day = d.getDay(),
       diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
     d.setDate(diff);
-    var date = d.getDate();
-    var month = d.getMonth() + 1;
-    var year = d.getFullYear();
-    var dateStr = month + "/" + date + "/" + year;
-    return dateStr;
+    let sDate = d.getDate();
+    let sMonth = d.getMonth() + 1;
+    let sYear = d.getFullYear();
+    d.setDate(diff + 6);
+    let eDate = d.getDate();
+    let eMonth = d.getMonth() + 1;
+    let eYear = d.getFullYear();
+    const startDateStr = sMonth + "/" + sDate + "/" + sYear;
+    const endDateStr = eMonth + "/" + eDate + "/" + eYear;
+    return [startDateStr, endDateStr];
   };
-  const weekBeginning = getMonday(new Date());
+
+  const [weekBeginning, weekEnd] = getStartEnd(new Date());
 
   const formatExerciseName = (n) => {
     var splitStr = n.toLowerCase().split(" ");
@@ -681,6 +692,14 @@ const IndividualPatientView = (props) => {
       setValidatedDay(day);
     };
 
+    const getPrevWeek = () => {
+      console.log("Bringing data of prevWeek ");
+    };
+
+    const getNextWeek = () => {
+      console.log("Bringing data of nextWeek");
+    };
+
     return (
       <div>
         <div>
@@ -690,8 +709,15 @@ const IndividualPatientView = (props) => {
             </Typography>
           </header>
           <header className={classes.progressHeader}>
+            <Typography variant="h4" className={classes.date}>
+              <ArrowBackIosIcon onClick={() => getPrevWeek()} />
+              {weekBeginning} ~ {weekEnd}
+              <ArrowForwardIosIcon onClick={() => getNextWeek()} />
+            </Typography>
+          </header>
+          <header className={classes.progressHeader}>
             <Typography variant="h4" className={classes.header}>
-              Week of {weekBeginning} Progress
+              Progress
             </Typography>
             <Link
               to={{
