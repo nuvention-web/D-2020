@@ -97,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
   newExercise: {
     marginTop: 10,
   },
-  deleteIcon: {
+  deleteButton: {
     "&:hover": {
       color: "#8ca1e6",
     },
@@ -245,6 +245,9 @@ const IndividualPatientView = (props) => {
   // For loading data, taken from PatientExerciseMain
   const [loaded, setLoaded] = useState(false);
   const [exerciseType, setExerciseType] = useState([]);
+
+  // For determining if the current page can be modified
+  const [canModify, setCanModify] = useState(true);
 
   const dotw = [
     "Monday",
@@ -450,6 +453,36 @@ const IndividualPatientView = (props) => {
         });
     }
   }, [currUser]);
+
+  useEffect(() => {
+    checkCanModify();
+  }, [thisMondayStr]);
+  // End loading data
+
+  const checkCanModify = () => {
+    console.log('in checkCanModify', thisMondayStr)
+    // If we are in a week prior to this one, set canModify to false
+    // d = this Monday
+    const d = new Date();
+    let day = d.getDay(),
+      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+    d.setDate(diff);
+    d.setHours(0, 0, 0, 0);
+
+    if (typeof thisMondayStr !== 'undefined') {
+      // The monday we are looking at
+      var currMonday = new Date(thisMondayStr);
+
+      console.log('modify', currMonday, d)
+      if (currMonday < d) {
+        console.log("Cannot modify this week")
+        setCanModify(false);
+      }
+      else {
+        setCanModify(true);
+      }
+    }
+  }
 
   const getUpdatedSet = async (day) => {
     console.log("current new Exercise: ", newExercise);
@@ -695,6 +728,9 @@ const IndividualPatientView = (props) => {
       setValidatedDay(day);
     };
 
+
+
+
     const getPrevWeek = () => {
       console.log("Bringing data of prevWeek ");
 
@@ -716,6 +752,7 @@ const IndividualPatientView = (props) => {
 
       console.log("new thisMondayStr", year + "-" + month + "-" + date)
       setThisMondayStr(year + "-" + month + "-" + date);
+      // checkCanModify();
     };
 
 
@@ -743,6 +780,7 @@ const IndividualPatientView = (props) => {
 
       console.log("new thisMondayStr", year + "-" + month + "-" + date)
       setThisMondayStr(year + "-" + month + "-" + date);
+      // checkCanModify();
     };
 
     return (
@@ -822,35 +860,37 @@ const IndividualPatientView = (props) => {
 
           {/* Description */}
           <div className={classes.descripContainer}>
-            <div className={classes.descripDiv}>
-              <Typography variant="h4" className={classes.header}>
-                How to Assign Exercises:
+            {canModify ? (
+              <div className={classes.descripDiv}>
+                <Typography variant="h4" className={classes.header}>
+                  How to Assign Exercises:
               </Typography>
-              <li>
-                <span className={classes.emphasis}>Reps:</span>
-                Repetitions of the exercise per set
+                <li>
+                  <span className={classes.emphasis}>Reps:</span>
+                  Repetitions of the exercise per set
               </li>
-              <li>
-                <span className={classes.emphasis}>Sets:</span> Number of sets
-                to be completed
+                <li>
+                  <span className={classes.emphasis}>Sets:</span> Number of sets
+                  to be completed
               </li>
-              <li>
-                <span className={classes.emphasis}>Duration (seconds):</span>{" "}
-                Duration of one repetition (including hold time)
+                <li>
+                  <span className={classes.emphasis}>Duration (seconds):</span>{" "}
+                  Duration of one repetition (including hold time)
               </li>
-              <li>
-                <span className={classes.emphasis}>Hold (seconds):</span> Time
-                to hold during each rep? (default of 0)
+                <li>
+                  <span className={classes.emphasis}>Hold (seconds):</span> Time
+                  to hold during each rep? (default of 0)
               </li>
-              <li>
-                <span className={classes.emphasis}>Rest (seconds):</span> Rest
-                between sets (seconds)
+                <li>
+                  <span className={classes.emphasis}>Rest (seconds):</span> Rest
+                  between sets (seconds)
               </li>
-              <li>
-                <span className={classes.emphasis}>Resistance:</span>
-                Resistance during exercise (i.e. 5kg band)
+                <li>
+                  <span className={classes.emphasis}>Resistance:</span>
+                  Resistance during exercise (i.e. 5kg band)
               </li>
-            </div>
+              </div>
+            ) : <div>This page is read-only</div>}
           </div>
           {/* End Description */}
 
@@ -904,15 +944,17 @@ const IndividualPatientView = (props) => {
                           {console.log("ex", ex)}
 
                           <Col className={classes.centeredCol}>
-                            <FontAwesomeIcon
-                              icon={faTimes}
-                              color="#9DB4FF"
-                              size="2x"
-                              className={classes.deleteIcon}
-                              onClick={(e) => {
-                                deleteExercise(e, day, ex.docId);
-                              }}
-                            />
+                            <Button
+                              variant="light"
+                              onClick={(e) => { deleteExercise(e, day, ex.docId) }}
+                              disabled={!canModify}
+                            >
+                              <FontAwesomeIcon
+                                icon={faTimes}
+                                color="#9DB4FF"
+                                size="2x"
+                              />
+                            </Button>
                           </Col>
                         </Row>
                       </div>
@@ -1077,8 +1119,7 @@ const IndividualPatientView = (props) => {
                         <Button
                           variant="light"
                           type="submit"
-                          className={classes.addButton}
-                          // disabled={(typeof newReps === 'undefined' || typeof newDuration === 'undefined')}
+                          disabled={!canModify}
                           onClick={(e) => {
                             canClick(day)
                               ? addExercise(e, day, checkMatch(day).length)
