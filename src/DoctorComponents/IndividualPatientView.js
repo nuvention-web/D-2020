@@ -750,7 +750,7 @@ const IndividualPatientView = (props) => {
         <div>
           <header className={classes.progressHeader}>
             <Typography variant="h4" className={classes.header}>
-              Patient: {location.patientInfo ? location.patientInfo.name : null}
+              Patient: {currUser.displayName}
             </Typography>
           </header>
           <header className={classes.progressHeader}>
