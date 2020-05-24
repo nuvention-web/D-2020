@@ -173,6 +173,17 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     margin: "0 auto",
   },
+  arrowButton: {
+    // [theme.breakpoints.down("sm")]: {
+    //   width: 80,
+    //   fontSize: 16,
+    // },
+    display: "inline-block",
+    // flexDirection: "row",
+    alignItems: "left",
+    width: 40,
+    margin: 30,
+  },
 }));
 
 export const dayToNumIdMap = new Map([
@@ -744,9 +755,13 @@ const IndividualPatientView = (props) => {
           </header>
           <header className={classes.progressHeader}>
             <Typography variant="h4" className={classes.date}>
-              <ArrowBackIosIcon onClick={() => getPrevWeek()} />
+              <Button variant="light" className={classes.arrowButton} onClick={() => getPrevWeek()}>
+                <ArrowBackIosIcon></ArrowBackIosIcon>
+              </Button>
               {getStartEnd(thisMondayStr)}
-              <ArrowForwardIosIcon onClick={() => getNextWeek()} />
+              <Button variant="light" className={classes.arrowButton} onClick={() => getNextWeek()}>
+                <ArrowForwardIosIcon />
+              </Button>
             </Typography>
           </header>
           <header className={classes.progressHeader}>
