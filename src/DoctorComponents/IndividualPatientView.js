@@ -173,6 +173,17 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     margin: "0 auto",
   },
+  arrowButton: {
+    // [theme.breakpoints.down("sm")]: {
+    //   width: 80,
+    //   fontSize: 16,
+    // },
+    display: "inline-block",
+    // flexDirection: "row",
+    alignItems: "left",
+    width: 40,
+    margin: 30,
+  },
 }));
 
 export const dayToNumIdMap = new Map([
@@ -576,10 +587,8 @@ const IndividualPatientView = (props) => {
     let eYear = d.getFullYear();
     const startDateStr = sMonth + "/" + sDate + "/" + sYear;
     const endDateStr = eMonth + "/" + eDate + "/" + eYear;
-    return [startDateStr, endDateStr];
+    return startDateStr + " - " + endDateStr;
   };
-
-  const [weekBeginning, weekEnd] = getStartEnd(new Date());
 
   const formatExerciseName = (n) => {
     var splitStr = n.toLowerCase().split(" ");
@@ -640,13 +649,7 @@ const IndividualPatientView = (props) => {
     };
 
     const checkMatch = (day) => {
-      console.log("day in checkMatch", day);
-      // .find returns the element that matches
-      // let s = exerciseSets[day].find((element) => element.day == day);
-      // Undefined if there are no matches
-      // if (s === undefined) {
-      //   return [];
-      // }
+      // Go through all exercises for given day and sort by date field
       var sortedExercises = exerciseSets[day].sort(compareDate);
       return sortedExercises;
     };
@@ -694,10 +697,52 @@ const IndividualPatientView = (props) => {
 
     const getPrevWeek = () => {
       console.log("Bringing data of prevWeek ");
+
+      // Retrieve thisMondayStr
+      var currMonday = new Date(thisMondayStr);
+      console.log("thisMondayStr as a date obj", currMonday)
+
+      // Change it so that it is 7 days in the past.
+      var tempDate = currMonday.getDate() - 7;
+      currMonday.setDate(tempDate);
+
+      // Log the new currMonday
+      console.log("week ago", currMonday);
+
+      // modify thisMondayStr, which will fetch new data
+      const date = currMonday.getDate();
+      const month = currMonday.getMonth() + 1;
+      const year = currMonday.getFullYear();
+
+      console.log("new thisMondayStr", year + "-" + month + "-" + date)
+      setThisMondayStr(year + "-" + month + "-" + date);
     };
 
+
+    // Very similar code, can condense into one function later
     const getNextWeek = () => {
       console.log("Bringing data of nextWeek");
+
+      console.log("Bringing data of prevWeek ");
+
+      // Retrieve thisMondayStr
+      var currMonday = new Date(thisMondayStr);
+      console.log("thisMondayStr as a date obj", currMonday)
+
+      // Change it so that it is 7 days in the past.
+      var tempDate = currMonday.getDate() + 7;
+      currMonday.setDate(tempDate);
+
+      // Log the new currMonday
+      console.log("week ago", currMonday);
+
+      // modify thisMondayStr, which will fetch new data
+      const date = currMonday.getDate();
+      const month = currMonday.getMonth() + 1;
+      const year = currMonday.getFullYear();
+
+      console.log("new thisMondayStr", year + "-" + month + "-" + date)
+      setThisMondayStr(year + "-" + month + "-" + date);
     };
 
     return (
@@ -710,9 +755,13 @@ const IndividualPatientView = (props) => {
           </header>
           <header className={classes.progressHeader}>
             <Typography variant="h4" className={classes.date}>
-              <ArrowBackIosIcon onClick={() => getPrevWeek()} />
-              {weekBeginning} ~ {weekEnd}
-              <ArrowForwardIosIcon onClick={() => getNextWeek()} />
+              <Button variant="light" className={classes.arrowButton} onClick={() => getPrevWeek()}>
+                <ArrowBackIosIcon></ArrowBackIosIcon>
+              </Button>
+              {getStartEnd(thisMondayStr)}
+              <Button variant="light" className={classes.arrowButton} onClick={() => getNextWeek()}>
+                <ArrowForwardIosIcon />
+              </Button>
             </Typography>
           </header>
           <header className={classes.progressHeader}>
@@ -753,7 +802,6 @@ const IndividualPatientView = (props) => {
               {Object.entries(exerciseSets)
                 .filter((entry) => entry[0] !== "exerciseList")
                 .map((entry, i) => {
-                  console.log("entry???", entry);
                   return (
                     <Row key={i}>
                       <Col>{entry[0]}</Col>
@@ -830,7 +878,6 @@ const IndividualPatientView = (props) => {
                   <Divider />
 
                   {console.log("exerciseSets", exerciseSets)}
-                  {console.log("checkMatch:", day, checkMatch(day))}
                   {checkMatch(day).map((ex, k) => {
                     return (
                       <div>
@@ -918,7 +965,6 @@ const IndividualPatientView = (props) => {
                             }}
                             required
                           />
-                          {console.log("new reps??", newReps)}
                           <Form.Control.Feedback type="invalid">
                             Reps are required.
                           </Form.Control.Feedback>
@@ -1001,7 +1047,6 @@ const IndividualPatientView = (props) => {
                             }}
                             required
                           />
-                          {console.log("new rest??", newRest)}
                           <Form.Control.Feedback type="invalid">
                             Rest is required.
                           </Form.Control.Feedback>
