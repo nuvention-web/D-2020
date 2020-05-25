@@ -245,6 +245,7 @@ const IndividualPatientView = (props) => {
   // For loading data, taken from PatientExerciseMain
   const [loaded, setLoaded] = useState(false);
   const [exerciseType, setExerciseType] = useState([]);
+  const [patientName, setPatientName] = useState();
 
   // For determining if the current page can be modified
   const [canModify, setCanModify] = useState(true);
@@ -277,6 +278,25 @@ const IndividualPatientView = (props) => {
 
     setThisMondayStr(year + "-" + month + "-" + date);
   }, [currUser]);
+
+  // Get patient name
+  useEffect(() => {
+    var patientRef = db.collection("patients").doc(id);
+    patientRef
+      .get()
+      .then(function (doc) {
+        if (doc.exists) {
+          console.log("Patient data:", doc.data());
+          setPatientName(doc.data().name);
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      })
+      .catch(function (error) {
+        console.log("Error getting document:", error);
+      });
+  }, []);
 
   const getDayFromNum = (num) => {
     let dayNum;
@@ -782,9 +802,11 @@ const IndividualPatientView = (props) => {
       <div>
         <div>
           <header className={classes.progressHeader}>
-            <Typography variant="h4" className={classes.header}>
-              Patient: {currUser.displayName}
-            </Typography>
+            {patientName ? (
+              <Typography variant="h4" className={classes.header}>
+                Patient: {patientName}
+              </Typography>
+            ) : null}
           </header>
           <header className={classes.progressHeader}>
             <Typography variant="h4" className={classes.date}>
