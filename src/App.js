@@ -76,18 +76,19 @@ const App = () => {
             <Users />
           </Route> */}
             <Route
+              path="/PT/patient/history/:id"
+              component={(props) => (
+                <ProgressHistory {...props}></ProgressHistory>
+              )}
+            ></Route>
+            <Route
               exact
               path="/PT/patient/:id"
               component={(props) => (
                 <IndividualPatientView {...props}></IndividualPatientView>
               )}
             ></Route>
-            <Route
-              path="/PT/patient/:id/history"
-              component={(props) => (
-                <ProgressHistory {...props}></ProgressHistory>
-              )}
-            ></Route>
+
             <Route
               path="/PT/exercises/new"
               component={(props) => <ExerciseNew {...props}></ExerciseNew>}

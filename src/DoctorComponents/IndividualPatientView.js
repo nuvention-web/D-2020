@@ -833,7 +833,7 @@ const IndividualPatientView = (props) => {
             </Typography>
             <Link
               to={{
-                pathname: `/PT/patient/${id}/history`,
+                pathname: `/PT/patient/history/${id}`,
               }}
               className={classes.link}
             >
