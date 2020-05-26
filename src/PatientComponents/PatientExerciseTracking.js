@@ -33,6 +33,7 @@ import { Alert, AlertTitle } from "@material-ui/lab";
 import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
 import Drawer from "react-drag-drawer";
+import { dayToNumIdMap } from "../DoctorComponents/IndividualPatientView";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -177,17 +178,31 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
   },
   emphasis: {
-    color: '#3358C4',
+    color: "#3358C4",
     fontWeight: 600,
   },
   carouselItem: {
     overflowY: "scroll",
   },
   taskList: {
-    paddingLeft: '42%',
-    textAlign: 'left',
+    paddingLeft: "42%",
+    textAlign: "left",
   },
 }));
+
+const getMonday = (d) => {
+  d = new Date(d);
+  var day = d.getDay(),
+    diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+  d.setDate(diff);
+  var date = d.getDate();
+  var month = d.getMonth() + 1;
+  var year = d.getFullYear();
+  const dateDash = year + "-" + month + "-" + date;
+  return dateDash;
+};
+
+const thisMonday = getMonday(new Date());
 
 const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
   const [index, setIndex] = useState(0);
@@ -208,13 +223,14 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
   };
 
   const handleSubmit = (info, feedback) => {
+
     // Firestore reference
     var exerciseRef = db
       .collection("patients")
       .doc(info.currUser.uid)
-      .collection("exercisesets")
-      .doc(day)
-      .collection("exercises");
+      .collection("exercises")
+      .doc("weekEx")
+      .collection(thisMonday);
     let ex;
     exerciseRef
       .doc(info.exercise.doc_id)
@@ -227,14 +243,6 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
         console.log("info: ", info);
         console.log("feedback: ", feedback);
         setDrawer(false);
-      })
-      .then(() => {
-        // Update History with feedback to notify it's completed
-        db.collection("patients")
-          .doc(info.currUser.uid)
-          .collection("history")
-          .doc(ex.historyId)
-          .update({ ...ex, ...feedback });
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
@@ -307,18 +315,21 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
     );
   };
 
+
   // Update 'complete' flag when timer hits 0
   const updateCompleted = (exercisename, currUser) => {
     // Firestore reference
     var exerciseRef = db
       .collection("patients")
       .doc(currUser.uid)
-      .collection("exercisesets")
-      .doc(day)
-      .collection("exercises");
+      .collection("exercises")
+      .doc("weekEx")
+      .collection(thisMonday);
+
 
     exerciseRef
       .where("name", "==", exercisename)
+      .where("day", "==", dayToNumIdMap.get(day))
       .get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
@@ -382,7 +393,12 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
             {Object.entries(currUser).length > 0 ? (
               <React.Fragment>
                 <Timer
-                  initialTime={[exercise.sets * exercise.reps * exercise.duration + (exercise.sets-1) * exercise.rest] * 1000}
+                  initialTime={
+                    [
+                      exercise.sets * exercise.reps * exercise.duration +
+                        (exercise.sets - 1) * exercise.rest,
+                    ] * 1000
+                  }
                   direction="backward"
                   startImmediately={false}
                   checkpoints={[
@@ -398,7 +414,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                     <React.Fragment>
                       <div className={classes.time}>
                         <Timer.Minutes />:
-                      <Timer.Seconds
+                        <Timer.Seconds
                           formatValue={(value) =>
                             `${value < 10 ? `0${value}` : value}`
                           }
@@ -406,33 +422,69 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                       </div>
                       <Button onClick={start} className="timer-btn">
                         Start
-                    </Button>
+                      </Button>
                       <Button onClick={stop} className="timer-btn">
                         Stop
-                    </Button>
+                      </Button>
                       <Button onClick={reset} className="timer-btn">
                         Reset
-                    </Button>
+                      </Button>
                     </React.Fragment>
                   )}
                 </Timer>
-                <Typography variant="h5" className={classes.exerciseName}>Tasklist</Typography>
+                <Typography variant="h5" className={classes.exerciseName}>
+                  Tasklist
+                </Typography>
                 <div className={classes.taskList}>
-                  <li><span className={classes.emphasis}>Reps:</span> {exercise.reps}</li>
-                  <li><span className={classes.emphasis}>Sets:</span> {exercise.sets}</li>
-                  <li><span className={classes.emphasis}>Duration (seconds):</span> {exercise.duration}</li>
-                  <li><span className={classes.emphasis}>Hold (seconds):</span> {exercise.hold}</li>
-                  <li><span className={classes.emphasis}>Rest (seconds):</span> {exercise.rest}</li>
+                  <li>
+                    <span className={classes.emphasis}>Reps:</span>{" "}
+                    {exercise.reps}
+                  </li>
+                  <li>
+                    <span className={classes.emphasis}>Sets:</span>{" "}
+                    {exercise.sets}
+                  </li>
+                  <li>
+                    <span className={classes.emphasis}>
+                      Duration (seconds):
+                    </span>{" "}
+                    {exercise.duration}
+                  </li>
+                  <li>
+                    <span className={classes.emphasis}>
+                      Hold during rep(seconds):
+                    </span>{" "}
+                    {exercise.hold}
+                  </li>
+                  <li>
+                    <span className={classes.emphasis}>Rest (seconds):</span>{" "}
+                    {exercise.rest}
+                  </li>
+                  <li>
+                    <span className={classes.emphasis}>Resitance:</span>{" "}
+                    {exercise.resistance}
+                  </li>
                 </div>
               </React.Fragment>
-              // End Task Stuff
-            ) : null}
+            ) : // End Task Stuff
+            null}
           </div>
         </Carousel.Item>
       ))}
     </Carousel>
   );
 };
+
+//to get 
+const numToDayMap = new Map([
+  [0, "Sunday"],
+  [1, "Monday"],
+  [2, "Tuesday"],
+  [3, "Wednesday"],
+  [4, "Thursday"],
+  [5, "Friday"],
+  [6, "Saturday"],
+]);
 
 // Main function
 const ExerciseTracking = (props) => {
@@ -461,9 +513,9 @@ const ExerciseTracking = (props) => {
       var setRef = db
         .collection("patients")
         .doc(currUser.uid)
-        .collection("exercisesets")
-        .doc(day)
-        .collection("exercises");
+        .collection("exercises")
+        .doc("weekEx")
+        .collection(thisMonday);
 
       console.log("setRef", setRef);
       // Newly added to load Firestore data, using onSnapshot to get live updates
@@ -472,7 +524,9 @@ const ExerciseTracking = (props) => {
         var l = [];
         querySnapshot.forEach(function (doc) {
           console.log("Got data again via snapshot", doc.data());
-          l.push({ doc_id: doc.id, ...doc.data() });
+          if (numToDayMap.get(doc.data().day) == day) {
+            l.push({ doc_id: doc.id, ...doc.data() });
+          }
         });
         setCurrentSet(l);
       });

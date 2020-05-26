@@ -22,6 +22,9 @@ import { useLocation, useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
+    [theme.breakpoints.down('sm')]: {
+      overflowX: "scroll"
+    },
     marginTop: "3%",
     height: "45vh",
     overflowY: "scroll",
@@ -176,7 +179,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cols: {
     textAlign: "center",
-    minWidth: "100px",
+    minWidth: "85px",
   },
   firstCol: {
     minWidth: "200px",
@@ -197,9 +200,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const calculateTotalTime = (s) => {
+const calculateTotalTime = (exercises) => {
   var t = 0;
-  for (const [i, entry] of Object.entries(s.exercise)) {
+  for (const [i, entry] of Object.entries(exercises)) {
     // t += entry.duration;
     t += entry.sets * entry.reps * entry.duration + (entry.sets - 1) * entry.rest;
   }
@@ -219,11 +222,25 @@ const formatExerciseName = (n) => {
   return splitStr.join(" ");
 };
 
+// export const getMonday = (d) => {
+//     d = new Date(d);
+//     var day = d.getDay(),
+//       diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+//     d.setDate(diff);
+//     var date = d.getDate();
+//     var month = d.getMonth() + 1;
+//     var year = d.getFullYear();
+//     const dateSlash = month + "/" + date + "/" + year;
+//     const dateDash = year + "-" + month + "-" + date;
+//     return [dateSlash, dateDash];
+//   };
+
 const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   const [exerciseSets, setExerciseSets] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [therapistInfo, setTherapistInfo] = useState();
   const [userProfile, setUserProfile] = useState();
+
   const blankImg = "/img/blankProfile.png";
   const type = localStorage.getItem("type");
   console.log("TYpe: ", type);
@@ -234,6 +251,22 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   const classes = useStyles();
   const { id } = useParams();
 
+  const getMonday = (d) => {
+    d = new Date(d);
+    var day = d.getDay(),
+      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+    d.setDate(diff);
+    var date = d.getDate();
+    var month = d.getMonth() + 1;
+    var year = d.getFullYear();
+    const dateSlash = month + "/" + date + "/" + year;
+    const dateDash = year + "-" + month + "-" + date;
+    return [dateSlash, dateDash];
+  };
+  const weekBeginning = getMonday(new Date())[0];
+
+  const thisMondayStr = getMonday(new Date())[1];
+
 
   // Load correct NavBar for patient
   useEffect(() => {
@@ -243,12 +276,14 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   }, [type]);
 
   useEffect(() => {
-    if (Object.entries(currUser).length > 0) {
+    if (Object.entries(currUser).length > 0 && thisMondayStr) {
       console.log("this runs");
       var collectionRef = db
         .collection("patients")
         .doc(currUser.uid)
-        .collection("exercisesets")
+        .collection("exercises")
+        .doc("weekEx")
+        .collection(thisMondayStr)
         .limit(1);
 
       collectionRef.get().then((query) => {
@@ -256,7 +291,6 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         if (query.size === 0) {
           setLoaded(true);
         }
-        // query => query.size
       });
     }
   }, [currUser]);
@@ -285,49 +319,75 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   // note: need to load data asynchronously first
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
-    if (Object.entries(currUser).length > 0) {
+    const fetchPatient = () => {
       // Newly added to load Firestore data
-      var patientRef = db
-        .collection("patients")
-        .doc(currUser.uid)
-        .collection("exercisesets");
+      let exerciseHolder = {
+        Monday: [],
+        Tuesday: [],
+        Wednesday: [],
+        Thursday: [],
+        Friday: [],
+        Saturday: [],
+        Sunday: [],
+        exerciseList: [],
+      };
+      if (Object.entries(currUser).length > 0 && thisMondayStr) {
+        console.log("This Monday: ", thisMondayStr);
+        console.log("id", currUser.uid);
 
-      // Newly added to load Firestore data
-      var fullset = [];
-      var l = [];
-      patientRef.get().then((querySnapshot) => {
-        //used to check whether ExerciseSets should be set
-        const exercisesLen = querySnapshot.size;
-        querySnapshot.forEach((doc) => {
-          const day = doc.data().day;
-          var ex = [];
-          // Nested inner
-          patientRef
-            .doc(doc.id)
-            .collection("exercises")
-            .get()
-            .then((querySnapshot) => {
-              querySnapshot.forEach((doc1) => {
-                const exercise = doc1.data();
-                ex.push(exercise);
-                if (!l.includes(exercise.name)) {
-                  l.push(exercise.name);
-                }
-              });
-            })
-            .then(() => {
-              fullset.push({ day: day, exercise: ex, exerciseList: l });
+        var patientRef = db
+          .collection("patients")
+          .doc(currUser.uid)
+          .collection("exercises")
+          .doc("weekEx")
+          .collection(thisMondayStr);
 
-              //when all the days are loaded in, you can set ExerciseSets
-              if (fullset.length === exercisesLen) {
-                fullset.sort(compareSets);
-                setExerciseSets(fullset);
+        // Newly added to load Firestore data
+        patientRef.get().then((querySnapshot) => {
+          console.log("QuerySnapshot: ", querySnapshot.docs);
+          Promise.all(
+            querySnapshot.docs.map((doc) => ({ docId: doc.id, ...doc.data() }))
+          ).then((exercises) => {
+            console.log("Exercises: ", exercises);
+            exercises.forEach((exercise) => {
+              console.log("Exercise: ", exercise);
+              switch (exercise.day) {
+                case 0:
+                  exerciseHolder["Sunday"].push(exercise);
+                  break;
+                case 1:
+                  exerciseHolder["Monday"].push(exercise);
+                  break;
+                case 2:
+                  exerciseHolder["Tuesday"].push(exercise);
+                  break;
+                case 3:
+                  exerciseHolder["Wednesday"].push(exercise);
+                  break;
+                case 4:
+                  exerciseHolder["Thursday"].push(exercise);
+                  break;
+                case 5:
+                  exerciseHolder["Friday"].push(exercise);
+                  break;
+                case 6:
+                  exerciseHolder["Saturday"].push(exercise);
+              }
+              if (!exerciseHolder.exerciseList.includes(exercise.name)) {
+                exerciseHolder.exerciseList.push(exercise.name);
+                console.log("l now", exerciseHolder.exerciseList);
               }
             });
+            console.log("exerciseHolder: ", exerciseHolder);
+            setExerciseSets(exerciseHolder);
+          });
         });
-      });
-    }
+      }
+    };
+
+    fetchPatient();
   }, [currUser]);
+
 
   useEffect(() => {
     console.log(type, currUser);
@@ -347,18 +407,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
     }
   }, [exerciseSets]);
 
-  const getMonday = (d) => {
-    d = new Date(d);
-    var day = d.getDay(),
-      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-    d.setDate(diff);
-    var date = d.getDate();
-    var month = d.getMonth() + 1;
-    var year = d.getFullYear();
-    var dateStr = month + "/" + date + "/" + year;
-    return dateStr;
-  };
-  const weekBeginning = getMonday(new Date());
+
 
   const renderItems = () => {
     // Return true, false, or - (not an exercise for this day)
@@ -451,10 +500,10 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         <div className={classes.progressContainer}>
           <div className={classes.progressDiv}>
             <Row>
-              {exerciseSets.length !== 0 ? (
+              {Object.entries(exerciseSets).length !== 0 ? (
                 <React.Fragment>
                   <Col>Exercise Name</Col>
-                  {exerciseSets[0].exerciseList.map((ex) => (
+                  {exerciseSets.exerciseList.map((ex) => (
                     <Col class="col-4" className={classes.cols}>{ex}</Col>
                   ))}
                 </React.Fragment>
@@ -464,16 +513,17 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
               ) : null}
             </Row>
             <Divider />
-            {exerciseSets.map((s, i) => {
+            {Object.entries(exerciseSets)
+              .filter((s) => s[0] !== "exerciseList")
+              .map((s, i) => {
               return (
                 <Row key={i}>
-                  <Col>{s["day"]}</Col>
-                  {/* Map through each column */ console.log(s["day"])}
-                  {s.exerciseList.map((name, j) => {
+                  <Col>{s[0]}</Col>
+                  {exerciseSets.exerciseList.map((name, j) => {
                     // if s
                     return (
                       <Col className={classes.cols} key={j}>
-                        {checkComplete(s.exercise, name)}
+                        {checkComplete(s[1], name)}
                       </Col>
                     );
                   })}
@@ -489,29 +539,32 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         </div>
 
         <div className={classes.exercises}>
-          {exerciseSets.map((s, i) => {
-            return s.exercise.length === 0 ? null : (
+          {Object.entries(exerciseSets)
+            .filter((s) => s[0] !== "exerciseList")
+            .map((s, i) => {
+              console.log("exercises", s[1])
+            return s[1].length === 0 ? null : (
               <div className={classes.exerciseContainer} key={i}>
                 <div className={classes.exerciseSetDiv} key={i}>
                   <Typography variant="h4" className={classes.header}>
-                    {s.day}
+                    {s[0]}
                   </Typography>
                   <Typography variant="subtitle1" display="block" gutterBottom>
                     <i class="far fa-clock"></i>
                     <img src={"/img/timeicon.png"} className={classes.timeIcon} alt="timeicon" />
-                    {calculateTotalTime(s)}
+                    {calculateTotalTime(s[1])}
                   </Typography>
                   <Row className={classes.rows}>
                     <Col className={classes.firstCol}>Exercise</Col>
                     <Col className={classes.cols}>Reps</Col>
-                    <Col className={classes.cols}>Duration(s)</Col>
+                    <Col className={classes.cols}>Duration (s)</Col>
                     <Col className={classes.cols}>Sets</Col>
-                    <Col className={classes.cols}>Hold(s)</Col>
+                    <Col className={classes.cols}>Hold (s)</Col>
                     <Col className={classes.cols}>Resistance</Col>
-                    <Col className={classes.cols}>Rest(s)</Col>
+                    <Col className={classes.cols}>Rest (s)</Col>
                   </Row>
                   <Divider />
-                  {Object.values(s.exercise).map((ex, k) => {
+                  {s[1].map((ex, k) => {
                     return (
                       <div>
                         <Row key={i} className={classes.rows}>
@@ -542,7 +595,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                   })}
                   <Link
                     to={{
-                      pathname: `/workout/${s.day}`,
+                      pathname: `/workout/${s[0]}`,
                       exerciseProps: s,
                       setInd: i,
                     }}
@@ -556,26 +609,6 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
             );
           })}
         </div>
-
-        {/* <footer className={classes.footer}>
-          <img
-            src={"/img/StretchGraphic2.png"}
-            className={classes.stretchGraphic2}
-            alt=""
-          />
-          <img
-            src={"/img/StretchGraphic1.png"}
-            className={classes.stretchGraphic1}
-            alt=""
-          />
-          <Typography className={classes.quote}>
-            "Movement is a medicine for creating change <br />
-            in a person's physical, emotional, and mental states."
-            <Typography variant="h6">
-              <br />- Carol Welch
-            </Typography>
-          </Typography>
-        </footer> */}
       </div>
     );
   };
