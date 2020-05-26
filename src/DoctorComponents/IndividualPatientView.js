@@ -4,6 +4,7 @@ import {
   Typography,
   Divider,
   CircularProgress,
+  Modal,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Form, Row, Col } from "react-bootstrap";
@@ -17,6 +18,7 @@ import {
   faTimes,
   faPlus,
   faArrowRight,
+  faEdit,
 } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
@@ -70,6 +72,9 @@ const useStyles = makeStyles((theme) => ({
     height: ".325rem",
     marginTop: "1.5rem",
     background: "#9DB4FF",
+  },
+  buttonInline: {
+    display: "inline-block",
   },
   checkIcon: {
     maxWidth: 35,
@@ -184,6 +189,19 @@ const useStyles = makeStyles((theme) => ({
     width: 40,
     margin: 30,
   },
+  paper: {
+    position: "absolute",
+    width: 1000,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+  modalStyle: {
+    top: `${50}%`,
+    left: `${50}%`,
+    transform: `translate(-${50}%, -${50}%)`,
+  },
 }));
 
 export const dayToNumIdMap = new Map([
@@ -225,19 +243,36 @@ const compareDate = (a, b) => {
   return comparison;
 };
 
+const getModalStyle = () => {
+  return {
+    top: `${50}%`,
+    left: `${50}%`,
+    transform: `translate(-${50}%, -${50}%)`,
+  };
+};
+
 const IndividualPatientView = (props) => {
   const classes = useStyles();
   // exerciseSets stores the "exercisesets" of the patient we are looking at
   const [exerciseSets, setExerciseSets] = useState([]);
-  const [newExercise, setNewExercise] = useState("");
 
   // Input States
+  const [newExercise, setNewExercise] = useState("");
   const [newReps, setNewReps] = useState({});
   const [newDuration, setNewDuration] = useState({});
   const [newSets, setNewSets] = useState({});
   const [newHold, setNewHold] = useState({});
   const [newResistance, setNewResistance] = useState({});
   const [newRest, setNewRest] = useState({});
+
+  // Modal States
+  const [newModalExercise, setNewModalExercise] = useState({});
+  const [editReps, setEditReps] = useState("");
+  const [editDuration, setEditDuration] = useState("");
+  const [editSets, setEditSets] = useState("");
+  const [editHold, setEditHold] = useState("");
+  const [editResistance, setEditResistance] = useState("");
+  const [editRest, setEditRest] = useState("");
 
   const { id } = useParams();
   const currUser = useContext(UserContext).user;
@@ -261,11 +296,12 @@ const IndividualPatientView = (props) => {
   ];
 
   const location = useLocation();
-
   const [validated, setValidated] = useState(false);
   const [validatedDay, setValidatedDay] = useState("");
-
   const [thisMondayStr, setThisMondayStr] = useState();
+  const [open, setOpen] = useState(false);
+  const [modalStyle] = useState(getModalStyle);
+  const [selectedEx, setSelectedEx] = useState();
 
   useEffect(() => {
     const d = new Date();
@@ -354,7 +390,6 @@ const IndividualPatientView = (props) => {
   // Handle new patient with no exercisesets collection yet
   useEffect(() => {
     if (Object.entries(currUser).length > 0 && thisMondayStr) {
-      console.log("this runs");
       var collectionRef = db
         .collection("patients")
         .doc(currUser.uid)
@@ -364,7 +399,6 @@ const IndividualPatientView = (props) => {
         .limit(1);
 
       collectionRef.get().then((query) => {
-        console.log("query size:", query.size);
         if (query.size === 0) {
           setLoaded(true);
         }
@@ -375,7 +409,6 @@ const IndividualPatientView = (props) => {
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
     const fetchPatient = () => {
-      console.log("location.patientInfo", location.patientInfo);
       // Newly added to load Firestore data
       let exerciseHolder = {
         Monday: [],
@@ -388,9 +421,6 @@ const IndividualPatientView = (props) => {
         exerciseList: [],
       };
       if (thisMondayStr) {
-        console.log("This Monday: ", thisMondayStr);
-        console.log("This Monday Type: ", typeof thisMondayStr);
-
         var patientRef = db
           .collection("patients")
           .doc(id)
@@ -400,13 +430,10 @@ const IndividualPatientView = (props) => {
 
         // Newly added to load Firestore data
         patientRef.get().then((querySnapshot) => {
-          console.log("QuerySnapshot: ", querySnapshot.docs);
           Promise.all(
             querySnapshot.docs.map((doc) => ({ docId: doc.id, ...doc.data() }))
           ).then((exercises) => {
-            console.log("Exercises: ", exercises);
             exercises.forEach((exercise) => {
-              console.log("Exercise: ", exercise);
               switch (exercise.day) {
                 case 0:
                   exerciseHolder["Sunday"].push(exercise);
@@ -431,10 +458,8 @@ const IndividualPatientView = (props) => {
               }
               if (!exerciseHolder.exerciseList.includes(exercise.name)) {
                 exerciseHolder.exerciseList.push(exercise.name);
-                console.log("l now", exerciseHolder.exerciseList);
               }
             });
-            console.log("exerciseHolder: ", exerciseHolder);
             setExerciseSets(exerciseHolder);
           });
         });
@@ -461,7 +486,6 @@ const IndividualPatientView = (props) => {
         .collection("exercises")
         .get()
         .then((querySnapshot) => {
-          console.log(querySnapshot);
           querySnapshot.docs.forEach((doc) => {
             const data = doc.data();
             const id = doc.id;
@@ -480,7 +504,6 @@ const IndividualPatientView = (props) => {
   // End loading data
 
   const checkCanModify = () => {
-    console.log("in checkCanModify", thisMondayStr);
     // If we are in a week prior to this one, set canModify to false
     // d = this Monday
     const d = new Date();
@@ -493,9 +516,7 @@ const IndividualPatientView = (props) => {
       // The monday we are looking at
       var currMonday = new Date(thisMondayStr);
 
-      console.log("modify", currMonday, d);
       if (currMonday < d) {
-        console.log("Cannot modify this week");
         setCanModify(false);
       } else {
         setCanModify(true);
@@ -613,6 +634,55 @@ const IndividualPatientView = (props) => {
 
     // Should only reload if previous chunk of code has run..
     window.location.reload(false);
+  };
+
+  useEffect((day, exId) => {}, []);
+
+  const editExercise = async (e, exercise) => {
+    e.preventDefault();
+    console.log("name: ", exercise.name);
+    console.log("selectedEx: ", exercise);
+    // Need videoId update
+    const selectedExerciseType = await exerciseType.filter(
+      (ex) => ex.name === exercise.name
+    );
+    console.log("Exercise VideoId: ", selectedExerciseType[0].videoId);
+    const editExObj = {
+      day: exercise.day,
+      name: exercise.name,
+      reps: parseInt(exercise.reps),
+      duration: parseFloat(exercise.duration),
+      sets: parseInt(exercise.sets),
+      hold: parseInt(exercise.hold),
+      resistance: exercise.resistance,
+      rest: parseInt(exercise.rest),
+      videoId: selectedExerciseType[0].videoId,
+      complete: false,
+      dateAdded: new Date(),
+    };
+
+    console.log("Editing!");
+    console.log("EditExObj: ", editExObj);
+    const exerciseRef = db
+      .collection("patients")
+      .doc(id)
+      .collection("exercises")
+      .doc("weekEx")
+      .collection(thisMondayStr)
+      .doc(exercise.docId);
+
+    // Update
+    exerciseRef
+      .update(editExObj)
+      .then(function (docRef) {
+        console.log("Exercise document written with ID: ", docRef.id);
+      })
+      .catch(function (error) {
+        console.error("Error writing document: ", error);
+      })
+      .then(() => {
+        window.location.reload(false);
+      });
   };
 
   // Repeat function from PatientExerciseMain
@@ -798,9 +868,208 @@ const IndividualPatientView = (props) => {
       // checkCanModify();
     };
 
+    const handleOpen = (e, ex) => {
+      e.preventDefault();
+      setSelectedEx(ex);
+      setOpen(true);
+    };
+
+    const handleClose = () => {
+      setOpen(false);
+    };
+
     return (
       <div>
         <div>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+          >
+            <div style={modalStyle} className={classes.paper}>
+              <Typography variant="h4" className={classes.header}>
+                Edit this exercise
+              </Typography>
+              {selectedEx ? (
+                <Form
+                  noValidate
+                  // validated={day == validatedDay}
+                  // onSubmit={handleSubmit}
+                  className={classes.newExercise}
+                >
+                  <Row className={classes.rows}>
+                    <Col>Exercise</Col>
+                    <Col className={classes.paramCols}>Reps</Col>
+                    <Col className={classes.paramCols}>Sets</Col>
+                    <Col className={classes.paramCols}>Duration (s)</Col>
+                    <Col className={classes.paramCols}>Hold (s)</Col>
+                    <Col className={classes.paramCols}>Rest (s)</Col>
+                    <Col className={classes.paramCols}>Resistance</Col>
+                    {/* Keep extra column for add/delete button */}
+                    <Col></Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <Form.Group>
+                        <Form.Control
+                          as="select"
+                          className={classes.exerciseBox}
+                          onChange={(event) => {
+                            setSelectedEx({
+                              ...selectedEx,
+                              name: event.target.value,
+                            });
+                          }}
+                        >
+                          {exerciseType.map((exercise, i) => {
+                            return (
+                              <option value={exercise.name}>
+                                {exercise.name}
+                              </option>
+                            );
+                          })}
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                    <Col className={classes.centeredCol}>
+                      <Form.Group>
+                        <Form.Control
+                          type="number"
+                          min="0"
+                          className={classes.inputBox}
+                          value={selectedEx.reps}
+                          onChange={(event) => {
+                            setSelectedEx({
+                              ...selectedEx,
+                              reps: event.target.value,
+                            });
+                          }}
+                          required
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          Reps are required.
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col className={classes.centeredCol}>
+                      <Form.Group>
+                        <Form.Control
+                          type="number"
+                          min="0"
+                          className={classes.inputBox}
+                          value={selectedEx.sets}
+                          onChange={(event) => {
+                            setSelectedEx({
+                              ...selectedEx,
+                              sets: event.target.value,
+                            });
+                          }}
+                          required
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          Sets are required.
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col className={classes.centeredCol}>
+                      <Form.Control
+                        as="input"
+                        type="number"
+                        min="1"
+                        step="0.5"
+                        className={classes.inputBox}
+                        value={selectedEx.duration}
+                        onChange={(event) => {
+                          setSelectedEx({
+                            ...selectedEx,
+                            duration: event.target.value,
+                          });
+                        }}
+                        required
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        Duration is required.
+                      </Form.Control.Feedback>
+                    </Col>
+                    <Col className={classes.centeredCol}>
+                      <Form.Group>
+                        <Form.Control
+                          type="number"
+                          min="0"
+                          className={classes.inputBox}
+                          value={selectedEx.hold}
+                          onChange={(event) => {
+                            setSelectedEx({
+                              ...selectedEx,
+                              hold: event.target.value,
+                            });
+                          }}
+                          required
+                        />
+                        {console.log("edit reps??", editReps)}
+                        <Form.Control.Feedback type="invalid">
+                          Hold is required.
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col className={classes.centeredCol}>
+                      <Form.Group>
+                        <Form.Control
+                          type="number"
+                          min="0"
+                          className={classes.inputBox}
+                          value={selectedEx.rest}
+                          onChange={(event) => {
+                            setSelectedEx({
+                              ...selectedEx,
+                              rest: event.target.value,
+                            });
+                          }}
+                          required
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          Rest is required.
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+                    <Col className={classes.centeredCol}>
+                      <Form.Group>
+                        <Form.Control
+                          type="text"
+                          className={classes.inputBox}
+                          value={selectedEx.resistance}
+                          onChange={(event) => {
+                            setSelectedEx({
+                              ...selectedEx,
+                              resistance: event.target.value,
+                            });
+                          }}
+                          required
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          Resistance are required.
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                    </Col>
+
+                    <Col className={classes.centeredCol}>
+                      <Button
+                        variant="light"
+                        type="submit"
+                        disabled={!canModify}
+                        onClick={(e) => {
+                          editExercise(e, selectedEx);
+                        }}
+                      >
+                        Done
+                      </Button>
+                    </Col>
+                  </Row>
+                </Form>
+              ) : null}
+            </div>
+          </Modal>
           <header className={classes.progressHeader}>
             {patientName ? (
               <Typography variant="h4" className={classes.header}>
@@ -833,7 +1102,7 @@ const IndividualPatientView = (props) => {
             </Typography>
             <Link
               to={{
-                pathname: `/PT/patient/${id}/history`,
+                pathname: `/PT/patient/history/${id}`,
               }}
               className={classes.link}
             >
@@ -861,7 +1130,6 @@ const IndividualPatientView = (props) => {
                 ) : null}
               </Row>
               <Divider />
-              {console.log(Object.entries(exerciseSets))}
               {Object.entries(exerciseSets)
                 .filter((entry) => entry[0] !== "exerciseList")
                 .map((entry, i) => {
@@ -944,7 +1212,6 @@ const IndividualPatientView = (props) => {
 
                   <Divider />
 
-                  {console.log("exerciseSets", exerciseSets)}
                   {checkMatch(day).map((ex, k) => {
                     return (
                       <div>
@@ -970,26 +1237,40 @@ const IndividualPatientView = (props) => {
                           </Col>
                           <Col className={classes.centeredCol}>
                             {canModify ? (
-                              <Button
-                                variant="light"
-                                onClick={(e) => {
-                                  deleteExercise(e, day, ex.docId);
-                                }}
-                                disabled={!canModify}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faTimes}
-                                  color="#9DB4FF"
-                                  size="2x"
-                                />
-                              </Button>
+                              <div className={classes.buttonInline}>
+                                <Button
+                                  variant="light"
+                                  onClick={(e) => {
+                                    handleOpen(e, ex);
+                                  }}
+                                  disabled={!canModify}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faEdit}
+                                    color="#9DB4FF"
+                                    size="2x"
+                                  />
+                                </Button>
+                                <Button
+                                  variant="light"
+                                  onClick={(e) => {
+                                    deleteExercise(e, day, ex.docId);
+                                  }}
+                                  disabled={!canModify}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faTimes}
+                                    color="#9DB4FF"
+                                    size="2x"
+                                  />
+                                </Button>
+                              </div>
                             ) : null}
                           </Col>
                         </Row>
                       </div>
                     );
                   })}
-                  {console.log(day == validatedDay)}
                   {canModify ? (
                     <Form
                       noValidate
@@ -1008,10 +1289,6 @@ const IndividualPatientView = (props) => {
                                 setNewExercise(event.target.value);
                               }}
                             >
-                              {console.log(
-                                "exampleForm1",
-                                document.getElementById("reps-Monday")
-                              )}
                               {exerciseType.map((exercise, i) => {
                                 return (
                                   <option value={exercise.name}>
@@ -1057,7 +1334,6 @@ const IndividualPatientView = (props) => {
                               }}
                               required
                             />
-                            {console.log("new sets??", newSets)}
                             <Form.Control.Feedback type="invalid">
                               Sets are required.
                             </Form.Control.Feedback>
@@ -1098,7 +1374,6 @@ const IndividualPatientView = (props) => {
                               }}
                               required
                             />
-                            {console.log("new reps??", newReps)}
                             <Form.Control.Feedback type="invalid">
                               Hold is required.
                             </Form.Control.Feedback>
@@ -1138,7 +1413,6 @@ const IndividualPatientView = (props) => {
                               }}
                               required
                             />
-                            {console.log("new resistance??", newResistance)}
                             <Form.Control.Feedback type="invalid">
                               Resistance are required.
                             </Form.Control.Feedback>

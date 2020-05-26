@@ -223,7 +223,6 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
   };
 
   const handleSubmit = (info, feedback) => {
-
     // Firestore reference
     var exerciseRef = db
       .collection("patients")
@@ -315,7 +314,6 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
     );
   };
 
-
   // Update 'complete' flag when timer hits 0
   const updateCompleted = (exercisename, currUser) => {
     // Firestore reference
@@ -325,7 +323,6 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
       .collection("exercises")
       .doc("weekEx")
       .collection(thisMonday);
-
 
     exerciseRef
       .where("name", "==", exercisename)
@@ -475,7 +472,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
   );
 };
 
-//to get 
+//to get
 const numToDayMap = new Map([
   [0, "Sunday"],
   [1, "Monday"],

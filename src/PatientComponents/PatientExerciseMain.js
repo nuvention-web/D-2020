@@ -17,29 +17,28 @@ import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
 import { useHistory } from "react-router-dom";
 import { compareSets } from "../DoctorComponents/IndividualPatientView.js";
-import { useLocation, useParams } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
-    [theme.breakpoints.down('sm')]: {
-      overflowX: "scroll"
+    [theme.breakpoints.down("sm")]: {
+      overflowX: "scroll",
     },
     marginTop: "3%",
     height: "45vh",
     overflowY: "scroll",
   },
   header: {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 24
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 24,
     },
     marginTop: 10,
     marginBottom: 8,
     color: "#80858a",
   },
   progressHeader: {
-    [theme.breakpoints.down('sm')]: {
-      fontSize: 24
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 24,
     },
     width: "90%",
     display: "flex",
@@ -191,7 +190,7 @@ const useStyles = makeStyles((theme) => ({
   viewHistory: {
     [theme.breakpoints.down("sm")]: {
       width: 80,
-      fontSize: 16
+      fontSize: 16,
     },
     display: "flex",
     flexDirection: "row",
@@ -204,12 +203,13 @@ const calculateTotalTime = (exercises) => {
   var t = 0;
   for (const [i, entry] of Object.entries(exercises)) {
     // t += entry.duration;
-    t += entry.sets * entry.reps * entry.duration + (entry.sets - 1) * entry.rest;
+    t +=
+      entry.sets * entry.reps * entry.duration + (entry.sets - 1) * entry.rest;
   }
   // Minutes and seconds
   var m = Math.floor(t / 60);
   var s = t % 60;
-  return m.toString() + ' min ' + s.toString() + ' seconds';
+  return m.toString() + " min " + s.toString() + " seconds";
 };
 
 const formatExerciseName = (n) => {
@@ -249,7 +249,6 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   const history = useHistory();
 
   const classes = useStyles();
-  const { id } = useParams();
 
   const getMonday = (d) => {
     d = new Date(d);
@@ -266,7 +265,6 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   const weekBeginning = getMonday(new Date())[0];
 
   const thisMondayStr = getMonday(new Date())[1];
-
 
   // Load correct NavBar for patient
   useEffect(() => {
@@ -388,7 +386,6 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
     fetchPatient();
   }, [currUser]);
 
-
   useEffect(() => {
     console.log(type, currUser);
     if (Object.entries(currUser).length > 0 && type) {
@@ -406,8 +403,6 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
       setLoaded(true);
     }
   }, [exerciseSets]);
-
-
 
   const renderItems = () => {
     // Return true, false, or - (not an exercise for this day)
@@ -449,21 +444,21 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
             {therapistInfo ? (
               <p class="lead">Launch Zoom call with {therapistInfo.name} now</p>
             ) : (
-                <div>
-                  <Button
-                    variant="light"
-                    onClick={() =>
-                      history.push({
-                        pathname: "/profile/edit",
-                        userProfile: userProfile,
-                      })
-                    }
-                    className={classes.editButton}
-                  >
-                    Connect with your therapist!
+              <div>
+                <Button
+                  variant="light"
+                  onClick={() =>
+                    history.push({
+                      pathname: "/profile/edit",
+                      userProfile: userProfile,
+                    })
+                  }
+                  className={classes.editButton}
+                >
+                  Connect with your therapist!
                 </Button>
-                </div>
-              )}
+              </div>
+            )}
 
             {therapistInfo && therapistInfo.zoom ? (
               <a href={`${therapistInfo.zoom}`} target="_blank">
@@ -484,16 +479,16 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         <header className={classes.progressHeader}>
           <Typography variant="h4" className={classes.progressHeader}>
             Week of {weekBeginning} Progress
-        </Typography>
+          </Typography>
           <Link
             to={{
-              pathname: `/PT/patient/${id}/history`,
+              pathname: `/PT/patient/history/${currUser.uid}`,
             }}
             className={classes.link}
           >
             <Button variant="light" className={classes.viewHistory}>
               View History
-                </Button>
+            </Button>
           </Link>
         </header>
 
@@ -504,32 +499,36 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                 <React.Fragment>
                   <Col>Exercise Name</Col>
                   {exerciseSets.exerciseList.map((ex) => (
-                    <Col class="col-4" className={classes.cols}>{ex}</Col>
+                    <Col class="col-4" className={classes.cols}>
+                      {ex}
+                    </Col>
                   ))}
                 </React.Fragment>
               ) : null}
               {exerciseSets.length === 0 ? (
-                <Col>You have no exercises yet - please check with your PT!</Col>
+                <Col>
+                  You have no exercises yet - please check with your PT!
+                </Col>
               ) : null}
             </Row>
             <Divider />
             {Object.entries(exerciseSets)
               .filter((s) => s[0] !== "exerciseList")
               .map((s, i) => {
-              return (
-                <Row key={i}>
-                  <Col>{s[0]}</Col>
-                  {exerciseSets.exerciseList.map((name, j) => {
-                    // if s
-                    return (
-                      <Col className={classes.cols} key={j}>
-                        {checkComplete(s[1], name)}
-                      </Col>
-                    );
-                  })}
-                </Row>
-              );
-            })}
+                return (
+                  <Row key={i}>
+                    <Col>{s[0]}</Col>
+                    {exerciseSets.exerciseList.map((name, j) => {
+                      // if s
+                      return (
+                        <Col className={classes.cols} key={j}>
+                          {checkComplete(s[1], name)}
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                );
+              })}
           </div>
           {/* End Progress Chart */}
         </div>
@@ -542,72 +541,80 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
           {Object.entries(exerciseSets)
             .filter((s) => s[0] !== "exerciseList")
             .map((s, i) => {
-              console.log("exercises", s[1])
-            return s[1].length === 0 ? null : (
-              <div className={classes.exerciseContainer} key={i}>
-                <div className={classes.exerciseSetDiv} key={i}>
-                  <Typography variant="h4" className={classes.header}>
-                    {s[0]}
-                  </Typography>
-                  <Typography variant="subtitle1" display="block" gutterBottom>
-                    <i class="far fa-clock"></i>
-                    <img src={"/img/timeicon.png"} className={classes.timeIcon} alt="timeicon" />
-                    {calculateTotalTime(s[1])}
-                  </Typography>
-                  <Row className={classes.rows}>
-                    <Col className={classes.firstCol}>Exercise</Col>
-                    <Col className={classes.cols}>Reps</Col>
-                    <Col className={classes.cols}>Duration (s)</Col>
-                    <Col className={classes.cols}>Sets</Col>
-                    <Col className={classes.cols}>Hold (s)</Col>
-                    <Col className={classes.cols}>Resistance</Col>
-                    <Col className={classes.cols}>Rest (s)</Col>
-                  </Row>
-                  <Divider />
-                  {s[1].map((ex, k) => {
-                    return (
-                      <div>
-                        <Row key={i} className={classes.rows}>
-                          <Col className={classes.firstCol}>
-                            {ex.name ? ex.name : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.reps ? ex.reps : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.duration ? ex.duration : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.sets ? ex.sets : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.hold ? ex.hold : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.resistance ? ex.resistance : "-"}
-                          </Col>
-                          <Col className={classes.cols}>
-                            {ex.rest ? ex.rest : "-"}
-                          </Col>
-                        </Row>
-                      </div>
-                    );
-                  })}
-                  <Link
-                    to={{
-                      pathname: `/workout/${s[0]}`,
-                      exerciseProps: s,
-                      setInd: i,
-                    }}
-                  >
-                    <Button variant="light" className={classes.startButton}>
-                      Start
-                  </Button>
-                  </Link>
+              console.log("exercises", s[1]);
+              return s[1].length === 0 ? null : (
+                <div className={classes.exerciseContainer} key={i}>
+                  <div className={classes.exerciseSetDiv} key={i}>
+                    <Typography variant="h4" className={classes.header}>
+                      {s[0]}
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      display="block"
+                      gutterBottom
+                    >
+                      <i class="far fa-clock"></i>
+                      <img
+                        src={"/img/timeicon.png"}
+                        className={classes.timeIcon}
+                        alt="timeicon"
+                      />
+                      {calculateTotalTime(s[1])}
+                    </Typography>
+                    <Row className={classes.rows}>
+                      <Col className={classes.firstCol}>Exercise</Col>
+                      <Col className={classes.cols}>Reps</Col>
+                      <Col className={classes.cols}>Duration (s)</Col>
+                      <Col className={classes.cols}>Sets</Col>
+                      <Col className={classes.cols}>Hold (s)</Col>
+                      <Col className={classes.cols}>Resistance</Col>
+                      <Col className={classes.cols}>Rest (s)</Col>
+                    </Row>
+                    <Divider />
+                    {s[1].map((ex, k) => {
+                      return (
+                        <div>
+                          <Row key={i} className={classes.rows}>
+                            <Col className={classes.firstCol}>
+                              {ex.name ? ex.name : "-"}
+                            </Col>
+                            <Col className={classes.cols}>
+                              {ex.reps ? ex.reps : "-"}
+                            </Col>
+                            <Col className={classes.cols}>
+                              {ex.duration ? ex.duration : "-"}
+                            </Col>
+                            <Col className={classes.cols}>
+                              {ex.sets ? ex.sets : "-"}
+                            </Col>
+                            <Col className={classes.cols}>
+                              {ex.hold ? ex.hold : "-"}
+                            </Col>
+                            <Col className={classes.cols}>
+                              {ex.resistance ? ex.resistance : "-"}
+                            </Col>
+                            <Col className={classes.cols}>
+                              {ex.rest ? ex.rest : "-"}
+                            </Col>
+                          </Row>
+                        </div>
+                      );
+                    })}
+                    <Link
+                      to={{
+                        pathname: `/workout/${s[0]}`,
+                        exerciseProps: s,
+                        setInd: i,
+                      }}
+                    >
+                      <Button variant="light" className={classes.startButton}>
+                        Start
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     );
