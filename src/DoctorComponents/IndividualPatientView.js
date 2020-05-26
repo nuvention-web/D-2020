@@ -266,13 +266,13 @@ const IndividualPatientView = (props) => {
   const [newRest, setNewRest] = useState({});
 
   // Modal States
-  const [newModalExercise, setNewModalExercise] = useState();
-  const [editReps, setEditReps] = useState({});
-  const [editDuration, setEditDuration] = useState({});
-  const [editSets, setEditSets] = useState({});
-  const [editHold, setEditHold] = useState({});
-  const [editResistance, setEditResistance] = useState({});
-  const [editRest, setEditRest] = useState({});
+  const [newModalExercise, setNewModalExercise] = useState({});
+  const [editReps, setEditReps] = useState("");
+  const [editDuration, setEditDuration] = useState("");
+  const [editSets, setEditSets] = useState("");
+  const [editHold, setEditHold] = useState("");
+  const [editResistance, setEditResistance] = useState("");
+  const [editRest, setEditRest] = useState("");
 
   const { id } = useParams();
   const currUser = useContext(UserContext).user;
@@ -390,7 +390,6 @@ const IndividualPatientView = (props) => {
   // Handle new patient with no exercisesets collection yet
   useEffect(() => {
     if (Object.entries(currUser).length > 0 && thisMondayStr) {
-      console.log("this runs");
       var collectionRef = db
         .collection("patients")
         .doc(currUser.uid)
@@ -400,7 +399,6 @@ const IndividualPatientView = (props) => {
         .limit(1);
 
       collectionRef.get().then((query) => {
-        console.log("query size:", query.size);
         if (query.size === 0) {
           setLoaded(true);
         }
@@ -411,7 +409,6 @@ const IndividualPatientView = (props) => {
   // Use docID to retreive a specific patient's data from Firestore
   useEffect(() => {
     const fetchPatient = () => {
-      console.log("location.patientInfo", location.patientInfo);
       // Newly added to load Firestore data
       let exerciseHolder = {
         Monday: [],
@@ -424,9 +421,6 @@ const IndividualPatientView = (props) => {
         exerciseList: [],
       };
       if (thisMondayStr) {
-        console.log("This Monday: ", thisMondayStr);
-        console.log("This Monday Type: ", typeof thisMondayStr);
-
         var patientRef = db
           .collection("patients")
           .doc(id)
@@ -436,13 +430,10 @@ const IndividualPatientView = (props) => {
 
         // Newly added to load Firestore data
         patientRef.get().then((querySnapshot) => {
-          console.log("QuerySnapshot: ", querySnapshot.docs);
           Promise.all(
             querySnapshot.docs.map((doc) => ({ docId: doc.id, ...doc.data() }))
           ).then((exercises) => {
-            console.log("Exercises: ", exercises);
             exercises.forEach((exercise) => {
-              console.log("Exercise: ", exercise);
               switch (exercise.day) {
                 case 0:
                   exerciseHolder["Sunday"].push(exercise);
@@ -467,10 +458,8 @@ const IndividualPatientView = (props) => {
               }
               if (!exerciseHolder.exerciseList.includes(exercise.name)) {
                 exerciseHolder.exerciseList.push(exercise.name);
-                console.log("l now", exerciseHolder.exerciseList);
               }
             });
-            console.log("exerciseHolder: ", exerciseHolder);
             setExerciseSets(exerciseHolder);
           });
         });
@@ -497,7 +486,6 @@ const IndividualPatientView = (props) => {
         .collection("exercises")
         .get()
         .then((querySnapshot) => {
-          console.log(querySnapshot);
           querySnapshot.docs.forEach((doc) => {
             const data = doc.data();
             const id = doc.id;
@@ -516,7 +504,6 @@ const IndividualPatientView = (props) => {
   // End loading data
 
   const checkCanModify = () => {
-    console.log("in checkCanModify", thisMondayStr);
     // If we are in a week prior to this one, set canModify to false
     // d = this Monday
     const d = new Date();
@@ -529,9 +516,7 @@ const IndividualPatientView = (props) => {
       // The monday we are looking at
       var currMonday = new Date(thisMondayStr);
 
-      console.log("modify", currMonday, d);
       if (currMonday < d) {
-        console.log("Cannot modify this week");
         setCanModify(false);
       } else {
         setCanModify(true);
@@ -653,26 +638,50 @@ const IndividualPatientView = (props) => {
 
   useEffect((day, exId) => {}, []);
 
-  const editExercise = (e, docId) => {
+  const editExercise = async (e, exercise) => {
     e.preventDefault();
+    console.log("name: ", exercise.name);
+    console.log("selectedEx: ", exercise);
+    // Need videoId update
+    const selectedExerciseType = await exerciseType.filter(
+      (ex) => ex.name === exercise.name
+    );
+    console.log("Exercise VideoId: ", selectedExerciseType[0].videoId);
+    const editExObj = {
+      day: exercise.day,
+      name: exercise.name,
+      reps: parseInt(exercise.reps),
+      duration: parseFloat(exercise.duration),
+      sets: parseInt(exercise.sets),
+      hold: parseInt(exercise.hold),
+      resistance: exercise.resistance,
+      rest: parseInt(exercise.rest),
+      videoId: selectedExerciseType[0].videoId,
+      complete: false,
+      dateAdded: new Date(),
+    };
 
     console.log("Editing!");
+    console.log("EditExObj: ", editExObj);
     const exerciseRef = db
       .collection("patients")
       .doc(id)
       .collection("exercises")
       .doc("weekEx")
       .collection(thisMondayStr)
-      .doc(docId);
+      .doc(exercise.docId);
 
     // Update
     exerciseRef
-      .update({ newModalExercise })
+      .update(editExObj)
       .then(function (docRef) {
         console.log("Exercise document written with ID: ", docRef.id);
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
+      })
+      .then(() => {
+        window.location.reload(false);
       });
   };
 
@@ -907,13 +916,12 @@ const IndividualPatientView = (props) => {
                           as="select"
                           className={classes.exerciseBox}
                           onChange={(event) => {
-                            setNewModalExercise(event.target.value);
+                            setSelectedEx({
+                              ...selectedEx,
+                              name: event.target.value,
+                            });
                           }}
                         >
-                          {console.log(
-                            "exampleForm1",
-                            document.getElementById("reps-Monday")
-                          )}
                           {exerciseType.map((exercise, i) => {
                             return (
                               <option value={exercise.name}>
@@ -930,12 +938,13 @@ const IndividualPatientView = (props) => {
                           type="number"
                           min="0"
                           className={classes.inputBox}
-                          onChange={(event) => {
-                            let r = editReps;
-                            r = event.target.value;
-                            setEditReps(editReps);
-                          }}
                           value={selectedEx.reps}
+                          onChange={(event) => {
+                            setSelectedEx({
+                              ...selectedEx,
+                              reps: event.target.value,
+                            });
+                          }}
                           required
                         />
                         <Form.Control.Feedback type="invalid">
@@ -949,15 +958,15 @@ const IndividualPatientView = (props) => {
                           type="number"
                           min="0"
                           className={classes.inputBox}
-                          onChange={(event) => {
-                            let s = newSets;
-                            s = event.target.value;
-                            setEditSets(s);
-                          }}
                           value={selectedEx.sets}
+                          onChange={(event) => {
+                            setSelectedEx({
+                              ...selectedEx,
+                              sets: event.target.value,
+                            });
+                          }}
                           required
                         />
-                        {console.log("new sets??", newSets)}
                         <Form.Control.Feedback type="invalid">
                           Sets are required.
                         </Form.Control.Feedback>
@@ -970,13 +979,14 @@ const IndividualPatientView = (props) => {
                         min="1"
                         step="0.5"
                         className={classes.inputBox}
+                        value={selectedEx.duration}
                         onChange={(event) => {
-                          let dur = newDuration;
-                          dur = event.target.value;
-                          setEditDuration(dur);
+                          setSelectedEx({
+                            ...selectedEx,
+                            duration: event.target.value,
+                          });
                         }}
                         required
-                        value={selectedEx.duration}
                       />
                       <Form.Control.Feedback type="invalid">
                         Duration is required.
@@ -988,15 +998,16 @@ const IndividualPatientView = (props) => {
                           type="number"
                           min="0"
                           className={classes.inputBox}
+                          value={selectedEx.hold}
                           onChange={(event) => {
-                            let h = newHold;
-                            h = event.target.value;
-                            setEditHold(h);
+                            setSelectedEx({
+                              ...selectedEx,
+                              hold: event.target.value,
+                            });
                           }}
                           required
-                          value={selectedEx.hold}
                         />
-                        {console.log("new reps??", newReps)}
+                        {console.log("edit reps??", editReps)}
                         <Form.Control.Feedback type="invalid">
                           Hold is required.
                         </Form.Control.Feedback>
@@ -1008,12 +1019,13 @@ const IndividualPatientView = (props) => {
                           type="number"
                           min="0"
                           className={classes.inputBox}
-                          onChange={(event) => {
-                            let rest = newRest;
-                            rest = event.target.value;
-                            setEditRest(rest);
-                          }}
                           value={selectedEx.rest}
+                          onChange={(event) => {
+                            setSelectedEx({
+                              ...selectedEx,
+                              rest: event.target.value,
+                            });
+                          }}
                           required
                         />
                         <Form.Control.Feedback type="invalid">
@@ -1026,13 +1038,14 @@ const IndividualPatientView = (props) => {
                         <Form.Control
                           type="text"
                           className={classes.inputBox}
+                          value={selectedEx.resistance}
                           onChange={(event) => {
-                            let resistance = newResistance;
-                            resistance = event.target.value;
-                            setEditResistance(resistance);
+                            setSelectedEx({
+                              ...selectedEx,
+                              resistance: event.target.value,
+                            });
                           }}
                           required
-                          value={selectedEx.resistance}
                         />
                         <Form.Control.Feedback type="invalid">
                           Resistance are required.
@@ -1046,7 +1059,7 @@ const IndividualPatientView = (props) => {
                         type="submit"
                         disabled={!canModify}
                         onClick={(e) => {
-                          editExercise(selectedEx.docId);
+                          editExercise(e, selectedEx);
                         }}
                       >
                         Done
@@ -1117,7 +1130,6 @@ const IndividualPatientView = (props) => {
                 ) : null}
               </Row>
               <Divider />
-              {console.log(Object.entries(exerciseSets))}
               {Object.entries(exerciseSets)
                 .filter((entry) => entry[0] !== "exerciseList")
                 .map((entry, i) => {
@@ -1200,7 +1212,6 @@ const IndividualPatientView = (props) => {
 
                   <Divider />
 
-                  {console.log("exerciseSets", exerciseSets)}
                   {checkMatch(day).map((ex, k) => {
                     return (
                       <div>
@@ -1260,7 +1271,6 @@ const IndividualPatientView = (props) => {
                       </div>
                     );
                   })}
-                  {console.log(day == validatedDay)}
                   {canModify ? (
                     <Form
                       noValidate
@@ -1279,10 +1289,6 @@ const IndividualPatientView = (props) => {
                                 setNewExercise(event.target.value);
                               }}
                             >
-                              {console.log(
-                                "exampleForm1",
-                                document.getElementById("reps-Monday")
-                              )}
                               {exerciseType.map((exercise, i) => {
                                 return (
                                   <option value={exercise.name}>
@@ -1328,7 +1334,6 @@ const IndividualPatientView = (props) => {
                               }}
                               required
                             />
-                            {console.log("new sets??", newSets)}
                             <Form.Control.Feedback type="invalid">
                               Sets are required.
                             </Form.Control.Feedback>
@@ -1369,7 +1374,6 @@ const IndividualPatientView = (props) => {
                               }}
                               required
                             />
-                            {console.log("new reps??", newReps)}
                             <Form.Control.Feedback type="invalid">
                               Hold is required.
                             </Form.Control.Feedback>
@@ -1409,7 +1413,6 @@ const IndividualPatientView = (props) => {
                               }}
                               required
                             />
-                            {console.log("new resistance??", newResistance)}
                             <Form.Control.Feedback type="invalid">
                               Resistance are required.
                             </Form.Control.Feedback>
