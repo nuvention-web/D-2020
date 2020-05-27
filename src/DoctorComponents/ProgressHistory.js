@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-import { db } from "../Firebase";
+import { db, firebase } from "../Firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import { UserContext } from "../contexts/UserContext";
 import { useLocation, useParams } from "react-router-dom";
@@ -20,7 +20,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { firebase } from "../Firebase.js";
+// import { firebase } from "../Firebase.js";
 // import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
@@ -179,21 +179,22 @@ const ProgressHistory = (props) => {
           <div>
             <ScatterChart
               className={classes.progressChart}
-              width={600}
-              height={400}
+              width={800}
+              height={500}
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
             >
               <CartesianGrid />
               <XAxis
                 type="number"
-                domain={["dataMin", "dataMax"]}
+                domain={["auto","auto"]}
                 dataKey="time"
                 name="time"
+                interval={0}
+                minTickGap={2}
                 tickFormatter={
                   (timeStr) =>
                     // console.log(new Date(timeStr).toLocaleString().slice(0, 9))
-                    new Date(timeStr).toLocaleString().slice(0, 9)
-                  // new Date(timeStr).toString().slice(0, 15)
+                    new Date(timeStr).toLocaleString().slice(0, 4)
                 }
                 // label="Day"
               />
@@ -201,7 +202,7 @@ const ProgressHistory = (props) => {
                 type="number"
                 domain={[0, 10]}
                 tickCount={10}
-                interval="0"
+                interval={0}
                 dataKey={"pain"}
                 name="pain"
                 label="Pain"
@@ -209,7 +210,7 @@ const ProgressHistory = (props) => {
               <ZAxis range={[100]} />
               <Tooltip
                 cursor={{ strokeDasharray: "3 3" }}
-                formatter={(value) => new Date(value).toLocaleString()}
+                formatter={(value,name,props) => (name === 'time') ? new Date(value).toLocaleString().slice(0, 9) : value }
               />
               <Legend />
               {console.log("map", Object.entries(historyData))}
