@@ -786,17 +786,24 @@ const IndividualPatientView = (props) => {
       // Make sure anything has been entered
       if (
         typeof newReps === "undefined" ||
-        typeof newDuration === "undefined"
+        typeof newDuration === "undefined" ||
+        typeof newSets === "undefined" ||
+        typeof newHold === "undefined" ||
+        typeof newRest === "undefined" ||
+        typeof newResistance === "undefined"
+
       ) {
         return false;
       }
 
       // Make sure values are entered for proper day
       if (
-        typeof newReps[day] === "undefined" ||
-        newReps[day] === "" ||
-        typeof newDuration[day] === "undefined" ||
-        newDuration[day] === ""
+        typeof newReps[day] === "undefined" || newReps[day] === "" ||
+        typeof newDuration[day] === "undefined" || newDuration[day] === "" ||
+        typeof newSets[day] === "undefined" || newSets[day] === "" ||
+        typeof newHold[day] === "undefined" || newHold[day] === "" ||
+        typeof newRest[day] === "undefined" || newRest[day] === "" ||
+        typeof newResistance[day] === "undefined" || newResistance[day] === ""
       ) {
         return false;
       } else {
@@ -1048,7 +1055,7 @@ const IndividualPatientView = (props) => {
                           required
                         />
                         <Form.Control.Feedback type="invalid">
-                          Resistance are required.
+                          Resistance is required.
                         </Form.Control.Feedback>
                       </Form.Group>
                     </Col>
