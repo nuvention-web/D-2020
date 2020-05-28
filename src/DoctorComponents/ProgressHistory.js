@@ -101,56 +101,64 @@ const ProgressHistory = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log("currUser.uid", currUser.uid);
-    console.log("id", id);
-    if (typeof id !== "undefined") {
-      // Dictionary with key = exercise name, value = [{date: ..., pain:...}]
-      const tempHistoryData = {};
-      if (subCollections) {
-        subCollections.map((collection) => {
-          db.collection("patients")
-            .doc(id)
-            .collection("exercises")
-            .doc("weekEx")
-            .collection(collection)
-            .get()
-            .then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const entry = {};
-                console.log("doc.data()", data);
-                const created = new Date(collection);
-                created.setDate(created.getDate() + data.day - 1);
-                entry.time = created.getTime();
-                // entry.time = new Date(data.date).toLocaleString();
-                console.log("entry w time", entry);
-                entry.pain = data.painLevel;
+    const fetchData = async () => {
+      if (typeof id !== "undefined") {
+        // Dictionary with key = exercise name, value = [{date: ..., pain:...}]
+        var tempHistoryData = {};
+        if (subCollections) {
+          subCollections.map((collection) => {
+            db.collection("patients")
+              .doc(id)
+              .collection("exercises")
+              .doc("weekEx")
+              .collection(collection)
+              .get()
+              .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                  const data = doc.data();
+                  const entry = {};
+                  // console.log("doc.data()", data);
+                  const created = new Date(collection);
+                  created.setDate(created.getDate() + data.day - 1);
+                  entry.time = created.getTime();
+                  // entry.time = new Date(data.date).toLocaleString();
+                  // console.log("entry w time", entry);
+                  entry.pain = data.painLevel;
 
-                // If key does not exist yet
-                if (tempHistoryData[data.name] === undefined) {
-                  tempHistoryData[data.name] = [entry];
-                }
-                // Append to existing array
-                else {
-                  tempHistoryData[data.name].push(entry);
-                }
-                // const id = doc.id;
-                // exerciseArr.push({ ...data, id });
+                  // If key does not exist yet
+                  if (tempHistoryData[data.name] === undefined) {
+                    tempHistoryData[data.name] = [entry];
+                  }
+                  // Append to existing array
+                  else {
+                    tempHistoryData[data.name].push(entry);
+                  }
+                  // const id = doc.id;
+                  // exerciseArr.push({ ...data, id });
+                });
+              })
+              .then(() => {
+                console.log("tempHistoryData", tempHistoryData);
+                setHistoryData(tempHistoryData);
+                //   setExerciseType(exerciseArr);
               });
-            })
-            .then(() => {
-              console.log("tempHistoryData", tempHistoryData);
-              setHistoryData(tempHistoryData);
-              //   setExerciseType(exerciseArr);
-            });
-        });
+          }
+          );
+        }
       }
-    }
+    };
+    fetchData();
   }, [id, subCollections]);
 
   useEffect(() => {
+    console.log('setload rerunning')
     if (typeof historyData !== "undefined" && historyData.length !== 0) {
-      setLoaded(true);
+      var total = Object.values(historyData).reduce((sum, elt) => sum + (elt.length ? elt.length : 1), 0)
+      console.log('total', total)
+      console.log('historydata', historyData)
+      // if (total === 8) {
+        setLoaded(true);
+      // }
     }
   }, [historyData]);
 
@@ -186,7 +194,7 @@ const ProgressHistory = (props) => {
               <CartesianGrid />
               <XAxis
                 type="number"
-                domain={["auto","auto"]}
+                domain={["auto", "auto"]}
                 dataKey="time"
                 name="time"
                 interval={0}
@@ -196,7 +204,7 @@ const ProgressHistory = (props) => {
                     // console.log(new Date(timeStr).toLocaleString().slice(0, 9))
                     new Date(timeStr).toLocaleString().slice(0, 4)
                 }
-                // label="Day"
+              // label="Day"
               />
               <YAxis
                 type="number"
@@ -210,7 +218,7 @@ const ProgressHistory = (props) => {
               <ZAxis range={[100]} />
               <Tooltip
                 cursor={{ strokeDasharray: "3 3" }}
-                formatter={(value,name,props) => (name === 'time') ? new Date(value).toLocaleString().slice(0, 9) : value }
+                formatter={(value, name, props) => (name === 'time') ? new Date(value).toLocaleString().slice(0, 9) : value}
               />
               <Legend />
               {console.log("map", Object.entries(historyData))}
@@ -230,6 +238,8 @@ const ProgressHistory = (props) => {
           <div className={classes.stats}>
             <Typography variant="h4">Exercise Completion Statistics</Typography>
             ---
+            {console.log('historyData', historyData)}
+
             {Object.entries(historyData).map((d, i) => (
               <Typography>
                 {d[0]}: {countComplete(d[1])}/{d[1].length}
