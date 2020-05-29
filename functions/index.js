@@ -1,7 +1,13 @@
+// Basic Config
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
+
+// // Stripe Payments
+// const bodyParser = require("body-parser");
+// const cors = require('cors')({origin: true});
+// const express = require('express');
 
 // const calcDate = (day) => {
 //   let dayNum;
