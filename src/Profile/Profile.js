@@ -21,6 +21,10 @@ const Profile = ({ setHaveLoggedIn }) => {
       textAlign: "center",
       color: "#80858a",
     },
+    rootGrid: {
+      display: "flex",
+      flexWrap: "wrap",
+    },
     card: {
       marginTop: "3%",
       margin: "0 auto",
@@ -85,8 +89,8 @@ const Profile = ({ setHaveLoggedIn }) => {
   const renderPT = () => {
     return (
       <div>
-        <Grid container>
-          <Grid container item xs={6}>
+        <Grid container className={classes.rootGrid}>
+          <Grid item xs={12} sm={6}>
             <Container className={classes.root}>
               <Typography gutterBottom variant="h3">
                 Your Profile
@@ -159,7 +163,7 @@ const Profile = ({ setHaveLoggedIn }) => {
             </Container>
           </Grid>
           {/* Payment Info */}
-          <Grid container item xs={6}>
+          <Grid item xs={12} sm={6}>
             <Container>
               <Typography variant="h4" color="textSecondary" component="h2">
                 Our Pricing Policy:{" "}
