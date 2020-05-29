@@ -65,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
       backgroundColor: "#3358C4",
     },
+    marginBottom: "4%"
   },
   accentDivider: {
     content: "",
@@ -112,6 +113,7 @@ const Exercises = () => {
   const classes = useStyles();
   const currUser = useContext(UserContext).user;
   const [exercises, setExercises] = useState([]);
+  const [templates, setTemplates] = useState([]);
   const [deleted, setDeleted] = useState();
 
   useEffect(() => {
@@ -131,6 +133,28 @@ const Exercises = () => {
         })
         .then(() => {
           setExercises(exerciseArr);
+        });
+    }
+  }, [currUser, deleted]);
+
+  //fetch template data
+  useEffect(() => {
+    if (Object.entries(currUser).length > 0) {
+      const templateArr = [];
+      db.collection("therapists")
+        .doc(currUser.uid)
+        .collection("templates")
+        .get()
+        .then((querySnapshot) => {
+          console.log(querySnapshot);
+          querySnapshot.docs.forEach((doc) => {
+            const data = doc.data();
+            const id = doc.id;
+            templateArr.push({ ...data, id });
+          });
+        })
+        .then(() => {
+          setTemplates(templateArr);
         });
     }
   }, [currUser, deleted]);
@@ -186,6 +210,21 @@ const Exercises = () => {
           direction="row"
           className={classes.exerciseGridContainer}
         >
+          {templates && currUser
+            ? templates.map((t, i) => {
+                return (
+                  <div>
+                    <Grid item key={i} className={classes.exercisesGrid}>
+                      <Exercise
+                        exercise={t}
+                        currUser={currUser}
+                        setDeleted={setDeleted}
+                      />
+                    </Grid>
+                  </div>
+                );
+              })
+            : null}
         </Grid>
         <Link
           to={{

@@ -104,7 +104,7 @@ const Templates = () => {
     const [newDuration, setNewDuration] = useState({});
     const [newSets, setNewSets] = useState({});
     const [newHold, setNewHold] = useState({});
-    const [newResistance, setNewResistance] = useState({});
+    const [newResistance, setNewResistance] = useState(null);
     const [newRest, setNewRest] = useState({});
     const [templateExercises, setTemplateExercises] = useState([]);
     const [templateName, setTemplateName] = useState("");
@@ -184,36 +184,65 @@ const Templates = () => {
 
     const deleteExercise = async (e, ind) => {
         // For debugging purposes - pauses refresh on submit
-        // e.preventDefault();
+        e.preventDefault();
     
         console.log("Deleting!");
         console.log("exercise number", ind);
 
-        var currTempExercises = templateExercises;
-        currTempExercises.splice(ind, 1);
-        console.log(currTempExercises);
-        setTemplateExercises(currTempExercises);
-
+        setTemplateExercises(templateExercises.filter(function(value, index) {return index !== ind;}));
+        console.log("template exercises after del", templateExercises)
     
-        // // Should only reload if previous chunk of code has run..
-        // window.location.reload(false);
     };
 
     const addExercise = async (e) => {
         // For debugging purposes - pauses refresh on submit
-        // e.preventDefault();
-    
-        const newExercise = await getUpdatedSet();
+        e.preventDefault();
+
+        // var currTempExercises = templateExercises;
+        const newExercise = await getUpdatedSet()
         console.log("newExercise", newExercise);
 
-        var currTempExercises = templateExercises;
-        currTempExercises.push(newExercise);
-        console.log(currTempExercises);
-        setTemplateExercises(currTempExercises);
+        const updatedTemplate = templateExercises.concat(newExercise);
+        setTemplateExercises(updatedTemplate);
         console.log("new template exercises", templateExercises);
+
+        //reset params
+        // setNewExercise(exerciseType[0].name);
+        setNewReps({});
+        setNewDuration({});
+        setNewSets({});
+        setNewHold({});
+        setNewResistance("");
+        setNewRest({});
     
-        // // Should only reload if previous chunk of code has run..
-        // window.location.reload(false);
+    };
+
+    const addTemplate = async (e) => {
+        // For debugging purposes - pauses refresh on submit
+        e.preventDefault();
+    
+        const newTemplate = {
+            name: templateName, 
+            exercises: templateExercises
+        }
+    
+        const templateRef = db
+          .collection("therapists")
+          .doc(currUser.uid)
+          .collection("templates")
+    
+        // Add to exercises
+        await templateRef
+          .add(newTemplate)
+          .then(function (docRef) {
+            console.log("Exercise document written with ID: ", docRef.id);
+            alert("Template successfully created");
+          })
+          .catch(function (error) {
+            console.error("Error writing document: ", error);
+          });
+        // Should only reload if previous chunk of code has run..
+        window.location.reload(false);
     };
     
     
@@ -230,7 +259,7 @@ const Templates = () => {
                     <TextField id="template-name" 
                                 label="Template Name" 
                                 className={classes.nameField}
-                                onChange={(e) => setTemplateName("name", e.target.value)}
+                                onChange={(e) => setTemplateName(e.target.value)}
                                 helperText="Template name required"
                                 InputProps={{
                                     classes: {
@@ -253,38 +282,30 @@ const Templates = () => {
                 </div>
 
                 <Divider />
-                {console.log("templateExercises", templateExercises)}
                 { 
                     templateExercises.map((ex, k) => {
-                
+                    console.log(templateExercises);
                     return(
                     <div>
                     <Row key={k} className={classes.rows}>
-                        {console.log("exercise name", formatExerciseName(ex.name))}
                         <Col>{formatExerciseName(ex.name)}</Col>
                         <Col className={classes.cols}>
-                        1
-                        {/* {ex.reps ? ex.reps : "-"} */}
+                        {ex.reps ? ex.reps : "-"}
                         </Col>
                         <Col className={classes.cols}>
-                        1
-                        {/* {ex.sets ? ex.sets : "-"} */}
+                        {ex.sets ? ex.sets : "-"}
                         </Col>
                         <Col className={classes.cols}>
-                        1
-                        {/* {ex.duration ? ex.duration : "-"} */}
+                        {ex.duration ? ex.duration : "-"}
                         </Col>
                         <Col className={classes.cols}>
-                        1
-                        {/* {ex.hold ? ex.hold : "-"} */}
+                        {ex.hold ? ex.hold : "-"}
                         </Col>
                         <Col className={classes.cols}>
-                        1
-                        {/* {ex.rest ? ex.rest : "-"} */}
+                        {ex.rest ? ex.rest : "-"}
                         </Col>
                         <Col className={classes.cols}>
-                        1
-                        {/* {ex.resistance ? ex.resistance : "-"} */}
+                        {ex.resistance ? ex.resistance : "-"}
                         </Col>
                         <Col className={classes.centeredCol}>
                             <Button
@@ -347,6 +368,7 @@ const Templates = () => {
                                 setNewReps(r);
                             }}
                             required
+                            value={newReps}
                         />
                         {console.log("new reps", newReps)}
                         <Form.Control.Feedback type="invalid">
@@ -365,6 +387,7 @@ const Templates = () => {
                                 var s = event.target.value;
                                 setNewSets(s);
                             }}
+                            value={newSets}
                             required
                         />
                         {console.log("new sets", newSets)}
@@ -385,6 +408,7 @@ const Templates = () => {
                             var dur = event.target.value;
                             setNewDuration(dur);
                         }}
+                        value={newDuration}
                         required
                         />
                         {console.log("new duration", newDuration)}
@@ -403,6 +427,7 @@ const Templates = () => {
                                 var h = event.target.value;
                                 setNewHold(h);
                             }}
+                            value={newHold}
                             required
                         />
                         {console.log("new hold", newHold)}
@@ -422,6 +447,7 @@ const Templates = () => {
                                 var rest = event.target.value;
                                 setNewRest(rest);
                             }}
+                            value={newRest}
                             required
                         />
                         {console.log("new rest", newRest)}
@@ -440,6 +466,7 @@ const Templates = () => {
                                 var resistance = event.target.value;
                                 setNewResistance(resistance);
                             }}
+                            value={newResistance}
                             required
                         />
                         {console.log("new resistance", newResistance)}
@@ -468,7 +495,7 @@ const Templates = () => {
                     </Row>
                 </Form>
 
-                <Button variant="light" type="submit" className={classes.submitBtn}>
+                <Button variant="light" type="submit" className={classes.submitBtn} onClick={(e) => addTemplate(e)}>
                     Create Template
                 </Button>
             </div>
