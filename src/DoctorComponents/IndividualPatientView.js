@@ -214,6 +214,16 @@ export const dayToNumIdMap = new Map([
   ["Saturday", 6],
 ]);
 
+const numToDayMap = new Map([
+  [0, "Sunday"],
+  [1, "Monday"],
+  [2, "Tuesday"],
+  [3, "Wednesday"],
+  [4, "Thursday"],
+  [5, "Friday"],
+  [6, "Saturday"],
+]);
+
 //to sort exercisesets
 export const compareSets = (a, b) => {
   const dayA = a.day;
@@ -777,11 +787,7 @@ const IndividualPatientView = (props) => {
     };
 
     const canClick = (day) => {
-      var r = document.getElementById("reps-" + day);
-
-      console.log("what is r", r, r.value);
-      console.log("newReps:", newReps);
-      console.log("newDuration:", newDuration);
+      console.log("day in canClick", day);
 
       // Make sure anything has been entered
       if (
@@ -809,6 +815,29 @@ const IndividualPatientView = (props) => {
       } else {
         return true;
       }
+    };
+
+    const canClickEdit = (day) => {
+      console.log("day in canClickEdit", day);
+      console.log("newReps", newReps[day]);
+      console.log("newResistance", newResistance[day])
+      console.log("selectedEx", selectedEx)
+      // const form = e.currentTarget;
+      // return form.checkValidity();
+
+      // Make sure selectedEx contains a value
+      if (
+        selectedEx.reps === "" ||
+        selectedEx.duration === "" ||
+        selectedEx.sets === "" ||
+        selectedEx.old === "" ||
+        selectedEx.rest === "" ||
+        selectedEx.resistance === ""
+      ) {
+        console.log("Missing a value in selectedEx")
+        return false;
+      }
+      return true;
     };
 
     const doNothing = (e, day) => {
@@ -901,7 +930,8 @@ const IndividualPatientView = (props) => {
               {selectedEx ? (
                 <Form
                   noValidate
-                  // validated={day == validatedDay}
+                  validated={numToDayMap.get(selectedEx.day) == validatedDay}
+                  id={`form1-${selectedEx.day}`}
                   // onSubmit={handleSubmit}
                   className={classes.newExercise}
                 >
@@ -1066,7 +1096,9 @@ const IndividualPatientView = (props) => {
                         type="submit"
                         disabled={!canModify}
                         onClick={(e) => {
-                          editExercise(e, selectedEx);
+                          canClickEdit(numToDayMap.get(selectedEx.day))
+                          ? editExercise(e, selectedEx)
+                          : doNothing(e, numToDayMap.get(selectedEx.day));
                         }}
                       >
                         Done
@@ -1281,7 +1313,7 @@ const IndividualPatientView = (props) => {
                   {canModify ? (
                     <Form
                       noValidate
-                      validated={day == validatedDay}
+                      validated={!open && (day == validatedDay)}
                       // onSubmit={handleSubmit}
                       id={`form1-${day}`}
                       className={classes.newExercise}
