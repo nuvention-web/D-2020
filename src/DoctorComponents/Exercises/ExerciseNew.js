@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, TextField} from "@material-ui/core";
+import { Typography, TextField } from "@material-ui/core";
 import { UserContext } from "../../contexts/UserContext";
 import { db } from "../../Firebase";
 import { Button } from "react-bootstrap";
@@ -125,8 +125,6 @@ const ExerciseNew = () => {
     return video_id;
   };
 
-  {console.log("exerciseForm", exerciseForm)}
-
   return (
     <div className={classes.root}>
       <Typography variant="h3">Create a New Exercise</Typography>
@@ -148,8 +146,8 @@ const ExerciseNew = () => {
             value={exerciseForm.name}
             required
             helperText="Name required."
-            error = {exerciseForm["name"] === ""}
-            id = "outlined-error-helper-text"
+            error={exerciseForm["name"] === ""}
+            id="outlined-error-helper-text"
             onChange={(e) => setExerciseField("name", e.target.value)}
             className={classes.nameField}
             InputProps={{
@@ -180,7 +178,7 @@ const ExerciseNew = () => {
             value={exerciseForm.url}
             required
             helperText="URL required."
-            error = {exerciseForm["url"] === ""}
+            error={exerciseForm["url"] === "" || !(exerciseForm["url"].includes("youtube.com"))}
             id="outlined-error-helper-text"
             onChange={(e) => setExerciseField("url", e.target.value)}
             className={classes.nameField}
@@ -193,7 +191,7 @@ const ExerciseNew = () => {
         </div>
         <br />
         <Button variant="light" type="submit"
-        disabled={(exerciseForm["name"] === "") || (exerciseForm["url"] === "")}>
+          disabled={(exerciseForm["name"] === "") || (exerciseForm["url"] === "") || !(exerciseForm["url"].includes("youtube.com"))}>
           Submit
         </Button>
       </form>

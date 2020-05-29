@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-import { db } from "../Firebase";
+import { db, firebase } from "../Firebase";
 import { makeStyles } from "@material-ui/core/styles";
 import { UserContext } from "../contexts/UserContext";
 import { useLocation, useParams } from "react-router-dom";
@@ -20,6 +20,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+// import { firebase } from "../Firebase.js";
 // import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
@@ -49,9 +50,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 40,
   },
   stats: {
-    textAlign: 'center',
-    marginTop: '30px',
-  }
+    textAlign: "center",
+    marginTop: "30px",
+  },
 }));
 
 // const data01 = [
@@ -76,69 +77,103 @@ const ProgressHistory = (props) => {
   const currUser = useContext(UserContext).user;
   const [historyData, setHistoryData] = useState();
   const [loaded, setLoaded] = useState(false);
-
+  const [subCollections, setSubCollections] = useState();
   // patient id
   const { id } = useParams();
 
-  useEffect(() => {
-    console.log("currUser.uid", currUser.uid);
-    console.log("id", id);
-    if (typeof id !== "undefined") {
-      // Dictionary with key = exercise name, value = [{date: ..., pain:...}]
-      const tempHistoryData = {};
-      var patientRef = db.collection("patients").doc(id).collection("history");
-
-      patientRef
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const entry = {};
-            console.log("doc.data()", data);
-            console.log("data.date", data.date);
-            entry.time = data.date.toDate().getTime();
-            // entry.time = new Date(data.date).toLocaleString();
-            console.log("entry w time", entry);
-            entry.pain = data.painLevel;
-
-            // If key does not exist yet
-            if (tempHistoryData[data.name] === undefined) {
-              tempHistoryData[data.name] = [entry];
-            }
-            // Append to existing array
-            else {
-              tempHistoryData[data.name].push(entry);
-            }
-            // const id = doc.id;
-            // exerciseArr.push({ ...data, id });
-          });
-        })
-        .then(() => {
-          console.log("tempHistoryData", tempHistoryData);
-          setHistoryData(tempHistoryData);
-          //   setExerciseType(exerciseArr);
-        });
-    }
-  }, [id]);
+  // getSubCollection function from firebase cloud functions
+  const getSubCollections = firebase
+    .functions()
+    .httpsCallable("getSubCollections");
 
   useEffect(() => {
+    getSubCollections({
+      docPath: `/patients/${id}/exercises/weekEx`,
+    })
+      .then((result) => {
+        let collections = result.data.collections;
+        console.log("These are subcollections: ", collections);
+        setSubCollections(collections);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (typeof id !== "undefined") {
+        // Dictionary with key = exercise name, value = [{date: ..., pain:...}]
+        var tempHistoryData = {};
+        if (subCollections) {
+          subCollections.map((collection) => {
+            db.collection("patients")
+              .doc(id)
+              .collection("exercises")
+              .doc("weekEx")
+              .collection(collection)
+              .get()
+              .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                  const data = doc.data();
+                  const entry = {};
+                  // console.log("doc.data()", data);
+                  const created = new Date(collection);
+                  created.setDate(created.getDate() + data.day - 1);
+                  entry.time = created.getTime();
+                  // entry.time = new Date(data.date).toLocaleString();
+                  // console.log("entry w time", entry);
+                  entry.pain = data.painLevel;
+
+                  // If key does not exist yet
+                  if (tempHistoryData[data.name] === undefined) {
+                    tempHistoryData[data.name] = [entry];
+                  }
+                  // Append to existing array
+                  else {
+                    tempHistoryData[data.name].push(entry);
+                  }
+                  // const id = doc.id;
+                  // exerciseArr.push({ ...data, id });
+                });
+              })
+              .then(() => {
+                console.log("tempHistoryData", tempHistoryData);
+                setHistoryData(tempHistoryData);
+                //   setExerciseType(exerciseArr);
+              });
+          }
+          );
+        }
+      }
+    };
+    fetchData();
+  }, [id, subCollections]);
+
+  useEffect(() => {
+    console.log('setload rerunning')
     if (typeof historyData !== "undefined" && historyData.length !== 0) {
-      setLoaded(true);
+      var total = Object.values(historyData).reduce((sum, elt) => sum + (elt.length ? elt.length : 1), 0)
+      console.log('total', total)
+      console.log('historydata', historyData)
+      // if (total === 8) {
+        setLoaded(true);
+      // }
     }
   }, [historyData]);
 
   // To count how many of assigned exercises have pain values
   const countComplete = (d1) => {
-    console.log('d1', d1)
+    console.log("d1", d1);
     var ct = 0;
     for (let index = 0; index < d1.length; index++) {
       console.log(d1[index]);
-      if (typeof d1[index].pain !== 'undefined') {
+      if (typeof d1[index].pain !== "undefined") {
         ct += 1;
       }
     }
     return ct;
-  }
+  };
 
   const renderTable = () => {
     return (
@@ -152,20 +187,22 @@ const ProgressHistory = (props) => {
           <div>
             <ScatterChart
               className={classes.progressChart}
-              width={600}
-              height={400}
+              width={800}
+              height={500}
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
             >
               <CartesianGrid />
               <XAxis
                 type="number"
-                domain={["dataMin", "dataMax"]}
+                domain={["auto", "auto"]}
                 dataKey="time"
                 name="time"
-                tickFormatter={(timeStr) =>
-                  // console.log(new Date(timeStr).toLocaleString().slice(0, 9))
-                  new Date(timeStr).toLocaleString().slice(0, 9)
-                  // new Date(timeStr).toString().slice(0, 15)
+                interval={0}
+                minTickGap={2}
+                tickFormatter={
+                  (timeStr) =>
+                    // console.log(new Date(timeStr).toLocaleString().slice(0, 9))
+                    new Date(timeStr).toLocaleString().slice(0, 4)
                 }
               // label="Day"
               />
@@ -173,7 +210,7 @@ const ProgressHistory = (props) => {
                 type="number"
                 domain={[0, 10]}
                 tickCount={10}
-                interval="0"
+                interval={0}
                 dataKey={"pain"}
                 name="pain"
                 label="Pain"
@@ -181,7 +218,8 @@ const ProgressHistory = (props) => {
               <ZAxis range={[100]} />
               <Tooltip
                 cursor={{ strokeDasharray: "3 3" }}
-                formatter={(value) => new Date(value).toLocaleString()} />
+                formatter={(value, name, props) => (name === 'time') ? new Date(value).toLocaleString().slice(0, 9) : value}
+              />
               <Legend />
               {console.log("map", Object.entries(historyData))}
               {Object.entries(historyData).map((d, i) => (
@@ -198,13 +236,16 @@ const ProgressHistory = (props) => {
           </div>
 
           <div className={classes.stats}>
-          <Typography variant="h4">Exercise Completion Statistics</Typography>
-          ---
-          {Object.entries(historyData).map((d, i) => (
-            <Typography>{d[0]}: {countComplete(d[1])}/{d[1].length}</Typography>
-          ))}
-          </div>
+            <Typography variant="h4">Exercise Completion Statistics</Typography>
+            ---
+            {console.log('historyData', historyData)}
 
+            {Object.entries(historyData).map((d, i) => (
+              <Typography>
+                {d[0]}: {countComplete(d[1])}/{d[1].length}
+              </Typography>
+            ))}
+          </div>
         </Container>
       </div>
     );
