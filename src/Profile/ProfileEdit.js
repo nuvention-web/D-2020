@@ -173,6 +173,7 @@ const ProfileEdit = () => {
         })
         .then(function () {
           console.log("Document successfully written!");
+          console.log("condition", code && code !== "");
           if (code && code !== "") {
             // Update the patient
             const PTRef = db.collection("therapists").doc(code);

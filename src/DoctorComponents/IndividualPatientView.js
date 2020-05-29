@@ -253,6 +253,16 @@ const compareDate = (a, b) => {
   return comparison;
 };
 
+export const formatExerciseName = (n) => {
+  var splitStr = n.toLowerCase().split(" ");
+  for (var i = 0; i < splitStr.length; i++) {
+    splitStr[i] =
+      splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+  }
+  // Directly return the joined string
+  return splitStr.join(" ");
+};
+
 const getModalStyle = () => {
   return {
     top: `${50}%`,
@@ -722,15 +732,6 @@ const IndividualPatientView = (props) => {
     return startDateStr + " - " + endDateStr;
   };
 
-  const formatExerciseName = (n) => {
-    var splitStr = n.toLowerCase().split(" ");
-    for (var i = 0; i < splitStr.length; i++) {
-      splitStr[i] =
-        splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
-    }
-    // Directly return the joined string
-    return splitStr.join(" ");
-  };
 
   const generateID = () => {
     // Math.random should be unique because of its seeding algorithm.
@@ -1516,6 +1517,6 @@ const IndividualPatientView = (props) => {
   };
 
   return <div>{loaded ? renderTable() : renderLoading()}</div>;
-};
+}
 
 export default IndividualPatientView;

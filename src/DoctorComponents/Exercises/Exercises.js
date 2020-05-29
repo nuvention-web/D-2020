@@ -43,9 +43,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 55,
   },
   exerciseBox: {
-    width: 200,
+    height: "150vh"
   },
-  blueButton: {
+  exButton: {
     backgroundColor: "#9DB4FF",
     color: "white",
     border: "none",
@@ -54,6 +54,18 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
       backgroundColor: "#3358C4",
     },
+    marginBottom: 100
+  },
+  tempButton: {
+    backgroundColor: "#9DB4FF",
+    color: "white",
+    border: "none",
+    height: "calc(1.5em + .75rem + 2px)",
+    "&:hover": {
+      color: "white",
+      backgroundColor: "#3358C4",
+    },
+    marginBottom: "4%"
   },
   accentDivider: {
     content: "",
@@ -101,6 +113,7 @@ const Exercises = () => {
   const classes = useStyles();
   const currUser = useContext(UserContext).user;
   const [exercises, setExercises] = useState([]);
+  const [templates, setTemplates] = useState([]);
   const [deleted, setDeleted] = useState();
 
   useEffect(() => {
@@ -124,9 +137,31 @@ const Exercises = () => {
     }
   }, [currUser, deleted]);
 
+  //fetch template data
+  useEffect(() => {
+    if (Object.entries(currUser).length > 0) {
+      const templateArr = [];
+      db.collection("therapists")
+        .doc(currUser.uid)
+        .collection("templates")
+        .get()
+        .then((querySnapshot) => {
+          console.log(querySnapshot);
+          querySnapshot.docs.forEach((doc) => {
+            const data = doc.data();
+            const id = doc.id;
+            templateArr.push({ ...data, id });
+          });
+        })
+        .then(() => {
+          setTemplates(templateArr);
+        });
+    }
+  }, [currUser, deleted]);
+
   return (
     <div>
-      <Container>
+      <Container >
         <Typography variant="h3" className={classes.header}>
           Your Exercises
         </Typography>
@@ -160,8 +195,46 @@ const Exercises = () => {
           className={classes.link}
         >
           {" "}
-          <Button className={classes.blueButton} variant="outline-primary">
-            Add a new Exercise
+          <Button className={classes.exButton} variant="outline-primary">
+            new exercise
+          </Button>
+        </Link>
+        <br/>
+
+        <Typography variant="h3" className={classes.header}>
+          Your Templates
+        </Typography>
+        <div className={classes.accentDivider}></div>
+        <Grid
+          container
+          direction="row"
+          className={classes.exerciseGridContainer}
+        >
+          {templates && currUser
+            ? templates.map((t, i) => {
+                return (
+                  <div>
+                    <Grid item key={i} className={classes.exercisesGrid}>
+                      <Exercise
+                        exercise={t}
+                        currUser={currUser}
+                        setDeleted={setDeleted}
+                      />
+                    </Grid>
+                  </div>
+                );
+              })
+            : null}
+        </Grid>
+        <Link
+          to={{
+            pathname: "/PT/exercises/templates",
+          }}
+          className={classes.link}
+        >
+          {" "}
+          <Button className={classes.tempButton} variant="outline-primary">
+            new template
           </Button>
         </Link>
       </Container>
