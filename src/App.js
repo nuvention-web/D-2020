@@ -16,6 +16,7 @@ import Exercises from "./DoctorComponents/Exercises/Exercises";
 import Exercise from "./DoctorComponents/Exercises/Exercise";
 import ExerciseEdit from "./DoctorComponents/Exercises/ExerciseEdit";
 import ExerciseNew from "./DoctorComponents/Exercises/ExerciseNew";
+import Templates from "./DoctorComponents/Exercises/Templates";
 import ProgressHistory from "./DoctorComponents/ProgressHistory";
 // Add login/auth logic here, add react routing to correct pages
 // React routing flow
@@ -87,6 +88,10 @@ const App = () => {
               component={(props) => (
                 <ProgressHistory {...props}></ProgressHistory>
               )}
+            ></Route>
+            <Route
+              path="/PT/exercises/templates"
+              component={(props) => <Templates {...props}></Templates>}
             ></Route>
             <Route
               path="/PT/exercises/new"

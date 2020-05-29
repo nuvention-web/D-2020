@@ -43,9 +43,20 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 55,
   },
   exerciseBox: {
-    width: 200,
+    height: "150vh"
   },
-  blueButton: {
+  exButton: {
+    backgroundColor: "#9DB4FF",
+    color: "white",
+    border: "none",
+    height: "calc(1.5em + .75rem + 2px)",
+    "&:hover": {
+      color: "white",
+      backgroundColor: "#3358C4",
+    },
+    marginBottom: 100
+  },
+  tempButton: {
     backgroundColor: "#9DB4FF",
     color: "white",
     border: "none",
@@ -126,7 +137,7 @@ const Exercises = () => {
 
   return (
     <div>
-      <Container>
+      <Container >
         <Typography variant="h3" className={classes.header}>
           Your Exercises
         </Typography>
@@ -160,8 +171,31 @@ const Exercises = () => {
           className={classes.link}
         >
           {" "}
-          <Button className={classes.blueButton} variant="outline-primary">
-            Add a new Exercise
+          <Button className={classes.exButton} variant="outline-primary">
+            new exercise
+          </Button>
+        </Link>
+        <br/>
+
+        <Typography variant="h3" className={classes.header}>
+          Your Templates
+        </Typography>
+        <div className={classes.accentDivider}></div>
+        <Grid
+          container
+          direction="row"
+          className={classes.exerciseGridContainer}
+        >
+        </Grid>
+        <Link
+          to={{
+            pathname: "/PT/exercises/templates",
+          }}
+          className={classes.link}
+        >
+          {" "}
+          <Button className={classes.tempButton} variant="outline-primary">
+            new template
           </Button>
         </Link>
       </Container>

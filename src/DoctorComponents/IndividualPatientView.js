@@ -225,6 +225,16 @@ const compareDate = (a, b) => {
   return comparison;
 };
 
+export const formatExerciseName = (n) => {
+  var splitStr = n.toLowerCase().split(" ");
+  for (var i = 0; i < splitStr.length; i++) {
+    splitStr[i] =
+      splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+  }
+  // Directly return the joined string
+  return splitStr.join(" ");
+};
+
 const IndividualPatientView = (props) => {
   const classes = useStyles();
   // exerciseSets stores the "exercisesets" of the patient we are looking at
@@ -642,15 +652,15 @@ const IndividualPatientView = (props) => {
     return startDateStr + " - " + endDateStr;
   };
 
-  const formatExerciseName = (n) => {
-    var splitStr = n.toLowerCase().split(" ");
-    for (var i = 0; i < splitStr.length; i++) {
-      splitStr[i] =
-        splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
-    }
-    // Directly return the joined string
-    return splitStr.join(" ");
-  };
+  // export const formatExerciseName = (n) => {
+  //   var splitStr = n.toLowerCase().split(" ");
+  //   for (var i = 0; i < splitStr.length; i++) {
+  //     splitStr[i] =
+  //       splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+  //   }
+  //   // Directly return the joined string
+  //   return splitStr.join(" ");
+  // };
 
   const generateID = () => {
     // Math.random should be unique because of its seeding algorithm.
