@@ -261,6 +261,7 @@ export const formatExerciseName = (n) => {
   }
   // Directly return the joined string
   return splitStr.join(" ");
+};
 
 const getModalStyle = () => {
   return {
@@ -1516,6 +1517,6 @@ const IndividualPatientView = (props) => {
   };
 
   return <div>{loaded ? renderTable() : renderLoading()}</div>;
-};
+}
 
 export default IndividualPatientView;
