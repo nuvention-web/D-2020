@@ -184,7 +184,7 @@ const Templates = () => {
 
     const deleteExercise = async (e, ind) => {
         // For debugging purposes - pauses refresh on submit
-        e.preventDefault();
+        // e.preventDefault();
     
         console.log("Deleting!");
         console.log("exercise number", ind);
@@ -201,7 +201,7 @@ const Templates = () => {
 
     const addExercise = async (e) => {
         // For debugging purposes - pauses refresh on submit
-        e.preventDefault();
+        // e.preventDefault();
     
         const newExercise = await getUpdatedSet();
         console.log("newExercise", newExercise);
