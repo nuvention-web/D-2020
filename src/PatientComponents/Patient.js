@@ -22,8 +22,8 @@ const useStyles = makeStyles({
     minHeight: 130,
   },
   link: {
-    marginLeft: 10
-  }
+    marginLeft: 10,
+  },
 });
 
 const Patient = ({ p, therapist }) => {
@@ -54,7 +54,7 @@ const Patient = ({ p, therapist }) => {
       {therapist && therapist.zoom ? (
         <a href={therapist.zoom} target="_blank">
           <Button size="small" color="primary">
-            Start Zoom Call
+            Start Online Meeting
           </Button>
         </a>
       ) : null}
