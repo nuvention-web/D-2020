@@ -442,7 +442,9 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
               <h1 class="display-4">Hi, {userProfile.name}!</h1>
             ) : null}
             {therapistInfo ? (
-              <p class="lead">Launch Zoom call with {therapistInfo.name} now</p>
+              <p class="lead">
+                Start online meeting with {therapistInfo.name} now
+              </p>
             ) : (
               <div>
                 <Button

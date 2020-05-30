@@ -51,38 +51,36 @@ const Exercise = ({ exercise, currUser, setDeleted }) => {
 
   return (
     <Card className={classes.root}>
-      <CardActionArea>
-        {/* <CardMedia
+      {/* <CardMedia
           component="img"
           //   alt="Contemplative Reptile"
           height="230"
           src={photo}
           //   title="Contemplative Reptile"
         /> */}
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            {exercise.name}
-          </Typography>
-          <Link
-            to={{
-              pathname: `/PT/exercises/${exercise.id}`,
-            }}
-            className={classes.link}
-          >
-            {" "}
-            <Button className={classes.blueButton} variant="outline-primary">
-              Edit
-            </Button>
-          </Link>
-          <Button
-            className={classes.blueButton}
-            variant="outline-primary"
-            onClick={() => handleDelete()}
-          >
-            Delete
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="h2">
+          {exercise.name}
+        </Typography>
+        <Link
+          to={{
+            pathname: `/PT/exercises/${exercise.id}`,
+          }}
+          className={classes.link}
+        >
+          {" "}
+          <Button className={classes.blueButton} variant="outline-primary">
+            Edit
           </Button>
-        </CardContent>
-      </CardActionArea>
+        </Link>
+        <Button
+          className={classes.blueButton}
+          variant="outline-primary"
+          onClick={() => handleDelete()}
+        >
+          Delete
+        </Button>
+      </CardContent>
     </Card>
   );
 };

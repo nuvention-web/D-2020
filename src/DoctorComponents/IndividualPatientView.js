@@ -732,7 +732,6 @@ const IndividualPatientView = (props) => {
     return startDateStr + " - " + endDateStr;
   };
 
-
   const generateID = () => {
     // Math.random should be unique because of its seeding algorithm.
     // Convert it to base 36 (numbers + letters), and grab the first 9 characters
@@ -798,19 +797,24 @@ const IndividualPatientView = (props) => {
         typeof newHold === "undefined" ||
         typeof newRest === "undefined" ||
         typeof newResistance === "undefined"
-
       ) {
         return false;
       }
 
       // Make sure values are entered for proper day
       if (
-        typeof newReps[day] === "undefined" || newReps[day] === "" ||
-        typeof newDuration[day] === "undefined" || newDuration[day] === "" ||
-        typeof newSets[day] === "undefined" || newSets[day] === "" ||
-        typeof newHold[day] === "undefined" || newHold[day] === "" ||
-        typeof newRest[day] === "undefined" || newRest[day] === "" ||
-        typeof newResistance[day] === "undefined" || newResistance[day] === ""
+        typeof newReps[day] === "undefined" ||
+        newReps[day] === "" ||
+        typeof newDuration[day] === "undefined" ||
+        newDuration[day] === "" ||
+        typeof newSets[day] === "undefined" ||
+        newSets[day] === "" ||
+        typeof newHold[day] === "undefined" ||
+        newHold[day] === "" ||
+        typeof newRest[day] === "undefined" ||
+        newRest[day] === "" ||
+        typeof newResistance[day] === "undefined" ||
+        newResistance[day] === ""
       ) {
         return false;
       } else {
@@ -821,8 +825,8 @@ const IndividualPatientView = (props) => {
     const canClickEdit = (day) => {
       console.log("day in canClickEdit", day);
       console.log("newReps", newReps[day]);
-      console.log("newResistance", newResistance[day])
-      console.log("selectedEx", selectedEx)
+      console.log("newResistance", newResistance[day]);
+      console.log("selectedEx", selectedEx);
       // const form = e.currentTarget;
       // return form.checkValidity();
 
@@ -835,7 +839,7 @@ const IndividualPatientView = (props) => {
         selectedEx.rest === "" ||
         selectedEx.resistance === ""
       ) {
-        console.log("Missing a value in selectedEx")
+        console.log("Missing a value in selectedEx");
         return false;
       }
       return true;
@@ -1098,8 +1102,8 @@ const IndividualPatientView = (props) => {
                         disabled={!canModify}
                         onClick={(e) => {
                           canClickEdit(numToDayMap.get(selectedEx.day))
-                          ? editExercise(e, selectedEx)
-                          : doNothing(e, numToDayMap.get(selectedEx.day));
+                            ? editExercise(e, selectedEx)
+                            : doNothing(e, numToDayMap.get(selectedEx.day));
                         }}
                       >
                         Done
@@ -1199,12 +1203,12 @@ const IndividualPatientView = (props) => {
                   How to Assign Exercises:
                 </Typography>
                 <li>
-                  <span className={classes.emphasis}>Reps:</span>
+                  <span className={classes.emphasis}>Reps: </span>
                   Repetitions of the exercise per set
                 </li>
                 <li>
-                  <span className={classes.emphasis}>Sets:</span> Number of sets
-                  to be completed
+                  <span className={classes.emphasis}>Sets: </span> Number of
+                  sets to be completed
                 </li>
                 <li>
                   <span className={classes.emphasis}>Duration (seconds):</span>{" "}
@@ -1216,10 +1220,10 @@ const IndividualPatientView = (props) => {
                 </li>
                 <li>
                   <span className={classes.emphasis}>Rest (seconds):</span> Rest
-                  between sets (seconds)
+                  between sets
                 </li>
                 <li>
-                  <span className={classes.emphasis}>Resistance:</span>
+                  <span className={classes.emphasis}>Resistance: </span>
                   Resistance during exercise (i.e. 5kg band)
                 </li>
               </div>
@@ -1314,7 +1318,7 @@ const IndividualPatientView = (props) => {
                   {canModify ? (
                     <Form
                       noValidate
-                      validated={!open && (day == validatedDay)}
+                      validated={!open && day == validatedDay}
                       // onSubmit={handleSubmit}
                       id={`form1-${day}`}
                       className={classes.newExercise}
@@ -1517,6 +1521,6 @@ const IndividualPatientView = (props) => {
   };
 
   return <div>{loaded ? renderTable() : renderLoading()}</div>;
-}
+};
 
 export default IndividualPatientView;
