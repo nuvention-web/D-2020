@@ -60,6 +60,12 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexWrap: "wrap",
   },
+  select: {
+    width: 200,
+    height: 100,
+    textAlign: "center",
+    backgroundColor: "#3f51b5",
+  },
 }));
 
 const getSteps = () => {
@@ -78,38 +84,7 @@ const TempModal = ({ template, templateOpen, handleCloseTemplate }) => {
       transform: `translate(-${50}%, -${50}%)`,
     };
   };
-  const getStepContent = (stepIndex) => {
-    switch (stepIndex) {
-      //Choose Template
-      case 0:
-        return (
-          <div>
-            <Typography variant="h6" className={classes.header}>
-              Choose a template you want to add
-            </Typography>
-            <Grid container className={classes.templateGridContainer}>
-              {template.map((temp, i) => (
-                <Grid item key={i} className={classes.templateGrid}>
-                  <Card className={classes.cardRoot}>
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {temp.name}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </div>
-        );
-      case 1:
-        return "What is an ad group anyways?";
-      case 2:
-        return "This is the bit I really care about!";
-      default:
-        return "Unknown stepIndex";
-    }
-  };
+
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
 
@@ -129,6 +104,69 @@ const TempModal = ({ template, templateOpen, handleCloseTemplate }) => {
     setActiveStep(0);
   };
 
+  const emptyInputForm = {
+    templates: [],
+  };
+
+  const handleTemplate = (item, formData) => {
+    if (selectedTemplates.includes(item)) {
+      setSelectedTemplates(
+        selectedTemplates.filter((template) => template.name !== item.name)
+      );
+    } else setSelectedTemplates([...selectedTemplates, item]);
+  };
+
+  const [formData, setFormData] = useState(emptyInputForm);
+  const setFormField = (field, e) => {
+    setFormData({ ...formData, [field]: e.target.value });
+  };
+
+  const [selectedTemplates, setSelectedTemplates] = useState([]);
+  formData["templates"] = selectedTemplates;
+
+  const getStepContent = (stepIndex) => {
+    switch (stepIndex) {
+      //Choose Template
+      case 0:
+        return (
+          <div>
+            <Typography variant="h6" className={classes.header}>
+              Choose a template you want to add
+            </Typography>
+            {console.log("formData: ", formData)}
+            <Grid container className={classes.templateGridContainer}>
+              {template.map((temp, i) => (
+                <Grid item key={i} className={classes.templateGrid}>
+                  <Card
+                    onClick={() => handleTemplate(temp, formData)}
+                    variant={
+                      selectedTemplates.includes(temp) ? "outlined" : null
+                    }
+                    className={
+                      selectedTemplates.includes(temp)
+                        ? classes.select
+                        : classes.cardRoot
+                    }
+                  >
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {temp.name}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </div>
+        );
+      case 1:
+        return "Select days you want to apply";
+      case 2:
+        return "Confirm your selections";
+      default:
+        return "Unknown stepIndex";
+    }
+  };
   return (
     <Modal
       open={templateOpen}
