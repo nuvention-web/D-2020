@@ -110,25 +110,19 @@ const TempModal = ({
     // If last step
     if (activeStep === steps.length - 1) {
       // Add exercise into template
-      const exerciseRef = db
-        .collection("patients")
-        .doc(patientId)
-        .collection("exercises")
-        .doc("weekEx")
-        .collection(thisMondayStr)
-        .doc();
-
-      // Get a new write batch
       let batch = db.batch();
-      console.log("formData: ", formData);
 
       // Need to write batch writes
       formData.selectedDays.forEach((d) => {
-        console.log(d);
         formData.templates.forEach((temp) => {
-          console.log(temp);
           temp.exercises.forEach((ex) => {
-            console.log(ex);
+            const exerciseRef = db
+              .collection("patients")
+              .doc(patientId)
+              .collection("exercises")
+              .doc("weekEx")
+              .collection(thisMondayStr)
+              .doc();
             batch.set(exerciseRef, {
               ...ex,
               dateAdded: new Date(),
