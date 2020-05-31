@@ -106,7 +106,10 @@ const TempModal = ({ template, templateOpen, handleCloseTemplate }) => {
 
   const emptyInputForm = {
     templates: [],
+    selectedDays: [],
   };
+  const [selectedTemplates, setSelectedTemplates] = useState([]);
+  const [selectedDays, setSelectedDays] = useState([]);
 
   const handleTemplate = (item, formData) => {
     if (selectedTemplates.includes(item)) {
@@ -116,13 +119,19 @@ const TempModal = ({ template, templateOpen, handleCloseTemplate }) => {
     } else setSelectedTemplates([...selectedTemplates, item]);
   };
 
+  const handleDay = (day, formData) => {
+    if (selectedDays.includes(day)) {
+      setSelectedDays(selectedDays.filter((item) => day !== item));
+    } else setSelectedDays([...selectedDays, day]);
+  };
+
   const [formData, setFormData] = useState(emptyInputForm);
   const setFormField = (field, e) => {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
-  const [selectedTemplates, setSelectedTemplates] = useState([]);
   formData["templates"] = selectedTemplates;
+  formData["selectedDays"] = selectedDays;
 
   const getStepContent = (stepIndex) => {
     switch (stepIndex) {
@@ -160,7 +169,43 @@ const TempModal = ({ template, templateOpen, handleCloseTemplate }) => {
           </div>
         );
       case 1:
-        return "Select days you want to apply";
+        return (
+          <div>
+            <Typography variant="h6" className={classes.header}>
+              Select days you want to apply
+            </Typography>
+            {console.log("formData: ", formData)}
+            <Grid container className={classes.templateGridContainer}>
+              {[
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+              ].map((day, i) => (
+                <Grid item key={i} className={classes.templateGrid}>
+                  <Card
+                    onClick={() => handleDay(day, formData)}
+                    variant={selectedDays.includes(day) ? "outlined" : null}
+                    className={
+                      selectedDays.includes(day)
+                        ? classes.select
+                        : classes.cardRoot
+                    }
+                  >
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {day}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </div>
+        );
       case 2:
         return "Confirm your selections";
       default:
