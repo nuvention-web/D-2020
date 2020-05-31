@@ -176,7 +176,6 @@ const Templates = () => {
           rest: parseInt(newRest),
           videoId: selectedExerciseType[0].videoId,
           complete: false,
-          dateAdded: new Date(),
         };
     
         return exerciseObjectData;
