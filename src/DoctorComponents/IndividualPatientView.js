@@ -23,6 +23,7 @@ import {
 import ReactTooltip from "react-tooltip";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import TempModal from "./Modal/TempModal";
 const useStyles = makeStyles((theme) => ({
   exercises: {
     marginTop: 15,
@@ -197,6 +198,14 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
+  tempPaper: {
+    position: "absolute",
+    width: 700,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
   modalStyle: {
     top: `${50}%`,
     left: `${50}%`,
@@ -320,6 +329,8 @@ const IndividualPatientView = (props) => {
   const [validatedDay, setValidatedDay] = useState("");
   const [thisMondayStr, setThisMondayStr] = useState();
   const [open, setOpen] = useState(false);
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [template, setTemplate] = useState();
   const [modalStyle] = useState(getModalStyle);
   const [selectedEx, setSelectedEx] = useState();
 
@@ -353,6 +364,23 @@ const IndividualPatientView = (props) => {
         console.log("Error getting document:", error);
       });
   }, []);
+
+  // Get PT's Exercise Template
+  useEffect(() => {
+    if (Object.entries(currUser).length > 0) {
+      const templateRef = db
+        .collection("therapists")
+        .doc(currUser.uid)
+        .collection("templates");
+      templateRef.get().then((querySnapshot) => {
+        Promise.all(querySnapshot.docs.map((doc) => doc.data())).then(
+          (template) => {
+            setTemplate(template);
+          }
+        );
+      });
+    }
+  }, [currUser]);
 
   const getDayFromNum = (num) => {
     let dayNum;
@@ -919,9 +947,20 @@ const IndividualPatientView = (props) => {
       setOpen(false);
     };
 
+    const handleOpenTemplate = (e) => {
+      e.preventDefault();
+      setTemplateOpen(true);
+    };
+
+    const handleCloseTemplate = (e) => {
+      e.preventDefault();
+      setTemplateOpen(false);
+    };
+
     return (
       <div>
         <div>
+          {/* Modal for Editing */}
           <Modal
             open={open}
             onClose={handleClose}
@@ -1114,6 +1153,13 @@ const IndividualPatientView = (props) => {
               ) : null}
             </div>
           </Modal>
+
+          {/* Modal for Adding Template */}
+          <TempModal
+            template={template}
+            templateOpen={templateOpen}
+            handleCloseTemplate={handleCloseTemplate}
+          />
           <header className={classes.progressHeader}>
             {patientName ? (
               <Typography variant="h4" className={classes.header}>
@@ -1232,7 +1278,16 @@ const IndividualPatientView = (props) => {
             )}
           </div>
           {/* End Description */}
-
+          <div className={classes.descripContainer}>
+            <Button
+              onClick={(e) => {
+                handleOpenTemplate(e);
+              }}
+              variant="dark"
+            >
+              Add Your Exercise Template
+            </Button>
+          </div>
           {dotw.map((day, ind) => {
             return (
               <div className={classes.exerciseContainer} key={ind}>
