@@ -1159,6 +1159,8 @@ const IndividualPatientView = (props) => {
             template={template}
             templateOpen={templateOpen}
             handleCloseTemplate={handleCloseTemplate}
+            patientId={id}
+            thisMondayStr={thisMondayStr}
           />
           <header className={classes.progressHeader}>
             {patientName ? (

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Modal, Typography, makeStyles } from "@material-ui/core";
 import {
   Stepper,
   CardActionArea,
@@ -10,13 +9,21 @@ import {
   StepLabel,
   Button,
   Grid,
+  Modal,
+  Typography,
+  makeStyles,
 } from "@material-ui/core";
+import { db } from "../../Firebase.js";
 
 const useStyles = makeStyles((theme) => ({
   modalStyle: {
     top: `${50}%`,
     left: `${50}%`,
     transform: `translate(-${50}%, -${50}%)`,
+  },
+  emphasis: {
+    color: "#3358C4",
+    fontWeight: 600,
   },
   tempPaper: {
     position: "absolute",
@@ -76,7 +83,13 @@ const getSteps = () => {
   ];
 };
 
-const TempModal = ({ template, templateOpen, handleCloseTemplate }) => {
+const TempModal = ({
+  template,
+  templateOpen,
+  handleCloseTemplate,
+  patientId,
+  thisMondayStr,
+}) => {
   const getModalStyle = () => {
     return {
       top: `${50}%`,
@@ -93,7 +106,23 @@ const TempModal = ({ template, templateOpen, handleCloseTemplate }) => {
   const steps = getSteps();
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    // If last step
+    if (activeStep === steps.length - 1) {
+      // Add exercise into template
+      const exerciseRef = db
+        .collection("patients")
+        .doc(patientId)
+        .collection("exercises")
+        .doc("weekEx")
+        .collection(thisMondayStr)
+        .doc();
+
+      // Get a new write batch
+      var batch = db.batch();
+      formData.templates.forEach((temp) =>
+        temp.exercises.forEach((ex) => batch.update(exerciseRef, ex))
+      );
+    } else setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
   const handleBack = () => {
@@ -132,6 +161,24 @@ const TempModal = ({ template, templateOpen, handleCloseTemplate }) => {
 
   formData["templates"] = selectedTemplates;
   formData["selectedDays"] = selectedDays;
+
+  const selectedTemplatetoString = () => {
+    let tempString = "";
+    selectedTemplates.forEach((template, i) => {
+      if (i == 0) tempString += template.name;
+      else tempString += `, ${template.name}`;
+    });
+    return tempString;
+  };
+
+  const selectedDaytoString = () => {
+    let dayString = "";
+    selectedDays.forEach((day, i) => {
+      if (i == 0) dayString += day;
+      else dayString += `, ${day}`;
+    });
+    return dayString;
+  };
 
   const getStepContent = (stepIndex) => {
     switch (stepIndex) {
@@ -207,7 +254,21 @@ const TempModal = ({ template, templateOpen, handleCloseTemplate }) => {
           </div>
         );
       case 2:
-        return "Confirm your selections";
+        return (
+          <div>
+            <Typography variant="h6" className={classes.header}>
+              Confirm your selections
+            </Typography>
+            <li>
+              <span className={classes.emphasis}>Selected Templates: </span>
+              {selectedTemplatetoString()}
+            </li>
+            <li>
+              <span className={classes.emphasis}>Selected Days: </span>
+              {selectedDaytoString()}
+            </li>
+          </div>
+        );
       default:
         return "Unknown stepIndex";
     }
@@ -255,7 +316,7 @@ const TempModal = ({ template, templateOpen, handleCloseTemplate }) => {
                     color="primary"
                     onClick={handleNext}
                   >
-                    {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                    {activeStep === steps.length - 1 ? "Add Template" : "Next"}
                   </Button>
                 </div>
               </div>
