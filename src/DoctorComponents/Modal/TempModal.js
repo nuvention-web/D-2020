@@ -14,6 +14,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { db } from "../../Firebase.js";
+import { dayToNumIdMap } from "../IndividualPatientView";
 
 const useStyles = makeStyles((theme) => ({
   modalStyle: {
@@ -118,10 +119,29 @@ const TempModal = ({
         .doc();
 
       // Get a new write batch
-      var batch = db.batch();
-      formData.templates.forEach((temp) =>
-        temp.exercises.forEach((ex) => batch.update(exerciseRef, ex))
-      );
+      let batch = db.batch();
+      console.log("formData: ", formData);
+
+      // Need to write batch writes
+      formData.selectedDays.forEach((d) => {
+        console.log(d);
+        formData.templates.forEach((temp) => {
+          console.log(temp);
+          temp.exercises.forEach((ex) => {
+            console.log(ex);
+            batch.set(exerciseRef, {
+              ...ex,
+              dateAdded: new Date(),
+              day: dayToNumIdMap.get(d),
+            });
+          });
+        });
+      });
+
+      batch.commit().then(function () {
+        console.log("Successfully added template");
+        window.location.reload(false);
+      });
     } else setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
@@ -189,7 +209,6 @@ const TempModal = ({
             <Typography variant="h6" className={classes.header}>
               Choose a template you want to add
             </Typography>
-            {console.log("formData: ", formData)}
             <Grid container className={classes.templateGridContainer}>
               {template.map((temp, i) => (
                 <Grid item key={i} className={classes.templateGrid}>
@@ -221,7 +240,6 @@ const TempModal = ({
             <Typography variant="h6" className={classes.header}>
               Select days you want to apply
             </Typography>
-            {console.log("formData: ", formData)}
             <Grid container className={classes.templateGridContainer}>
               {[
                 "Monday",
