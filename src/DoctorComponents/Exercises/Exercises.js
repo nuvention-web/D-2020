@@ -5,6 +5,7 @@ import { Container, Typography, Grid, Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { db } from "../../Firebase";
 import { UserContext } from "../../contexts/UserContext";
+import Template from "./Template";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -215,8 +216,8 @@ const Exercises = () => {
                 return (
                   <div>
                     <Grid item key={i} className={classes.exercisesGrid}>
-                      <Exercise
-                        exercise={t}
+                      <Template
+                        template={t}
                         currUser={currUser}
                         setDeleted={setDeleted}
                       />
