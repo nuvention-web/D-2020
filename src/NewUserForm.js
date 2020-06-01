@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     marginTop: 10,
-    marginBottom: "1.5%"
+    marginBottom: "1.5%",
   },
   resize: {
     fontSize: 18,
@@ -88,7 +88,7 @@ const NewUserForm = () => {
       const Ref = db.collection(type);
 
       //case where user doesn't upload pic
-      var downloadUrl = ""
+      var downloadUrl = "";
       if (photo) {
         const imageRef = storageRef.child(`images/${photo.name}`);
         const snapshot = await imageRef.put(photo);
@@ -112,8 +112,7 @@ const NewUserForm = () => {
         .catch(function (error) {
           console.error("Error writing document: ", error);
         });
-    }
-    else {
+    } else {
       alert("Please complete the 'type' and 'name' fields first");
     }
   };
@@ -146,9 +145,6 @@ const NewUserForm = () => {
               error={userInfo["type"] === ""}
               id="outlined-error-helper-text"
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
               <MenuItem value={"patients"}>Patient</MenuItem>
               <MenuItem value={"therapists"}>Therapist</MenuItem>
             </Select>
@@ -202,8 +198,15 @@ const NewUserForm = () => {
           onChange={onPhotoChange}
         />
         <br />
-        <Button variant="light" type="submit"
-          disabled={(userInfo["type"] === "") || (userInfo["name"] === "") || (userInfo["bio"] === "")}>
+        <Button
+          variant="light"
+          type="submit"
+          disabled={
+            userInfo["type"] === "" ||
+            userInfo["name"] === "" ||
+            userInfo["bio"] === ""
+          }
+        >
           Submit
         </Button>
       </form>

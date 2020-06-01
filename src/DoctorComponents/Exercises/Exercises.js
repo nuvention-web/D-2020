@@ -44,29 +44,29 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 55,
   },
   exerciseBox: {
-    height: "150vh"
+    height: "150vh",
   },
   exButton: {
-    backgroundColor: "#9DB4FF",
+    backgroundColor: "#3358C4",
     color: "white",
     border: "none",
     height: "calc(1.5em + .75rem + 2px)",
     "&:hover": {
       color: "white",
-      backgroundColor: "#3358C4",
+      backgroundColor: "#9DB4FF",
     },
-    marginBottom: 100
+    marginBottom: 100,
   },
   tempButton: {
-    backgroundColor: "#9DB4FF",
+    backgroundColor: "#3358C4",
     color: "white",
     border: "none",
     height: "calc(1.5em + .75rem + 2px)",
     "&:hover": {
       color: "white",
-      backgroundColor: "#3358C4",
+      backgroundColor: "#9DB4FF",
     },
-    marginBottom: "4%"
+    marginBottom: 100,
   },
   accentDivider: {
     content: "",
@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
 
   exerciseGridContainer: {
     marginTop: 40,
-    marginBottom: "4%"
+    marginBottom: "4%",
   },
 
   // paper: {
@@ -162,7 +162,7 @@ const Exercises = () => {
 
   return (
     <div>
-      <Container >
+      <Container>
         <Typography variant="h3" className={classes.header}>
           Your Exercises
         </Typography>
@@ -200,7 +200,7 @@ const Exercises = () => {
             new exercise
           </Button>
         </Link>
-        <br/>
+        <br />
 
         <Typography variant="h3" className={classes.header}>
           Your Templates

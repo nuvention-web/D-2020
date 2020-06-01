@@ -19,13 +19,13 @@ const useStyles = makeStyles({
     textAlign: "right",
   },
   blueButton: {
-    backgroundColor: "#9DB4FF",
+    backgroundColor: "#3358C4",
     color: "white",
     border: "none",
     height: "calc(1.5em + .75rem + 2px)",
     "&:hover": {
       color: "white",
-      backgroundColor: "#3358C4",
+      backgroundColor: "#9DB4FF",
     },
     margin: 3,
   },
