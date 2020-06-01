@@ -85,7 +85,7 @@ const ProfileEdit = () => {
 
   useEffect(() => {
     if (location.userProfile) {
-      console.log(location.userProfile);
+      console.log("location.userProfile", location.userProfile);
       localStorage.setItem("userProfile", JSON.stringify(location.userProfile));
       setUserProfile(location.userProfile);
     } else {
@@ -98,6 +98,7 @@ const ProfileEdit = () => {
 
   const setUserField = (field, data) => {
     setUserInfo({ ...userInfo, [field]: data });
+    console.log("setUserField", userInfo);
   };
 
   const onPhotoChange = (e) => {
@@ -279,7 +280,7 @@ const ProfileEdit = () => {
               <TextField
                 id="standard-basic"
                 label="Name"
-                value={userInfo.name !== "" ? userInfo.name : userProfile.name}
+                defaultValue={ userProfile.name }
                 onChange={(e) => setUserField("name", e.target.value)}
                 className={classes.nameField}
                 InputProps={{
@@ -294,10 +295,10 @@ const ProfileEdit = () => {
                 id="outlined-multiline-static"
                 label="Bio"
                 multiline
-                value={userInfo.bio !== "" ? userInfo.bio : userProfile.bio}
+                // value={userInfo.bio !== "" ? userInfo.bio : userProfile.bio}
                 onChange={(e) => setUserField("bio", e.target.value)}
                 rows={4}
-                defaultValue="Default Value"
+                defaultValue={ userProfile.bio }
                 variant="outlined"
                 className={classes.bio}
                 InputProps={{
@@ -312,9 +313,8 @@ const ProfileEdit = () => {
                 <TextField
                   id="standard-basic"
                   label="Your Therapist Code"
-                  value={
-                    userInfo.code !== "" ? userInfo.code : userProfile.code
-                  }
+                  // value={userInfo.code !== "" ? userInfo.code : userProfile.code}
+                  defaultValue={ userProfile.code }
                   onChange={(e) => setUserField("code", e.target.value)}
                   className={classes.codeField}
                   InputProps={{
