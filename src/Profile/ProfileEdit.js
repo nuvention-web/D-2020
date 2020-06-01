@@ -66,6 +66,11 @@ const ProfileEdit = () => {
     resize: {
       fontSize: 18,
     },
+    button: {
+      marginRight: "10px",
+      backgroundColor: "#3358C4",
+      width: "100px",
+    },
   }));
 
   const currUser = useContext(UserContext).user;
@@ -190,8 +195,7 @@ const ProfileEdit = () => {
         .catch(function (error) {
           console.error("Error writing document: ", error);
         });
-    } 
-    else {
+    } else {
       // No photo selected
       Ref.doc(currUser.uid)
         .update({
@@ -266,9 +270,6 @@ const ProfileEdit = () => {
                   label="Profile Type"
                   className={classes.profileType}
                 >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
                   <MenuItem value={"patients"}>Patient</MenuItem>
                   <MenuItem value={"therapists"}>Therapist</MenuItem>
                 </Select>
@@ -355,7 +356,14 @@ const ProfileEdit = () => {
               onChange={onPhotoChange}
             />
             <br />
-            <Button variant="light" type="submit">
+            <Button
+              color="primary"
+              className={classes.button}
+              onClick={() => history.goBack()}
+            >
+              Cancel
+            </Button>
+            <Button color="primary" className={classes.button} type="submit">
               Submit
             </Button>
           </form>
