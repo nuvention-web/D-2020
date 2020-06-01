@@ -197,12 +197,13 @@ const ProgressHistory = (props) => {
                 domain={["auto", "auto"]}
                 dataKey="time"
                 name="time"
-                interval={0}
+                // interval={0}
                 minTickGap={2}
                 tickFormatter={
                   (timeStr) =>
                     // console.log(new Date(timeStr).toLocaleString().slice(0, 9))
-                    new Date(timeStr).toLocaleString().slice(0, 4)
+                    new Date(timeStr).toLocaleString().split("/",2).join("/")
+                    
                 }
               // label="Day"
               />

@@ -54,7 +54,10 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 55,
   },
   exerciseBox: {
-    width: 100,
+    minWidth: 250,
+  },
+  firstCol: {
+    minWidth: 270,
   },
   blueButton: {
     backgroundColor: "#9DB4FF",
@@ -99,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paramCols: {
     textAlign: "center",
+    width: 30,
   },
   newExercise: {
     marginTop: 10,
@@ -192,7 +196,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     position: "absolute",
-    width: 1000,
+    width: 1300,
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -211,6 +215,9 @@ const useStyles = makeStyles((theme) => ({
     left: `${50}%`,
     transform: `translate(-${50}%, -${50}%)`,
   },
+  iconButton: {
+    margin: "0px 5px"
+  }
 }));
 
 export const dayToNumIdMap = new Map([
@@ -684,7 +691,7 @@ const IndividualPatientView = (props) => {
     window.location.reload(false);
   };
 
-  useEffect((day, exId) => {}, []);
+  useEffect((day, exId) => { }, []);
 
   const editExercise = async (e, exercise) => {
     e.preventDefault();
@@ -980,7 +987,7 @@ const IndividualPatientView = (props) => {
                   className={classes.newExercise}
                 >
                   <Row className={classes.rows}>
-                    <Col>Exercise</Col>
+                    <Col className={classes.firstCol}>Exercise</Col>
                     <Col className={classes.paramCols}>Reps</Col>
                     <Col className={classes.paramCols}>Sets</Col>
                     <Col className={classes.paramCols}>Duration (s)</Col>
@@ -990,6 +997,8 @@ const IndividualPatientView = (props) => {
                     {/* Keep extra column for add/delete button */}
                     <Col></Col>
                   </Row>
+                  <Divider />
+                  <br />
                   <Row>
                     <Col>
                       <Form.Group>
@@ -1276,8 +1285,8 @@ const IndividualPatientView = (props) => {
                 </li>
               </div>
             ) : (
-              <div>This page is read-only</div>
-            )}
+                <div>This page is read-only</div>
+              )}
           </div>
           {/* End Description */}
           <div className={classes.descripContainer}>
@@ -1299,7 +1308,7 @@ const IndividualPatientView = (props) => {
                   </Typography>
                   <div>
                     <Row className={classes.rows}>
-                      <Col>Exercise</Col>
+                      <Col className={classes.firstCol}>Exercise</Col>
                       <Col className={classes.paramCols}>Reps</Col>
                       <Col className={classes.paramCols}>Sets</Col>
                       <Col className={classes.paramCols}>Duration (s)</Col>
@@ -1317,7 +1326,7 @@ const IndividualPatientView = (props) => {
                     return (
                       <div>
                         <Row key={k} className={classes.rows}>
-                          <Col>{formatExerciseName(ex.name)}</Col>
+                          <Col className={classes.firstCol}>{formatExerciseName(ex.name)}</Col>
                           <Col className={classes.cols}>
                             {ex.reps ? ex.reps : "-"}
                           </Col>
@@ -1340,6 +1349,7 @@ const IndividualPatientView = (props) => {
                             {canModify ? (
                               <div className={classes.buttonInline}>
                                 <Button
+                                  className={classes.iconButton}
                                   variant="light"
                                   onClick={(e) => {
                                     handleOpen(e, ex);
@@ -1353,6 +1363,7 @@ const IndividualPatientView = (props) => {
                                   />
                                 </Button>
                                 <Button
+                                  className={classes.iconButton}
                                   variant="light"
                                   onClick={(e) => {
                                     deleteExercise(e, day, ex.docId);
@@ -1522,6 +1533,7 @@ const IndividualPatientView = (props) => {
 
                         <Col className={classes.centeredCol}>
                           <Button
+                            className={classes.iconButton}
                             variant="light"
                             type="submit"
                             disabled={!canModify}
