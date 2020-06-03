@@ -17,6 +17,8 @@ import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
 import { compareSets } from "../DoctorComponents/IndividualPatientView.js";
 import { useLocation, useHistory } from "react-router-dom";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -196,6 +198,10 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     width: 120,
   },
+  date: {
+    textAlign: "center",
+    margin: "0 auto",
+  },
 }));
 
 const calculateTotalTime = (exercises) => {
@@ -246,24 +252,26 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   //user id used to load correct user exercises (taken from landing page)
   const currUser = useContext(UserContext).user;
   const history = useHistory();
-
   const classes = useStyles();
+  const [thisMondayStr, setThisMondayStr] = useState();
 
-  const getMonday = (d) => {
-    d = new Date(d);
-    var day = d.getDay(),
-      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-    d.setDate(diff);
-    var date = d.getDate();
-    var month = d.getMonth() + 1;
-    var year = d.getFullYear();
-    const dateSlash = month + "/" + date + "/" + year;
-    const dateDash = year + "-" + month + "-" + date;
-    return [dateSlash, dateDash];
-  };
-  const weekBeginning = getMonday(new Date())[0];
 
-  const thisMondayStr = getMonday(new Date())[1];
+  // const getMonday = (d) => {
+  //   d = new Date(d);
+  //   var day = d.getDay(),
+  //     diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+  //   d.setDate(diff);
+  //   var date = d.getDate();
+  //   var month = d.getMonth() + 1;
+  //   var year = d.getFullYear();
+  //   const dateSlash = month + "/" + date + "/" + year;
+  //   const dateDash = year + "-" + month + "-" + date;
+  //   return [dateSlash, dateDash];
+  // };
+  // const weekBeginning = getMonday(new Date())[0];
+
+  // const thisMondayStr = getMonday(new Date())[1];
+
 
   // Load correct NavBar for patient
   useEffect(() => {
@@ -291,6 +299,18 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         }
       });
     }
+  }, [currUser]);
+
+  useEffect(() => {
+    const d = new Date();
+    let day = d.getDay(),
+      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+    d.setDate(diff);
+    const date = d.getDate();
+    const month = d.getMonth() + 1;
+    const year = d.getFullYear();
+
+    setThisMondayStr(year + "-" + month + "-" + date);
   }, [currUser]);
 
   // Get zoom link of the therapist
@@ -384,7 +404,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
     };
 
     fetchPatient();
-  }, [currUser]);
+  }, [currUser, thisMondayStr]);
 
   useEffect(() => {
     console.log(type, currUser);
@@ -433,6 +453,75 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
       return "-";
     };
 
+    const getPrevWeek = () => {
+      console.log("Bringing data of prevWeek ");
+
+      // Retrieve thisMondayStr
+      var currMonday = new Date(thisMondayStr);
+      console.log("thisMondayStr as a date obj", currMonday);
+
+      // Change it so that it is 7 days in the past.
+      var tempDate = currMonday.getDate() - 7;
+      currMonday.setDate(tempDate);
+
+      // Log the new currMonday
+      console.log("week ago", currMonday);
+
+      // modify thisMondayStr, which will fetch new data
+      const date = currMonday.getDate();
+      const month = currMonday.getMonth() + 1;
+      const year = currMonday.getFullYear();
+
+      console.log("new thisMondayStr", year + "-" + month + "-" + date);
+      setThisMondayStr(year + "-" + month + "-" + date);
+      // checkCanModify();
+    };
+
+    // Very similar code, can condense into one function later
+    const getNextWeek = () => {
+      console.log("Bringing data of nextWeek");
+
+      console.log("Bringing data of prevWeek ");
+
+      // Retrieve thisMondayStr
+      var currMonday = new Date(thisMondayStr);
+      console.log("thisMondayStr as a date obj", currMonday);
+
+      // Change it so that it is 7 days in the past.
+      var tempDate = currMonday.getDate() + 7;
+      currMonday.setDate(tempDate);
+
+      // Log the new currMonday
+      console.log("week ago", currMonday);
+
+      // modify thisMondayStr, which will fetch new data
+      const date = currMonday.getDate();
+      const month = currMonday.getMonth() + 1;
+      const year = currMonday.getFullYear();
+
+      console.log("new thisMondayStr", year + "-" + month + "-" + date);
+      setThisMondayStr(year + "-" + month + "-" + date);
+      // checkCanModify();
+    };
+
+    const getStartEnd = (d) => {
+      d = new Date(d);
+      let day = d.getDay(),
+        diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+      d.setDate(diff);
+      let sDate = d.getDate();
+      let sMonth = d.getMonth() + 1;
+      let sYear = d.getFullYear();
+      d.setDate(diff + 6);
+      let eDate = d.getDate();
+      let eMonth = d.getMonth() + 1;
+      let eYear = d.getFullYear();
+      const startDateStr = sMonth + "/" + sDate + "/" + sYear;
+      const endDateStr = eMonth + "/" + eDate + "/" + eYear;
+      return startDateStr + " - " + endDateStr;
+    };
+
+
     return (
       <div className={classes.window}>
         {/* Start Jumbotron */}
@@ -446,21 +535,21 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                 Start online meeting with {therapistInfo.name} now
               </p>
             ) : (
-              <div>
-                <Button
-                  variant="light"
-                  onClick={() =>
-                    history.push({
-                      pathname: "/profile/edit",
-                      userProfile: userProfile,
-                    })
-                  }
-                  className={classes.editButton}
-                >
-                  Connect with your therapist!
+                <div>
+                  <Button
+                    variant="light"
+                    onClick={() =>
+                      history.push({
+                        pathname: "/profile/edit",
+                        userProfile: userProfile,
+                      })
+                    }
+                    className={classes.editButton}
+                  >
+                    Connect with your therapist!
                 </Button>
-              </div>
-            )}
+                </div>
+              )}
 
             {therapistInfo && therapistInfo.zoom ? (
               <a href={`${therapistInfo.zoom}`} target="_blank">
@@ -477,10 +566,33 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         </div>
         {/* End Jumbotron */}
 
+        {/* Weekly Scroll */}
+          <header className={classes.progressHeader}>
+            <Typography variant="h4" className={classes.date}>
+              <Button
+                variant="light"
+                className={classes.arrowButton}
+                onClick={() => getPrevWeek()}
+              >
+                <ArrowBackIosIcon></ArrowBackIosIcon>
+              </Button>
+              {getStartEnd(thisMondayStr)}
+              <Button
+                variant="light"
+                className={classes.arrowButton}
+                onClick={() => getNextWeek()}
+              >
+                <ArrowForwardIosIcon />
+              </Button>
+            </Typography>
+          </header>
+        {/* End Weekly Scroll */}
+        <br/>
+
         {/* Progress Chart */}
         <header className={classes.progressHeader}>
           <Typography variant="h4" className={classes.progressHeader}>
-            Week of {weekBeginning} Progress
+            Progress
           </Typography>
           <Link
             to={{
