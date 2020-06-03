@@ -212,7 +212,7 @@ const ProgressHistory = (props) => {
                 name="pain"
                 label="Pain"
               />
-              <ZAxis range={[100]} />
+              {/* <ZAxis range={[100]} /> */}
               <Tooltip
                 cursor={{ strokeDasharray: "3 3" }}
                 formatter={(value, name, props) =>
@@ -226,7 +226,7 @@ const ProgressHistory = (props) => {
               {Object.entries(historyData).map((d, i) => (
                 <Scatter
                   name={d[0]}
-                  data={d[1]}
+                  data={d[1].filter((d1) => typeof(d1.pain) !== "undefined" )}
                   fill={"#" + Math.random().toString(16).substr(-6)}
                   line
                 />
