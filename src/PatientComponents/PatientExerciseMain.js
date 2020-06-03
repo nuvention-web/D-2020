@@ -15,9 +15,8 @@ import { Link } from "react-router-dom";
 import { Row, Col, Button } from "react-bootstrap";
 import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
-import { useHistory } from "react-router-dom";
 import { compareSets } from "../DoctorComponents/IndividualPatientView.js";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -270,6 +269,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   useEffect(() => {
     if (type !== "") {
       setHaveLoggedIn(true);
+      if (type === "therapists") history.push("/PT");
     }
   }, [type]);
 

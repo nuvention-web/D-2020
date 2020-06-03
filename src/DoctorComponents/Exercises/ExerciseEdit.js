@@ -67,7 +67,6 @@ const ExerciseEdit = () => {
   const currUser = useContext(UserContext).user;
   const classes = useStyles();
 
-
   const [exerciseForm, setExerciseForm] = useState({
     name: "",
     stretched: "",
@@ -119,6 +118,11 @@ const ExerciseEdit = () => {
     console.log("Video Id: ", video_id);
     return video_id;
   };
+
+  useEffect(() => {
+    const type = localStorage.getItem("type");
+    if (type && type === "patients") history.push("/workout");
+  }, []);
 
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {

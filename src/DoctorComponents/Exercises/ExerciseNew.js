@@ -69,6 +69,12 @@ const ExerciseNew = () => {
     stretched: "",
     url: "",
   });
+
+  useEffect(() => {
+    const type = localStorage.getItem("type");
+    if (type && type === "patients") history.push("/workout");
+  }, []);
+
   const setExerciseField = (field, data) => {
     setExerciseForm({ ...exerciseForm, [field]: data });
   };
@@ -178,7 +184,10 @@ const ExerciseNew = () => {
             value={exerciseForm.url}
             required
             helperText="URL required."
-            error={exerciseForm["url"] === "" || !(exerciseForm["url"].includes("youtube.com"))}
+            error={
+              exerciseForm["url"] === "" ||
+              !exerciseForm["url"].includes("youtube.com")
+            }
             id="outlined-error-helper-text"
             onChange={(e) => setExerciseField("url", e.target.value)}
             className={classes.nameField}
@@ -190,8 +199,15 @@ const ExerciseNew = () => {
           />
         </div>
         <br />
-        <Button variant="light" type="submit"
-          disabled={(exerciseForm["name"] === "") || (exerciseForm["url"] === "") || !(exerciseForm["url"].includes("youtube.com"))}>
+        <Button
+          variant="light"
+          type="submit"
+          disabled={
+            exerciseForm["name"] === "" ||
+            exerciseForm["url"] === "" ||
+            !exerciseForm["url"].includes("youtube.com")
+          }
+        >
           Submit
         </Button>
       </form>

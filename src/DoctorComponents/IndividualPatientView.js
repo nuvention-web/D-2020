@@ -24,6 +24,8 @@ import ReactTooltip from "react-tooltip";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import TempModal from "./Modal/TempModal";
+import { useHistory } from "react-router-dom";
+
 const useStyles = makeStyles((theme) => ({
   exercises: {
     marginTop: 15,
@@ -216,8 +218,8 @@ const useStyles = makeStyles((theme) => ({
     transform: `translate(-${50}%, -${50}%)`,
   },
   iconButton: {
-    margin: "0px 5px"
-  }
+    margin: "0px 5px",
+  },
 }));
 
 export const dayToNumIdMap = new Map([
@@ -340,6 +342,12 @@ const IndividualPatientView = (props) => {
   const [template, setTemplate] = useState();
   const [modalStyle] = useState(getModalStyle);
   const [selectedEx, setSelectedEx] = useState();
+  const history = useHistory();
+
+  useEffect(() => {
+    const type = localStorage.getItem("type");
+    if (type && type === "patients") history.push("/workout");
+  }, []);
 
   useEffect(() => {
     const d = new Date();
@@ -691,7 +699,7 @@ const IndividualPatientView = (props) => {
     window.location.reload(false);
   };
 
-  useEffect((day, exId) => { }, []);
+  useEffect((day, exId) => {}, []);
 
   const editExercise = async (e, exercise) => {
     e.preventDefault();
@@ -1207,7 +1215,7 @@ const IndividualPatientView = (props) => {
               }}
               className={classes.link}
             >
-              <Button variant="light" className={classes.viewHistory}>
+              <Button variant="dark" className={classes.viewHistory}>
                 View History
               </Button>
             </Link>
@@ -1285,8 +1293,8 @@ const IndividualPatientView = (props) => {
                 </li>
               </div>
             ) : (
-                <div>This page is read-only</div>
-              )}
+              <div>This page is read-only</div>
+            )}
           </div>
           {/* End Description */}
           <div className={classes.descripContainer}>
@@ -1326,7 +1334,9 @@ const IndividualPatientView = (props) => {
                     return (
                       <div>
                         <Row key={k} className={classes.rows}>
-                          <Col className={classes.firstCol}>{formatExerciseName(ex.name)}</Col>
+                          <Col className={classes.firstCol}>
+                            {formatExerciseName(ex.name)}
+                          </Col>
                           <Col className={classes.cols}>
                             {ex.reps ? ex.reps : "-"}
                           </Col>

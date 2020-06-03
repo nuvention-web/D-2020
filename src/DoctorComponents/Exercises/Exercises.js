@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { db } from "../../Firebase";
 import { UserContext } from "../../contexts/UserContext";
 import Template from "./Template";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -116,6 +117,12 @@ const Exercises = () => {
   const [exercises, setExercises] = useState([]);
   const [templates, setTemplates] = useState([]);
   const [deleted, setDeleted] = useState();
+  const history = useHistory();
+
+  useEffect(() => {
+    const type = localStorage.getItem("type");
+    if (type && type === "patients") history.push("/workout");
+  }, []);
 
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {

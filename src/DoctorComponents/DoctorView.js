@@ -13,6 +13,7 @@ import PatientExerciseData from "../ModelJSON/PatientExercises.json";
 import { db } from "../Firebase.js";
 import Patient from "../PatientComponents/Patient";
 import { UserContext } from "../contexts/UserContext";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,13 +51,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   blueButton: {
-    backgroundColor: "#9DB4FF",
+    backgroundColor: "#3358C4",
     color: "white",
     border: "none",
     height: "calc(1.5em + .75rem + 2px)",
     "&:hover": {
       color: "white",
-      backgroundColor: "#3358C4",
+      backgroundColor: "#9DB4FF",
     },
   },
   patientInfoCard: {
@@ -94,11 +95,13 @@ const DoctorView = ({ setHaveLoggedIn }) => {
   const currUser = useContext(UserContext).user;
   const [therapistInfo, setTherapistInfo] = useState({});
   const type = localStorage.getItem("type");
+  const history = useHistory();
 
   // Load correct NavBar for PT
   useEffect(() => {
     if (type !== "") {
       setHaveLoggedIn(true);
+      if (type === "patients") history.push("/workout");
     }
   }, [type]);
 
