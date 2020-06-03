@@ -87,30 +87,30 @@ admin.initializeApp();
 //       allUser.push(doc.id);
 //     });
 
-//     Promise.all(allUser.map((userId) => fetchAllExericses(week, userId))).then(
-//       async (allUsersWeekExercises) => {
-//         returnObjArr = allUsersWeekExercises.map((uEx) =>
-//           uEx.exercises.map((ex) => {
-//             if (ex !== undefined)
-//               return ex.exercises.map((e) => {
-//                 if (e !== undefined)
-//                   return {
-//                     exId: e.exId,
-//                     day: ex.day,
-//                     complete: false,
-//                     date: calcDate(ex.day),
-//                     duration: e.duration,
-//                     hold: e.hold,
-//                     name: e.name,
-//                     reps: e.reps,
-//                     resistance: e.resistance,
-//                     rest: e.rest,
-//                     sets: e.sets,
-//                     videoId: e.videoId,
-//                   };
-//               });
-//           })
-//         );
+// Promise.all(allUser.map((userId) => fetchAllExericses(week, userId))).then(
+//   async (allUsersWeekExercises) => {
+//     returnObjArr = allUsersWeekExercises.map((uEx) =>
+//       uEx.exercises.map((ex) => {
+//         if (ex !== undefined)
+//           return ex.exercises.map((e) => {
+//             if (e !== undefined)
+//               return {
+//                 exId: e.exId,
+//                 day: ex.day,
+//                 complete: false,
+//                 date: calcDate(ex.day),
+//                 duration: e.duration,
+//                 hold: e.hold,
+//                 name: e.name,
+//                 reps: e.reps,
+//                 resistance: e.resistance,
+//                 rest: e.rest,
+//                 sets: e.sets,
+//                 videoId: e.videoId,
+//               };
+//           });
+//       })
+//     );
 
 //         for (let i = 0; i < allUser.length; i++) {
 //           // Add to History

@@ -42,18 +42,18 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "40px",
     fontSize: "18px",
     fontWeight: 300,
+  },
+  // to make buttons equally spaced
+  linkBox: {
     "&:hover": {
       color: "#3358C4",
       textDecoration: "none",
       borderBottom: "2px solid #3358C4",
       paddingBottom: 3,
     },
-  },
-  // to make buttons equally spaced
-  linkBox: {
     paddingTop: 10,
     border: "none",
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   navLogout: {
     color: "black",
@@ -175,87 +175,36 @@ const NavBar = ({ haveLoggedIn, setHaveLoggedIn }) => {
         {Object.entries(currUser).length < 1 ? (
           <SignIn />
         ) : (
-            <div>
-              <div className={classes.buttonCollapse}>
-                <IconButton onClick={(e) => handleMenu(e)}>
-                  <MenuIcon />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={open}
-                  onClose={() => handleClose()}
-                >
-                  {Object.entries(currUser).length >= 1 &&
-                    type == "therapists" ? (
-                      <MenuItem>
-                        <Link to="/PT" className={classes.navLink}>
-                          PT View
-                    </Link>
-                      </MenuItem>
-                    ) : null}
-                  {Object.entries(currUser).length >= 1 && type == "patients" ? (
-                    <MenuItem>
-                      <Link
-                        to={{
-                          pathname: "/workout",
-                          state: { userId: currUser.uid },
-                        }}
-                        className={classes.navLink}
-                      >
-                        {/* <Button variant="light" className={classes.navButton}> */}
-                        Exercise Tracking
-                      {/* </Button> */}
-                      </Link>
-                    </MenuItem>
-                  ) : null}
-
-                  {Object.entries(currUser).length >= 1 ? (
-                    <MenuItem>
-                      <Link
-                        to={{ pathname: "/profile" }}
-                        className={classes.navLink}
-                      >
-                        Profile
-                    </Link>{" "}
-                    </MenuItem>
-                  ) : null}
-                  <div className={classes.rightButtons}>
-                    <MenuItem>
-                      <button
-                        variant="light"
-                        className={classes.navLogout}
-                        onClick={() => {
-                          LogOut();
-                          history.push("/");
-                          setCurrUser({});
-                        }}
-                      >
-                        Log Out
-                    </button>
-                    </MenuItem>
-                  </div>
-                </Menu>
-              </div>
-              <div className={classes.buttonBar} id="appbar-collapse">
-                {Object.entries(currUser).length >= 1 && type == "therapists" ? (
-                  <button className={classes.linkBox}>
+          <div>
+            <div className={classes.buttonCollapse}>
+              <IconButton onClick={(e) => handleMenu(e)}>
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={open}
+                onClose={() => handleClose()}
+              >
+                {Object.entries(currUser).length >= 1 &&
+                type == "therapists" ? (
+                  <MenuItem>
+                    {" "}
                     <Link to="/PT" className={classes.navLink}>
-                      PT View
+                      PT View{" "}
                     </Link>
-                  </button>
+                  </MenuItem>
                 ) : null}
-
                 {Object.entries(currUser).length >= 1 && type == "patients" ? (
-                  <button className={classes.linkBox}>
+                  <MenuItem>
                     <Link
                       to={{
                         pathname: "/workout",
@@ -265,35 +214,82 @@ const NavBar = ({ haveLoggedIn, setHaveLoggedIn }) => {
                     >
                       {/* <Button variant="light" className={classes.navButton}> */}
                       Exercise Tracking
-                  {/* </Button> */}
+                      {/* </Button> */}
                     </Link>
-                  </button>
+                  </MenuItem>
                 ) : null}
 
                 {Object.entries(currUser).length >= 1 ? (
-                  <button className={classes.linkBox}>
-                    <Link to={{ pathname: "/profile" }} className={classes.navLink}>
+                  <MenuItem>
+                    <Link
+                      to={{ pathname: "/profile" }}
+                      className={classes.navLink}
+                    >
                       Profile
-                </Link>
-                  </button>
+                    </Link>{" "}
+                  </MenuItem>
                 ) : null}
-
                 <div className={classes.rightButtons}>
-                  <button
-                    variant="light"
-                    className={classes.navLogout}
-                    onClick={() => {
-                      LogOut();
-                      history.push("/");
-                      setCurrUser({});
-                    }}
-                  >
-                    Log Out
-                </button>
+                  <MenuItem>
+                    <button
+                      variant="light"
+                      className={classes.navLogout}
+                      onClick={() => {
+                        LogOut();
+                        history.push("/");
+                        setCurrUser({});
+                      }}
+                    >
+                      Log Out
+                    </button>
+                  </MenuItem>
                 </div>
+              </Menu>
+            </div>
+            <div className={classes.buttonBar} id="appbar-collapse">
+              {Object.entries(currUser).length >= 1 && type == "therapists" ? (
+                <Link to="/PT" className={classes.navLink}>
+                  <button className={classes.linkBox}>PT View</button>
+                </Link>
+              ) : null}
+
+              {Object.entries(currUser).length >= 1 && type == "patients" ? (
+                <Link
+                  to={{
+                    pathname: "/workout",
+                    state: { userId: currUser.uid },
+                  }}
+                  className={classes.navLink}
+                >
+                  {" "}
+                  <button className={classes.linkBox}>
+                    Exercise Tracking
+                  </button>{" "}
+                </Link>
+              ) : null}
+
+              {Object.entries(currUser).length >= 1 ? (
+                <Link to={{ pathname: "/profile" }} className={classes.navLink}>
+                  <button className={classes.linkBox}>Profile</button>{" "}
+                </Link>
+              ) : null}
+
+              <div className={classes.rightButtons}>
+                <button
+                  variant="light"
+                  className={classes.navLogout}
+                  onClick={() => {
+                    LogOut();
+                    history.push("/");
+                    setCurrUser({});
+                  }}
+                >
+                  Log Out
+                </button>
               </div>
             </div>
-          )}
+          </div>
+        )}
       </div>
     );
   };

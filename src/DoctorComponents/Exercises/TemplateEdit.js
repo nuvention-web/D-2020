@@ -126,6 +126,10 @@ const TemplateEdit = () => {
   const { id } = useParams();
   const history = useHistory();
 
+  useEffect(() => {
+    const type = localStorage.getItem("type");
+    if (type && type === "patients") history.push("/workout");
+  }, []);
   // Fetch exercise type of this therapist
   useEffect(() => {
     if (Object.entries(currUser).length > 0) {

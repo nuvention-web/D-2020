@@ -34,6 +34,7 @@ import { db } from "../Firebase.js";
 import { UserContext } from "../contexts/UserContext";
 import Drawer from "react-drag-drawer";
 import { dayToNumIdMap } from "../DoctorComponents/IndividualPatientView";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   exercises: {
@@ -212,6 +213,12 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
 
   const currUser = useContext(UserContext).user;
   const { day } = useParams();
+  const history = useHistory();
+
+  useEffect(() => {
+    const type = localStorage.getItem("type");
+    if (type === "therapists") history.push("/PT");
+  }, []);
 
   const handleSelect = (selectedIndex, e) => {
     setIndex(selectedIndex);
