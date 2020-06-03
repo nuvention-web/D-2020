@@ -33,6 +33,7 @@ Designated contact person: vanessachu2020@u.northwestern.edu
 * Click **Start Zoom Call** to launch a Zoom meeting with your PT
 * View a summary of this week’s progress
 * View your entire progress history (click **View History**)
+* To *view a sample Patient account*, login using tendonpatient@gmail.com (PW: tendon123). Feel free to try any of the functionality mentioned!
 * To *create your own patient profile*, please login and link to the PT using his PT code (submit this on the patient profile page). Our sample PT account has a PT code of **JwKxjkQbPvc1NWQtVg2Tm1MfJFy2**. Please feel free to use this.
 
 
