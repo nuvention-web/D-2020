@@ -198,6 +198,10 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     width: 120,
   },
+  date: {
+    textAlign: "center",
+    margin: "0 auto",
+  },
 }));
 
 const calculateTotalTime = (exercises) => {
@@ -267,7 +271,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   // const weekBeginning = getMonday(new Date())[0];
 
   // const thisMondayStr = getMonday(new Date())[1];
-  
+
 
   // Load correct NavBar for patient
   useEffect(() => {
@@ -500,22 +504,22 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
       // checkCanModify();
     };
 
-     const getStartEnd = (d) => {
-    d = new Date(d);
-    let day = d.getDay(),
-      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-    d.setDate(diff);
-    let sDate = d.getDate();
-    let sMonth = d.getMonth() + 1;
-    let sYear = d.getFullYear();
-    d.setDate(diff + 6);
-    let eDate = d.getDate();
-    let eMonth = d.getMonth() + 1;
-    let eYear = d.getFullYear();
-    const startDateStr = sMonth + "/" + sDate + "/" + sYear;
-    const endDateStr = eMonth + "/" + eDate + "/" + eYear;
-    return startDateStr + " - " + endDateStr;
-  };
+    const getStartEnd = (d) => {
+      d = new Date(d);
+      let day = d.getDay(),
+        diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+      d.setDate(diff);
+      let sDate = d.getDate();
+      let sMonth = d.getMonth() + 1;
+      let sYear = d.getFullYear();
+      d.setDate(diff + 6);
+      let eDate = d.getDate();
+      let eMonth = d.getMonth() + 1;
+      let eYear = d.getFullYear();
+      const startDateStr = sMonth + "/" + sDate + "/" + sYear;
+      const endDateStr = eMonth + "/" + eDate + "/" + eYear;
+      return startDateStr + " - " + endDateStr;
+    };
 
 
     return (
@@ -531,21 +535,21 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                 Start online meeting with {therapistInfo.name} now
               </p>
             ) : (
-              <div>
-                <Button
-                  variant="light"
-                  onClick={() =>
-                    history.push({
-                      pathname: "/profile/edit",
-                      userProfile: userProfile,
-                    })
-                  }
-                  className={classes.editButton}
-                >
-                  Connect with your therapist!
+                <div>
+                  <Button
+                    variant="light"
+                    onClick={() =>
+                      history.push({
+                        pathname: "/profile/edit",
+                        userProfile: userProfile,
+                      })
+                    }
+                    className={classes.editButton}
+                  >
+                    Connect with your therapist!
                 </Button>
-              </div>
-            )}
+                </div>
+              )}
 
             {therapistInfo && therapistInfo.zoom ? (
               <a href={`${therapistInfo.zoom}`} target="_blank">
@@ -562,8 +566,8 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
         </div>
         {/* End Jumbotron */}
 
-        {/* Progress Chart */}
-        <header className={classes.progressHeader}>
+        {/* Weekly Scroll */}
+          <header className={classes.progressHeader}>
             <Typography variant="h4" className={classes.date}>
               <Button
                 variant="light"
@@ -582,10 +586,13 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
               </Button>
             </Typography>
           </header>
+        {/* End Weekly Scroll */}
+        <br/>
 
+        {/* Progress Chart */}
         <header className={classes.progressHeader}>
           <Typography variant="h4" className={classes.progressHeader}>
-            Progress this Week
+            Progress
           </Typography>
           <Link
             to={{
