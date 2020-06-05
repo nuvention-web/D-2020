@@ -43,10 +43,13 @@ const Exercise = ({ exercise, currUser, setDeleted }) => {
       .then(() => {
         console.log("Document successfully deleted!");
         setDeleted(true);
+        // Should only reload if previous chunk of code has run..
+        window.location.reload(false);
       })
       .catch(function (error) {
         console.error("Error removing document: ", error);
       });
+
   };
 
   return (
