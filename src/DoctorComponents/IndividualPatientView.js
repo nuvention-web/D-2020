@@ -123,6 +123,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     width: 120,
+    backgroundColor: "#dbdbdb",
+    border: "none",
+    "&:hover": {
+      backgroundColor: "#f5f5f5",
+      color: "black"
+    },
+    color: "black"
   },
   progressHeader: {
     [theme.breakpoints.down("sm")]: {
@@ -220,6 +227,15 @@ const useStyles = makeStyles((theme) => ({
   iconButton: {
     margin: "0px 5px",
   },
+  templateButton: {
+    backgroundColor: "#dbdbdb",
+    border: "none",
+    "&:hover": {
+      backgroundColor: "#f5f5f5",
+      color: "black"
+    },
+    color: "black"
+  }
 }));
 
 export const dayToNumIdMap = new Map([
@@ -1215,7 +1231,7 @@ const IndividualPatientView = (props) => {
               }}
               className={classes.link}
             >
-              <Button variant="dark" className={classes.viewHistory}>
+              <Button className={classes.viewHistory}>
                 View History
               </Button>
             </Link>
@@ -1302,7 +1318,7 @@ const IndividualPatientView = (props) => {
               onClick={(e) => {
                 handleOpenTemplate(e);
               }}
-              variant="dark"
+              className={classes.templateButton}
             >
               Add Your Exercise Template
             </Button>

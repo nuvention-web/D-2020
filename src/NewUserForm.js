@@ -100,6 +100,7 @@ const NewUserForm = () => {
           name: name,
           bio: bio,
           img: downloadUrl,
+          dateCreated: new Date()
         })
         .then(function () {
           console.log("Document successfully written!");

@@ -37,6 +37,11 @@ const Profile = ({ setHaveLoggedIn }) => {
     },
     editButton: {
       marginBottom: "2%",
+      backgroundColor: "#dbdbdb",
+      border: "none",
+      "&:hover": {
+        backgroundColor: "#f5f5f5"
+      }
     },
     bio: {
       textAlign: "justify",
@@ -233,7 +238,6 @@ const Profile = ({ setHaveLoggedIn }) => {
                 </CardContent>
                 <div>
                   <Button
-                    variant="light"
                     onClick={() =>
                       history.push({
                         pathname: "/profile/edit",
