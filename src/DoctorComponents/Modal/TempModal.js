@@ -204,27 +204,29 @@ const TempModal = ({
               Choose a template you want to add
             </Typography>
             <Grid container className={classes.templateGridContainer}>
-              {template.map((temp, i) => (
-                <Grid item key={i} className={classes.templateGrid}>
-                  <Card
-                    onClick={() => handleTemplate(temp, formData)}
-                    variant={
-                      selectedTemplates.includes(temp) ? "outlined" : null
-                    }
-                    className={
-                      selectedTemplates.includes(temp)
-                        ? classes.select
-                        : classes.cardRoot
-                    }
-                  >
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {temp.name}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+              {template
+                ? template.map((temp, i) => (
+                    <Grid item key={i} className={classes.templateGrid}>
+                      <Card
+                        onClick={() => handleTemplate(temp, formData)}
+                        variant={
+                          selectedTemplates.includes(temp) ? "outlined" : null
+                        }
+                        className={
+                          selectedTemplates.includes(temp)
+                            ? classes.select
+                            : classes.cardRoot
+                        }
+                      >
+                        <CardContent>
+                          <Typography gutterBottom variant="h5" component="h2">
+                            {temp.name}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))
+                : null}
             </Grid>
           </div>
         );
