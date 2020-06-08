@@ -127,9 +127,9 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
     "&:hover": {
       backgroundColor: "#f5f5f5",
-      color: "black"
+      color: "black",
     },
-    color: "black"
+    color: "black",
   },
   progressHeader: {
     [theme.breakpoints.down("sm")]: {
@@ -232,10 +232,10 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
     "&:hover": {
       backgroundColor: "#f5f5f5",
-      color: "black"
+      color: "black",
     },
-    color: "black"
-  }
+    color: "black",
+  },
 }));
 
 export const dayToNumIdMap = new Map([
@@ -305,7 +305,7 @@ const getModalStyle = () => {
   };
 };
 
-const IndividualPatientView = (props) => {
+const IndividualPatientView = () => {
   const classes = useStyles();
   // exerciseSets stores the "exercisesets" of the patient we are looking at
   const [exerciseSets, setExerciseSets] = useState([]);
@@ -478,6 +478,7 @@ const IndividualPatientView = (props) => {
         .limit(1);
 
       collectionRef.get().then((query) => {
+        console.log("this is query size: ", query.size);
         if (query.size === 0) {
           setLoaded(true);
         }
@@ -550,7 +551,7 @@ const IndividualPatientView = (props) => {
 
   // last line refers to how this useEffect will rerun if value of foundDID changes
   useEffect(() => {
-    if (exerciseSets.length !== 0 && exerciseType.length !== 0) {
+    if (exerciseSets.length !== 0 || exerciseType.length !== 0) {
       setLoaded(true);
     }
   }, [exerciseSets]);
@@ -1231,9 +1232,7 @@ const IndividualPatientView = (props) => {
               }}
               className={classes.link}
             >
-              <Button className={classes.viewHistory}>
-                View History
-              </Button>
+              <Button className={classes.viewHistory}>View History</Button>
             </Link>
           </header>
 
