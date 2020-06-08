@@ -100,7 +100,7 @@ const NewUserForm = () => {
           name: name,
           bio: bio,
           img: downloadUrl,
-          dateCreated: new Date()
+          dateCreated: new Date(),
         })
         .then(function () {
           console.log("Document successfully written!");
@@ -171,7 +171,7 @@ const NewUserForm = () => {
         <div>
           <TextField
             id="outlined-multiline-static"
-            label="Multiline"
+            label="Bio"
             multiline
             value={userInfo.bio}
             onChange={(e) => setUserField("bio", e.target.value)}
