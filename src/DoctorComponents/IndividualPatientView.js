@@ -1313,14 +1313,40 @@ const IndividualPatientView = () => {
           </div>
           {/* End Description */}
           <div className={classes.descripContainer}>
-            <Button
-              onClick={(e) => {
-                handleOpenTemplate(e);
-              }}
-              className={classes.templateButton}
-            >
-              Add Your Exercise Template
-            </Button>
+            {exerciseType && exerciseType.length > 0 ? (
+              template && template.length > 0 ? (
+                <Button
+                  onClick={(e) => {
+                    handleOpenTemplate(e);
+                  }}
+                  className={classes.templateButton}
+                >
+                  Add Your Exercise Template
+                </Button>
+              ) : (
+                <Link
+                  to={{
+                    pathname: `/PT/exercises`,
+                  }}
+                  className={classes.link}
+                >
+                  <Button className={classes.templateButton}>
+                    Go Make Your Templates for Easy Assignment
+                  </Button>
+                </Link>
+              )
+            ) : (
+              <Link
+                to={{
+                  pathname: `/PT/exercises`,
+                }}
+                className={classes.link}
+              >
+                <Button className={classes.templateButton}>
+                  Go Create Your Exercise Instant to Start Assigning!
+                </Button>
+              </Link>
+            )}
           </div>
           {dotw.map((day, ind) => {
             return (
