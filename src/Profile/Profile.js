@@ -28,7 +28,7 @@ const Profile = ({ setHaveLoggedIn }) => {
     card: {
       marginTop: "3%",
       margin: "0 auto",
-      width: "45vh",
+      width: "50vh",
       minHeight: "60vh",
     },
     image: {
@@ -140,6 +140,29 @@ const Profile = ({ setHaveLoggedIn }) => {
                       >
                         Bio: {userProfile.bio}
                       </Typography>
+                      {type &&
+                      type === "therapists" &&
+                      userProfile.zoom &&
+                      userProfile.zoom !== "" ? (
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                          className={classes.bio}
+                        >
+                          Zoom Link: {userProfile.zoom}
+                        </Typography>
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                          className={classes.bio}
+                        >
+                          Insert your Zoom personal meeting room url to hold
+                          meetings with your patients instantly!
+                        </Typography>
+                      )}
                     </CardContent>
                     <div>
                       <Button

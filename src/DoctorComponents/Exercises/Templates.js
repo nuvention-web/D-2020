@@ -263,7 +263,10 @@ const Templates = () => {
           <TextField
             id="template-name"
             label="Template Name"
+            required
             className={classes.nameField}
+            error={templateName === ""}
+            id="outlined-error-helper-text"
             onChange={(e) => setTemplateName(e.target.value)}
             helperText="Template name required"
             InputProps={{
@@ -490,6 +493,7 @@ const Templates = () => {
         <Button
           variant="light"
           type="submit"
+          disabled={templateExercises.length <= 0 || templateName !== ""}
           className={classes.submitBtn}
           onClick={(e) => addTemplate(e)}
         >
