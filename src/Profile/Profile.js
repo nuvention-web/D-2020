@@ -62,6 +62,25 @@ const Profile = ({ setHaveLoggedIn }) => {
     checkOut: {
       marginTop: "20px",
     },
+    // darkButton: {
+    //   backgroundColor: "#3358C4",
+    //   border: "none",
+    //   "&:hover": {
+    //     backgroundColor: "#264291",
+    //   },
+    //   marginBottom: 15,
+    // },
+    blueButton: {
+      backgroundColor: "#3358C4",
+      color: "white",
+      border: "none",
+      height: "calc(1.5em + .75rem + 2px)",
+      "&:hover": {
+        color: "white",
+        backgroundColor: "#9DB4FF",
+      },
+      marginBottom: 15,
+    },
   }));
   const currUser = useContext(UserContext).user;
   const type = localStorage.getItem("type");
@@ -166,14 +185,14 @@ const Profile = ({ setHaveLoggedIn }) => {
                     </CardContent>
                     <div>
                       <Button
-                        variant="light"
+                        variant="outline-primary"
                         onClick={() =>
                           history.push({
                             pathname: "/profile/edit",
                             userProfile: userProfile,
                           })
                         }
-                        className={classes.editButton}
+                        className={classes.blueButton}
                       >
                         Edit
                       </Button>
@@ -269,7 +288,7 @@ const Profile = ({ setHaveLoggedIn }) => {
                         userProfile: userProfile,
                       })
                     }
-                    className={classes.editButton}
+                    className={classes.darkButton}
                   >
                     Edit
                   </Button>
