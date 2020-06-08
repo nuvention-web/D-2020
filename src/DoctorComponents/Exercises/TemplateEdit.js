@@ -50,6 +50,13 @@ const useStyles = makeStyles((theme) => ({
   },
   paramCols: {
     textAlign: "center",
+    width: 30,
+  },
+  exerciseBox: {
+    minWidth: 250,
+  },
+  firstCol: {
+    minWidth: 270,
   },
   cols: {
     // marginRight: 100,
@@ -64,9 +71,6 @@ const useStyles = makeStyles((theme) => ({
   },
   newExercise: {
     marginTop: 10,
-  },
-  exerciseBox: {
-    width: 100,
   },
   inputBox: {
     width: 80,
@@ -309,7 +313,7 @@ const TemplateEdit = () => {
 
         <div>
           <Row className={classes.rows}>
-            <Col>Exercise</Col>
+            <Col className={classes.firstCol}>Exercise</Col>
             <Col className={classes.paramCols}>Reps</Col>
             <Col className={classes.paramCols}>Sets</Col>
             <Col className={classes.paramCols}>Duration (s)</Col>
@@ -327,7 +331,7 @@ const TemplateEdit = () => {
           return (
             <div>
               <Row key={k} className={classes.rows}>
-                <Col>{formatExerciseName(ex.name)}</Col>
+                <Col className={classes.firstCol}>{formatExerciseName(ex.name)}</Col>
                 <Col className={classes.cols}>{ex.reps ? ex.reps : "-"}</Col>
                 <Col className={classes.cols}>{ex.sets ? ex.sets : "-"}</Col>
                 <Col className={classes.cols}>

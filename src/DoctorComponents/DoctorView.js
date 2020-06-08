@@ -84,6 +84,24 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginTop: "40vh",
   },
+  darkButton: {
+    backgroundColor: "#3358C4",
+    border: "none",
+    "&:hover": {
+      backgroundColor: "#264291",
+    },
+  }, 
+  blueButton: {
+    backgroundColor: "#3358C4",
+    color: "white",
+    border: "none",
+    height: "calc(1.5em + .75rem + 2px)",
+    "&:hover": {
+      color: "white",
+      backgroundColor: "#9DB4FF",
+    },
+    margin: 3,
+  },         
 }));
 
 const DoctorView = ({ setHaveLoggedIn }) => {

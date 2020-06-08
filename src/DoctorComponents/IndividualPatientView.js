@@ -61,16 +61,6 @@ const useStyles = makeStyles((theme) => ({
   firstCol: {
     minWidth: 270,
   },
-  blueButton: {
-    backgroundColor: "#9DB4FF",
-    color: "white",
-    border: "none",
-    height: "calc(1.5em + .75rem + 2px)",
-    "&:hover": {
-      color: "white",
-      backgroundColor: "#3358C4",
-    },
-  },
   accentDivider: {
     content: "",
     display: "block",
@@ -227,14 +217,23 @@ const useStyles = makeStyles((theme) => ({
   iconButton: {
     margin: "0px 5px",
   },
-  templateButton: {
-    backgroundColor: "#dbdbdb",
+  // darkButton: {
+  //   backgroundColor: "#3358C4",
+  //   border: "none",
+  //   "&:hover": {
+  //     backgroundColor: "#264291",
+  //   },
+  // },
+  blueButton: {
+    backgroundColor: "#3358C4",
+    color: "white",
     border: "none",
+    height: "calc(1.5em + .75rem + 2px)",
     "&:hover": {
-      backgroundColor: "#f5f5f5",
-      color: "black",
+      color: "white",
+      backgroundColor: "#9DB4FF",
     },
-    color: "black",
+    marginBottom: 15,
   },
 }));
 
@@ -716,7 +715,7 @@ const IndividualPatientView = () => {
     window.location.reload(false);
   };
 
-  useEffect((day, exId) => {}, []);
+  useEffect((day, exId) => { }, []);
 
   const editExercise = async (e, exercise) => {
     e.preventDefault();
@@ -1308,46 +1307,54 @@ const IndividualPatientView = () => {
                 </li>
               </div>
             ) : (
-              <div>This page is read-only</div>
-            )}
+                <div>This page is read-only</div>
+              )}
           </div>
           {/* End Description */}
-          <div className={classes.descripContainer}>
-            {exerciseType && exerciseType.length > 0 ? (
-              template && template.length > 0 ? (
-                <Button
-                  onClick={(e) => {
-                    handleOpenTemplate(e);
-                  }}
-                  className={classes.templateButton}
-                >
-                  Add Your Exercise Template
+          {canModify ? (
+            <div className={classes.descripContainer}>
+              {(exerciseType && exerciseType.length > 0) ? (
+                template && template.length > 0 ? (
+                  <Button
+                    variant="outline-primary"
+                    onClick={(e) => {
+                      handleOpenTemplate(e);
+                    }}
+                    className={classes.blueButton}
+                  >
+                    Add Template
                 </Button>
-              ) : (
-                <Link
-                  to={{
-                    pathname: `/PT/exercises`,
-                  }}
-                  className={classes.link}
-                >
-                  <Button className={classes.templateButton}>
-                    Go Make Your Templates for Easy Assignment
+                ) : (
+                    <Link
+                      to={{
+                        pathname: `/PT/exercises`,
+                      }}
+                      className={classes.link}
+                    >
+                      <Button
+                        variant="outline-primary"
+                        className={classes.blueButton}>
+                        Go Make Your Templates for Easy Assignment
                   </Button>
-                </Link>
-              )
-            ) : (
-              <Link
-                to={{
-                  pathname: `/PT/exercises`,
-                }}
-                className={classes.link}
-              >
-                <Button className={classes.templateButton}>
-                  Go Create Your Exercise Instant to Start Assigning!
+                    </Link>
+                  )
+              ) : (
+                  <Link
+                    to={{
+                      pathname: `/PT/exercises`,
+                    }}
+                    className={classes.link}
+                  >
+                    <Button
+                      variant="outline-primary"
+                      className={classes.blueButton}>
+                      Create Exercises
                 </Button>
-              </Link>
-            )}
-          </div>
+                  </Link>
+                )}
+            </div>
+          ) : null}
+
           {dotw.map((day, ind) => {
             return (
               <div className={classes.exerciseContainer} key={ind}>
