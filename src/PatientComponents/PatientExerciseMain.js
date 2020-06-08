@@ -554,14 +554,13 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
             {userProfile ? (
               <h1 class="display-4">Hi, {userProfile.name}!</h1>
             ) : null}
-            {therapistInfo ? (
+            {therapistInfo && therapistInfo.zoom ? (
               <p class="lead">
                 Start online meeting with {therapistInfo.name} now
               </p>
             ) : (
               <div>
                 <Button
-                  variant="light"
                   onClick={() =>
                     history.push({
                       pathname: "/profile/edit",

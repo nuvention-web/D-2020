@@ -36,12 +36,14 @@ const Profile = ({ setHaveLoggedIn }) => {
       height: "100%",
     },
     editButton: {
-      marginBottom: "2%",
-      backgroundColor: "#dbdbdb",
+      backgroundColor: "#9DB4FF",
+      color: "white",
       border: "none",
+      height: "calc(1.5em + .75rem + 2px)",
       "&:hover": {
-        backgroundColor: "#f5f5f5"
-      }
+        color: "white",
+        backgroundColor: "#3358C4",
+      },
     },
     bio: {
       textAlign: "justify",
