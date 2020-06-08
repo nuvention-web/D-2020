@@ -493,7 +493,7 @@ const Templates = () => {
         <Button
           variant="light"
           type="submit"
-          disabled={templateExercises.length <= 0 || templateName !== ""}
+          disabled={templateExercises.length <= 0 || templateName === ""}
           className={classes.submitBtn}
           onClick={(e) => addTemplate(e)}
         >
