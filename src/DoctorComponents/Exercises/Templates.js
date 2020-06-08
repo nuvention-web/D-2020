@@ -84,6 +84,9 @@ const useStyles = makeStyles((theme) => ({
     background: "#9DB4FF",
     marginBottom: "1.75rem",
   },
+  descripDiv: {
+    marginBottom: "70px",
+  },
   nameField: {
     marginBottom: 20,
     width: "20%",
@@ -94,6 +97,10 @@ const useStyles = makeStyles((theme) => ({
   },
   submitBtn: {
     marginTop: "5%",
+  },
+  emphasis: {
+    color: "#3358C4",
+    fontWeight: 600,
   },
 }));
 
@@ -254,9 +261,40 @@ const Templates = () => {
   return (
     <div className={classes.exerciseContainer}>
       <div className={classes.exerciseSetDiv}>
+        <div className={classes.descripDiv}>
+          <Typography variant="h4" className={classes.header}>
+            How to Assign Exercises:
+          </Typography>
+          <li>
+            <span className={classes.emphasis}>Reps: </span>
+            Repetitions of the exercise per set
+          </li>
+          <li>
+            <span className={classes.emphasis}>Sets: </span> Number of sets to
+            be completed
+          </li>
+          <li>
+            <span className={classes.emphasis}>Duration (seconds):</span>{" "}
+            Duration of one repetition (including hold time)
+          </li>
+          <li>
+            <span className={classes.emphasis}>Hold (seconds):</span> Time to
+            hold during each rep? (default of 0)
+          </li>
+          <li>
+            <span className={classes.emphasis}>Rest (seconds):</span> Rest
+            between sets
+          </li>
+          <li>
+            <span className={classes.emphasis}>Resistance: </span>
+            Resistance during exercise (i.e. 5kg band)
+          </li>
+        </div>
+
         <Typography variant="h4" className={classes.header}>
           Create a New Template
         </Typography>
+
         <div className={classes.accentDivider} />
 
         <form noValidate autoComplete="off">
