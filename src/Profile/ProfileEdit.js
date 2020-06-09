@@ -66,10 +66,18 @@ const ProfileEdit = () => {
     resize: {
       fontSize: 18,
     },
-    button: {
+    blueButton: {
       marginRight: "10px",
-      backgroundColor: "#3358C4",
       width: "100px",
+      backgroundColor: "#3358C4",
+      color: "white",
+      border: "none",
+      height: "calc(1.5em + .75rem + 2px)",
+      "&:hover": {
+        color: "white",
+        backgroundColor: "#9DB4FF",
+      },
+      marginBottom: 15,
     },
   }));
 
@@ -211,13 +219,13 @@ const ProfileEdit = () => {
           ...(code && code !== ""
             ? { code: code }
             : userProfile.code
-            ? { code: userProfile.code }
-            : { code: null }),
+              ? { code: userProfile.code }
+              : { code: null }),
           ...(zoom && zoom !== ""
             ? { zoom: zoom }
             : userProfile.zoom
-            ? { zoom: userProfile.zoom }
-            : { zoom: null }),
+              ? { zoom: userProfile.zoom }
+              : { zoom: null }),
         })
         .then(function () {
           if (type == "patients") {
@@ -359,13 +367,16 @@ const ProfileEdit = () => {
             />
             <br />
             <Button
-              color="primary"
-              className={classes.button}
+              variant="outline-primary"
+              className={classes.blueButton}
               onClick={() => history.goBack()}
             >
               Cancel
             </Button>
-            <Button color="primary" className={classes.button} type="submit">
+            <Button
+              variant="outline-primary"
+              className={classes.blueButton}
+              type="submit">
               Submit
             </Button>
           </form>
