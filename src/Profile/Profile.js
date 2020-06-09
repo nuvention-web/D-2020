@@ -160,39 +160,39 @@ const Profile = ({ setHaveLoggedIn }) => {
                         Bio: {userProfile.bio}
                       </Typography>
                       {type &&
-                      type === "therapists" &&
-                      userProfile.zoom &&
-                      userProfile.zoom !== "" ? (
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                          className={classes.bio}
-                        >
-                          Zoom Link: {userProfile.zoom}
+                        type === "therapists" &&
+                        userProfile.zoom &&
+                        userProfile.zoom !== "" ? (
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            component="p"
+                            className={classes.bio}
+                          >
+                            Zoom Link: {userProfile.zoom}
+                          </Typography>
+                        ) : (
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            component="p"
+                            className={classes.bio}
+                          >
+                            Insert your Zoom personal meeting room url to hold
+                            meetings with your patients instantly!
                         </Typography>
-                      ) : (
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                          className={classes.bio}
-                        >
-                          Insert your Zoom personal meeting room url to hold
-                          meetings with your patients instantly!
-                        </Typography>
-                      )}
+                        )}
                     </CardContent>
                     <div>
                       <Button
                         variant="outline-primary"
+                        className={classes.blueButton}
                         onClick={() =>
                           history.push({
                             pathname: "/profile/edit",
                             userProfile: userProfile,
                           })
                         }
-                        className={classes.blueButton}
                       >
                         Edit
                       </Button>
@@ -201,14 +201,14 @@ const Profile = ({ setHaveLoggedIn }) => {
                   </Card>
                 </div>
               ) : (
-                <div>
-                  {" "}
-                  <Typography variant="h2" color="textSecondary" component="h2">
-                    You haven't made your profile yet:
+                  <div>
+                    {" "}
+                    <Typography variant="h2" color="textSecondary" component="h2">
+                      You haven't made your profile yet:
                   </Typography>
-                  <a href="/newUser">Go build you profile</a>
-                </div>
-              )}
+                    <a href="/newUser">Go build you profile</a>
+                  </div>
+                )}
             </Container>
           </Grid>
           {/* Payment Info */}
@@ -282,13 +282,14 @@ const Profile = ({ setHaveLoggedIn }) => {
                 </CardContent>
                 <div>
                   <Button
+                    variant="outline-primary"
+                    className={classes.blueButton}
                     onClick={() =>
                       history.push({
                         pathname: "/profile/edit",
                         userProfile: userProfile,
                       })
                     }
-                    className={classes.darkButton}
                   >
                     Edit
                   </Button>
@@ -297,14 +298,14 @@ const Profile = ({ setHaveLoggedIn }) => {
               </Card>
             </div>
           ) : (
-            <div>
-              {" "}
-              <Typography variant="h2" color="textSecondary" component="h2">
-                You haven't made your profile yet:
+              <div>
+                {" "}
+                <Typography variant="h2" color="textSecondary" component="h2">
+                  You haven't made your profile yet:
               </Typography>
-              <a href="/newUser">Go build you profile</a>
-            </div>
-          )}
+                <a href="/newUser">Go build you profile</a>
+              </div>
+            )}
         </Container>
       </div>
     );

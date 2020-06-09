@@ -202,6 +202,17 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     margin: "0 auto",
   },
+  blueButton: {
+    backgroundColor: "#3358C4",
+    color: "white",
+    border: "none",
+    height: "calc(1.5em + .75rem + 2px)",
+    "&:hover": {
+      color: "white",
+      backgroundColor: "#9DB4FF",
+    },
+    marginBottom: 15,
+  },
 }));
 
 const calculateTotalTime = (exercises) => {
@@ -255,32 +266,6 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   const classes = useStyles();
   const [thisMondayStr, setThisMondayStr] = useState();
 
-  const [canStart, setCanStart] = useState(true);
-
-  const checkCanStart = () => {
-    // If we are in a week prior to this one, set canModify to false
-    // d = this Monday
-    const d = new Date();
-    let day = d.getDay(),
-      diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-    d.setDate(diff);
-    d.setHours(0, 0, 0, 0);
-
-    if (typeof thisMondayStr !== "undefined") {
-      // The monday we are looking at
-      var currMonday = new Date(thisMondayStr);
-
-      if (currMonday < d) {
-        setCanStart(false);
-      } else {
-        setCanStart(true);
-      }
-    }
-  };
-
-  useEffect(() => {
-    checkCanStart();
-  }, [thisMondayStr]);
 
   // const getMonday = (d) => {
   //   d = new Date(d);
@@ -297,6 +282,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
   // const weekBeginning = getMonday(new Date())[0];
 
   // const thisMondayStr = getMonday(new Date())[1];
+
 
   // Load correct NavBar for patient
   useEffect(() => {
@@ -546,6 +532,7 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
       return startDateStr + " - " + endDateStr;
     };
 
+
     return (
       <div className={classes.window}>
         {/* Start Jumbotron */}
@@ -554,32 +541,33 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
             {userProfile ? (
               <h1 class="display-4">Hi, {userProfile.name}!</h1>
             ) : null}
-            {therapistInfo && therapistInfo.zoom ? (
+            {therapistInfo ? (
               <p class="lead">
                 Start online meeting with {therapistInfo.name} now
               </p>
             ) : (
-              <div>
-                <Button
-                  onClick={() =>
-                    history.push({
-                      pathname: "/profile/edit",
-                      userProfile: userProfile,
-                    })
-                  }
-                  className={classes.editButton}
-                >
-                  Connect with your therapist!
+                <div>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() =>
+                      history.push({
+                        pathname: "/profile/edit",
+                        userProfile: userProfile,
+                      })
+                    }
+                    className={classes.blueButton}
+                  >
+                    Connect with your therapist!
                 </Button>
-              </div>
-            )}
+                </div>
+              )}
 
             {therapistInfo && therapistInfo.zoom ? (
               <a href={`${therapistInfo.zoom}`} target="_blank">
                 <Button
                   size="small"
-                  color="primary"
-                  className={classes.darkButton}
+                  variant="outline-primary"
+                  className={classes.blueButton}
                 >
                   Start Zoom Call
                 </Button>
@@ -737,19 +725,17 @@ const PatientExerciseMain = ({ setHaveLoggedIn }) => {
                         </div>
                       );
                     })}
-                    {canStart ? (
-                      <Link
-                        to={{
-                          pathname: `/workout/${s[0]}`,
-                          exerciseProps: s,
-                          setInd: i,
-                        }}
-                      >
-                        <Button variant="light" className={classes.startButton}>
-                          Start
-                        </Button>
-                      </Link>
-                    ) : null}
+                    <Link
+                      to={{
+                        pathname: `/workout/${s[0]}`,
+                        exerciseProps: s,
+                        setInd: i,
+                      }}
+                    >
+                      <Button variant="light" className={classes.startButton}>
+                        Start
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               );

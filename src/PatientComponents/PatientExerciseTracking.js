@@ -189,6 +189,17 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: "42%",
     textAlign: "left",
   },
+  blueButton: {
+    backgroundColor: "#3358C4",
+    color: "white",
+    border: "none",
+    height: "calc(1.5em + .75rem + 2px)",
+    "&:hover": {
+      color: "white",
+      backgroundColor: "#9DB4FF",
+    },
+    margin: "15px 4px"
+  },
 }));
 
 const getMonday = (d) => {
@@ -395,7 +406,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                   initialTime={
                     [
                       exercise.sets * exercise.reps * exercise.duration +
-                        (exercise.sets - 1) * exercise.rest,
+                      (exercise.sets - 1) * exercise.rest,
                     ] * 1000
                   }
                   direction="backward"
@@ -419,13 +430,20 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                           }
                         />
                       </div>
-                      <Button onClick={start} className="timer-btn">
+                      <Button onClick={start}
+                        variant="outline-primary"
+                        className={classes.blueButton}
+                      >
                         Start
                       </Button>
-                      <Button onClick={stop} className="timer-btn">
+                      <Button onClick={stop} 
+                       variant="outline-primary"
+                       className={classes.blueButton}>
                         Stop
                       </Button>
-                      <Button onClick={reset} className="timer-btn">
+                      <Button onClick={reset} 
+                       variant="outline-primary"
+                       className={classes.blueButton}>
                         Reset
                       </Button>
                     </React.Fragment>
@@ -466,7 +484,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                 </div>
               </React.Fragment>
             ) : // End Task Stuff
-            null}
+              null}
           </div>
         </Carousel.Item>
       ))}

@@ -132,7 +132,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "5%",
   },
   cols: {
-    // marginRight: 100,
     textAlign: "center",
   },
   progressContainer: {
@@ -1231,7 +1230,9 @@ const IndividualPatientView = () => {
               }}
               className={classes.link}
             >
-              <Button className={classes.viewHistory}>View History</Button>
+              <Button
+                variant="light"
+                className={classes.viewHistory}>View History</Button>
             </Link>
           </header>
 
