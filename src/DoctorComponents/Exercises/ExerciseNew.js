@@ -63,6 +63,8 @@ const ExerciseNew = () => {
   const history = useHistory();
   const currUser = useContext(UserContext).user;
   const classes = useStyles();
+  const [noName, setNoName] = useState(false);
+  const [noUrl, setNoUrl] = useState(false);
 
   const [exerciseForm, setExerciseForm] = useState({
     name: "",
@@ -84,6 +86,12 @@ const ExerciseNew = () => {
     let parsedUrl = "";
     let { name, stretched, url } = exerciseForm;
     if (url) parsedUrl = videoIdParser(url);
+    if (exerciseForm["name"] == "") {
+      setNoName(true);
+    }
+    if (exerciseForm["url"] == "") {
+      setNoUrl(true);
+    }
 
     console.log(name, stretched, parsedUrl);
     await db
@@ -152,9 +160,16 @@ const ExerciseNew = () => {
             value={exerciseForm.name}
             required
             helperText="Name required."
-            error={exerciseForm["name"] === ""}
+            error={noName}
             id="outlined-error-helper-text"
-            onChange={(e) => setExerciseField("name", e.target.value)}
+            onChange={(e) => { 
+                setExerciseField("name", e.target.value)
+                if (e.target.value == "") {
+                  setNoName(true);
+                }
+                else {
+                  setNoName(false);
+                }}}
             className={classes.nameField}
             InputProps={{
               classes: {
@@ -185,11 +200,17 @@ const ExerciseNew = () => {
             required
             helperText="URL required."
             error={
-              exerciseForm["url"] === "" ||
-              !exerciseForm["url"].includes("youtube.com")
+              noUrl
             }
             id="outlined-error-helper-text"
-            onChange={(e) => setExerciseField("url", e.target.value)}
+            onChange={(e) => {
+              setExerciseField("url", e.target.value);
+              if (e.target.value == "") {
+                setNoUrl(true);
+              }
+              else {
+                setNoUrl(false);
+              }}}
             className={classes.nameField}
             InputProps={{
               classes: {

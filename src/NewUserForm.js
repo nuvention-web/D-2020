@@ -71,6 +71,9 @@ const NewUserForm = () => {
     name: "",
     bio: "",
   });
+  const [noType, setNoType] = useState(false);
+  const [noName, setNoName] = useState(false);
+  const [noBio, setNoBio] = useState(false);
 
   const setUserField = (field, data) => {
     setUserInfo({ ...userInfo, [field]: data });
@@ -140,10 +143,17 @@ const NewUserForm = () => {
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
               value={userInfo.type}
-              onChange={(e) => setUserField("type", e.target.value)}
+              onChange={(e) => {
+                setUserField("type", e.target.value);
+                if (e.target.value == "") {
+                  setNoType(true);
+                }
+                else {
+                  setNoType(false);
+                }}}
               label="Type"
               className={classes.profileType}
-              error={userInfo["type"] === ""}
+              error={noType}
               id="outlined-error-helper-text"
             >
               <MenuItem value={"patients"}>Patient</MenuItem>
@@ -157,14 +167,21 @@ const NewUserForm = () => {
             id="standard-basic"
             label="Name"
             value={userInfo.name}
-            onChange={(e) => setUserField("name", e.target.value)}
+            onChange={(e) => {
+              setUserField("name", e.target.value);
+              if (e.target.value == "") {
+                setNoName(true);
+              }
+              else {
+                setNoName(false);
+              }}}
             className={classes.nameField}
             InputProps={{
               classes: {
                 input: classes.resize,
               },
             }}
-            error={userInfo["name"] === ""}
+            error={noName}
             id="outlined-error-helper-text"
           />
         </div>
@@ -174,7 +191,14 @@ const NewUserForm = () => {
             label="Bio"
             multiline
             value={userInfo.bio}
-            onChange={(e) => setUserField("bio", e.target.value)}
+            onChange={(e) => {
+              setUserField("bio", e.target.value);
+              if (e.target.value == "") {
+                setNoBio(true);
+              }
+              else {
+                setNoBio(false);
+              }}}
             rows={4}
             defaultValue="Default Value"
             variant="outlined"
@@ -184,7 +208,7 @@ const NewUserForm = () => {
                 input: classes.resize,
               },
             }}
-            error={userInfo["bio"] === ""}
+            error={noBio}
             id="outlined-error-helper-text"
           />
         </div>

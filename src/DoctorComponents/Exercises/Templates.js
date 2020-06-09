@@ -75,14 +75,21 @@ const useStyles = makeStyles((theme) => ({
     border: "1px solid #ccc",
     display: "inline-block",
   },
-  accentDivider: {
-    content: "",
-    display: "block",
-    width: "6.25rem",
-    height: ".325rem",
-    marginTop: "1.5rem",
-    background: "#9DB4FF",
-    marginBottom: "1.75rem",
+  purpleDivider: {
+    backgroundColor: "#9DB4FF",
+    height: ".225rem",
+    width: "6.50rem",
+  },
+  blueDivider: {
+    backgroundColor: "#3358C4",
+    height: ".225rem",
+    width: "15.75rem",
+  },
+  dividers: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 10,
+    marginBottom: "1.75rem"
   },
   descripDiv: {
     marginBottom: "70px",
@@ -115,6 +122,7 @@ const Templates = () => {
   const [newRest, setNewRest] = useState({});
   const [templateExercises, setTemplateExercises] = useState([]);
   const [templateName, setTemplateName] = useState("");
+  const [noTempName, setNoTempName] = useState(false);
 
   const currUser = useContext(UserContext).user;
   const classes = useStyles();
@@ -295,7 +303,10 @@ const Templates = () => {
           Create a New Template
         </Typography>
 
-        <div className={classes.accentDivider} />
+        <div className={classes.dividers}>
+          <div className={classes.purpleDivider}></div>
+          <div className={classes.blueDivider}></div>
+        </div>
 
         <form noValidate autoComplete="off">
           <TextField
@@ -303,9 +314,16 @@ const Templates = () => {
             label="Template Name"
             required
             className={classes.nameField}
-            error={templateName === ""}
+            error={noTempName}
             id="outlined-error-helper-text"
-            onChange={(e) => setTemplateName(e.target.value)}
+            onChange={(e) => {
+              setTemplateName(e.target.value)
+              if (e.target.value == "") {
+                setNoTempName(true);
+              }
+              else {
+                setNoTempName(false);
+              }}}
             helperText="Template name required"
             InputProps={{
               classes: {
