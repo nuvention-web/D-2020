@@ -69,13 +69,20 @@ const useStyles = makeStyles((theme) => ({
     },
     marginBottom: 100,
   },
-  accentDivider: {
-    content: "",
-    display: "block",
-    width: "8.25rem",
-    height: ".325rem",
-    marginTop: "1.5rem",
-    background: "#9DB4FF",
+  purpleDivider: {
+    backgroundColor: "#9DB4FF",
+    height: ".225rem",
+    width: "6.00rem",
+  },
+  blueDivider: {
+    backgroundColor: "#3358C4",
+    height: ".225rem",
+    width: "14.50rem",
+  },
+  dividers: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 10,
   },
   checkIcon: {
     maxWidth: 35,
@@ -174,7 +181,10 @@ const Exercises = () => {
           Your Exercises
         </Typography>
 
-        <div className={classes.accentDivider}></div>
+        <div className={classes.dividers}>
+          <div className={classes.purpleDivider}></div>
+          <div className={classes.blueDivider}></div>
+        </div>
         <Grid
           container
           direction="row"
@@ -212,7 +222,10 @@ const Exercises = () => {
         <Typography variant="h3" className={classes.header}>
           Your Templates
         </Typography>
-        <div className={classes.accentDivider}></div>
+        <div className={classes.dividers}>
+          <div className={classes.purpleDivider}></div>
+          <div className={classes.blueDivider}></div>
+        </div>
         <Grid
           container
           direction="row"

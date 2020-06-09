@@ -330,7 +330,7 @@ const ProfileEdit = () => {
               <div>
                 <TextField
                   id="standard-basic"
-                  label="Enter your Zoom Personal Meeting Id "
+                  label="Enter personal zoom link"
                   defaultValue={
                     userInfo.zoom && userInfo.zoom !== ""
                       ? userInfo.zoom

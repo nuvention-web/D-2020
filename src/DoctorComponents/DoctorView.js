@@ -66,13 +66,20 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 40,
     marginTop: 10,
   },
-  accentDivider: {
-    content: "",
-    display: "block",
-    width: "6.25rem",
-    height: ".325rem",
-    marginTop: "1.5rem",
-    background: "#9DB4FF",
+  purpleDivider: {
+    backgroundColor: "#9DB4FF",
+    height: ".225rem",
+    width: "5.50rem",
+  },
+  blueDivider: {
+    backgroundColor: "#3358C4",
+    height: ".225rem",
+    width: "14.00rem",
+  },
+  dividers: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 10,
     marginBottom: "2.5rem",
   },
   yourExercises: {
@@ -202,7 +209,10 @@ const DoctorView = ({ setHaveLoggedIn }) => {
             <Typography variant="h3" className={classes.header}>
               Your Patients
             </Typography>
-            <div className={classes.accentDivider}></div>
+            <div className={classes.dividers}>
+              <div className={classes.purpleDivider}></div>
+              <div className={classes.blueDivider}></div>
+            </div>
             <Grid container direction="row">
               {patients.map((p, i) => {
                 return (
@@ -216,7 +226,10 @@ const DoctorView = ({ setHaveLoggedIn }) => {
               <Typography variant="h3" className={classes.header}>
                 Your Exercises
               </Typography>
-              <div className={classes.accentDivider}></div>
+              <div className={classes.dividers}>
+                <div className={classes.purpleDivider}></div>
+                <div className={classes.blueDivider}></div>
+              </div>
               <Link to="/PT/exercises" className={classes.link}>
                 <Button
                   className={classes.blueButton}
@@ -241,7 +254,10 @@ const DoctorView = ({ setHaveLoggedIn }) => {
             <Typography variant="h3" className={classes.header}>
               Your Patients
             </Typography>
-            <div className={classes.accentDivider}></div>
+            <div className={classes.dividers}>
+              <div className={classes.purpleDivider}></div>
+              <div className={classes.blueDivider}></div>
+            </div>
             <Typography variant="h4">
               You don't have any patients connected with you yet
             </Typography>
@@ -249,7 +265,10 @@ const DoctorView = ({ setHaveLoggedIn }) => {
               <Typography variant="h3" className={classes.header}>
                 Your Exercises
               </Typography>
-              <div className={classes.accentDivider}></div>
+              <div className={classes.dividers}>
+                <div className={classes.purpleDivider}></div>
+                <div className={classes.blueDivider}></div>
+              </div>
               <Link to="/PT/exercises" className={classes.link}>
                 <Button
                   className={classes.blueButton}
