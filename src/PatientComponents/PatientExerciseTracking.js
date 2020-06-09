@@ -322,7 +322,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
   };
 
   // Update 'complete' flag when timer hits 0
-  const updateCompleted = (exercisename, currUser) => {
+  const updateCompleted = (exercise, currUser) => {
     // Firestore reference
     var exerciseRef = db
       .collection("patients")
@@ -332,17 +332,12 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
       .collection(thisMonday);
 
     exerciseRef
-      .where("name", "==", exercisename)
-      .where("day", "==", dayToNumIdMap.get(day))
-      .get()
-      .then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-          console.log(doc.id, " => ", doc.data());
-          exerciseRef.doc(doc.id).update({ complete: true });
-          // alert("Good work!");
-          setExerciseDone(true);
-          setDrawer(true);
-        });
+      .doc(exercise.doc_id)
+      .update({ complete: true })
+      .then(() => {
+        // alert("Good work!");
+        setExerciseDone(true);
+        setDrawer(true);
       })
       .catch(function (error) {
         console.error("Error writing document: ", error);
@@ -409,7 +404,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                     {
                       time: 0,
                       callback: () => {
-                        updateCompleted(exercise.name, currUser);
+                        updateCompleted(exercise, currUser);
                       },
                     },
                   ]}

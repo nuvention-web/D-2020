@@ -22,6 +22,7 @@ const StripeCheckoutButton = ({ price }) => {
       panelLabel="Sign Up for Monthly Subscription"
       token={onToken}
       stripeKey={publishableKey}
+      disabled
     />
   );
 };
