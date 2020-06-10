@@ -180,6 +180,9 @@ const useStyles = makeStyles((theme) => ({
   date: {
     textAlign: "center",
     margin: "0 auto",
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 20,
+    },
   },
   arrowButton: {
     // [theme.breakpoints.down("sm")]: {
@@ -191,6 +194,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "left",
     width: 40,
     margin: 30,
+    [theme.breakpoints.down("sm")]: {
+      margin: "15px 10px 25px 10px", 
+    }
   },
   paper: {
     position: "absolute",
