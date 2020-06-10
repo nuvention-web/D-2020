@@ -186,6 +186,11 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
   },
   taskList: {
+    [theme.breakpoints.down("sm")]: {
+      paddingLeft: "25%",
+      marginTop: "3%"
+    },
+    marginTop: "2%",
     paddingLeft: "42%",
     textAlign: "left",
   },

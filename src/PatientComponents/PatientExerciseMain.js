@@ -201,6 +201,9 @@ const useStyles = makeStyles((theme) => ({
   date: {
     textAlign: "center",
     margin: "0 auto",
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 20,
+    },
   },
   blueButton: {
     backgroundColor: "#3358C4",
@@ -213,6 +216,11 @@ const useStyles = makeStyles((theme) => ({
     },
     marginBottom: 15,
   },
+  arrowButton: {
+    [theme.breakpoints.down("sm")]: {
+      margin: 10
+    },
+  }
 }));
 
 const calculateTotalTime = (exercises) => {
