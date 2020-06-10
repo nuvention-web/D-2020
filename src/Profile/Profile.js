@@ -56,6 +56,9 @@ const Profile = ({ setHaveLoggedIn }) => {
       marginTop: "40vh",
     },
     explanation: {
+      [theme.breakpoints.down("sm")]: {
+        width: "90%",
+      },
       width: "70%",
       marginTop: "25px",
     },
@@ -80,6 +83,18 @@ const Profile = ({ setHaveLoggedIn }) => {
         backgroundColor: "#9DB4FF",
       },
       marginBottom: 15,
+    },
+    pricingContainer: {
+      [theme.breakpoints.down("sm")]: {
+        marginTop: 50,
+        marginLeft: 35,
+      },
+    },
+    pricingHeader: {
+      [theme.breakpoints.down("sm")]: {
+        textAlign: "center",
+        marginLeft: -60,
+      },
     },
   }));
   const currUser = useContext(UserContext).user;
@@ -160,28 +175,28 @@ const Profile = ({ setHaveLoggedIn }) => {
                         Bio: {userProfile.bio}
                       </Typography>
                       {type &&
-                        type === "therapists" &&
-                        userProfile.zoom &&
-                        userProfile.zoom !== "" ? (
-                          <Typography
-                            variant="body2"
-                            color="textSecondary"
-                            component="p"
-                            className={classes.bio}
-                          >
-                            Zoom Link: {userProfile.zoom}
-                          </Typography>
-                        ) : (
-                          <Typography
-                            variant="body2"
-                            color="textSecondary"
-                            component="p"
-                            className={classes.bio}
-                          >
-                            Insert your Zoom personal meeting room url to hold
-                            meetings with your patients instantly!
+                      type === "therapists" &&
+                      userProfile.zoom &&
+                      userProfile.zoom !== "" ? (
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                          className={classes.bio}
+                        >
+                          Zoom Link: {userProfile.zoom}
                         </Typography>
-                        )}
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                          className={classes.bio}
+                        >
+                          Insert your Zoom personal meeting room url to hold
+                          meetings with your patients instantly!
+                        </Typography>
+                      )}
                     </CardContent>
                     <div>
                       <Button
@@ -201,21 +216,26 @@ const Profile = ({ setHaveLoggedIn }) => {
                   </Card>
                 </div>
               ) : (
-                  <div>
-                    {" "}
-                    <Typography variant="h2" color="textSecondary" component="h2">
-                      You haven't made your profile yet:
+                <div>
+                  {" "}
+                  <Typography variant="h2" color="textSecondary" component="h2">
+                    You haven't made your profile yet:
                   </Typography>
-                    <a href="/newUser">Go build you profile</a>
-                  </div>
-                )}
+                  <a href="/newUser">Go build you profile</a>
+                </div>
+              )}
             </Container>
           </Grid>
           {/* Payment Info */}
           <Grid item xs={12} sm={6}>
-            <Container>
-              <Typography variant="h4" color="textSecondary" component="h2">
-                Our Pricing Policy:{" "}
+            <Container className={classes.pricingContainer}>
+              <Typography
+                variant="h4"
+                color="textSecondary"
+                component="h2"
+                className={classes.pricingHeader}
+              >
+                Our Pricing Policy{" "}
               </Typography>
               <div className={classes.explanation}>
                 <Typography variant="h7" color="textSecondary" component="h7">
@@ -298,14 +318,14 @@ const Profile = ({ setHaveLoggedIn }) => {
               </Card>
             </div>
           ) : (
-              <div>
-                {" "}
-                <Typography variant="h2" color="textSecondary" component="h2">
-                  You haven't made your profile yet:
+            <div>
+              {" "}
+              <Typography variant="h2" color="textSecondary" component="h2">
+                You haven't made your profile yet:
               </Typography>
-                <a href="/newUser">Go build you profile</a>
-              </div>
-            )}
+              <a href="/newUser">Go build you profile</a>
+            </div>
+          )}
         </Container>
       </div>
     );

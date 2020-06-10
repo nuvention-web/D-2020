@@ -203,7 +203,7 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
       backgroundColor: "#9DB4FF",
     },
-    margin: "15px 4px"
+    margin: "15px 4px",
   },
 }));
 
@@ -411,7 +411,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                   initialTime={
                     [
                       exercise.sets * exercise.reps * exercise.duration +
-                      (exercise.sets - 1) * exercise.rest,
+                        (exercise.sets - 1) * exercise.rest,
                     ] * 1000
                   }
                   direction="backward"
@@ -435,20 +435,25 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                           }
                         />
                       </div>
-                      <Button onClick={start}
+                      <Button
+                        onClick={start}
                         variant="outline-primary"
                         className={classes.blueButton}
                       >
                         Start
                       </Button>
-                      <Button onClick={stop} 
-                       variant="outline-primary"
-                       className={classes.blueButton}>
+                      <Button
+                        onClick={stop}
+                        variant="outline-primary"
+                        className={classes.blueButton}
+                      >
                         Stop
                       </Button>
-                      <Button onClick={reset} 
-                       variant="outline-primary"
-                       className={classes.blueButton}>
+                      <Button
+                        onClick={reset}
+                        variant="outline-primary"
+                        className={classes.blueButton}
+                      >
                         Reset
                       </Button>
                     </React.Fragment>
@@ -489,7 +494,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                 </div>
               </React.Fragment>
             ) : // End Task Stuff
-              null}
+            null}
           </div>
         </Carousel.Item>
       ))}
