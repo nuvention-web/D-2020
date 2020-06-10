@@ -186,6 +186,11 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
   },
   taskList: {
+    [theme.breakpoints.down("sm")]: {
+      paddingLeft: "25%",
+      marginTop: "3%"
+    },
+    marginTop: "2%",
     paddingLeft: "42%",
     textAlign: "left",
   },
@@ -450,7 +455,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                   )}
                 </Timer>
                 <Typography variant="h5" className={classes.exerciseName}>
-                  Tasklist
+                  Instructions
                 </Typography>
                 <div className={classes.taskList}>
                   <li>
@@ -469,7 +474,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                   </li>
                   <li>
                     <span className={classes.emphasis}>
-                      Hold during rep(seconds):
+                      Hold during rep (seconds):
                     </span>{" "}
                     {exercise.hold}
                   </li>
@@ -478,7 +483,7 @@ const ExerciseCarousel = ({ set, setExerciseDone, exerciseDone }) => {
                     {exercise.rest}
                   </li>
                   <li>
-                    <span className={classes.emphasis}>Resitance:</span>{" "}
+                    <span className={classes.emphasis}>Resistance:</span>{" "}
                     {exercise.resistance}
                   </li>
                 </div>
